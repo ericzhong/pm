@@ -1,0 +1,10 @@
+# MAC
+.DS_Store
+
+*.pyc
+*.sqlite3
+*.swp
+
+# PyCharm
+.idea/
+migration
