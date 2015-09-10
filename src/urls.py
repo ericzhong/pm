@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^$', 'apps.views.home', name='home'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}),
     url(r'^password_reset/$', auth_views.password_reset, {'password_reset_form': PasswordResetByEmailForm}),
-
     url('^', include('django.contrib.auth.urls')),
+
     url(r'^admin/', include(admin.site.urls)),
 ]

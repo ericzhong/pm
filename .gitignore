@@ -1,10 +1,15 @@
 # MAC
 .DS_Store
 
+# Python
 *.pyc
-*.sqlite3
+
+# Vim
 *.swp
 
 # PyCharm
 .idea/
-migration
+
+# Django
+migrations
+*.sqlite3
