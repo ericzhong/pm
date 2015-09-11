@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1># Project Detail</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <td>Field</td>
+        <td>Value</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Name</td><td>{{ project.name }}</td></tr>
+      <tr><td>description</td><td>{{ project.description }}</td></tr>
+      <tr><td>homepage</td><td>{{ project.homepage }}</td></tr>
+      <tr><td>is_public</td><td>{{ project.is_public }}</td></tr>
+      <tr><td>parent_id</td><td>{{ project.parent_id }}</td></tr>
+      <tr><td>created_on</td><td>{{ project.created_on }}</td></tr>
+      <tr><td>updated_on</td><td>{{ project.updated_on }}</td></tr>
+      <tr><td>identifier</td><td>{{ project.identifier }}</td></tr>
+      <tr><td>status</td><td>{{ project.status }}</td></tr>
+      <tr><td>inherit_members</td><td>{{ project.inherit_members }}</td></tr>
+    </tbody>
+  </table>
+{% endblock %}

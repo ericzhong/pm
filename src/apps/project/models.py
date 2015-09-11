@@ -6,14 +6,14 @@ from django.contrib.auth.models import User
 
 
 @python_2_unicode_compatible
-class Projects(models.Model):
-    name = models.CharField(max_length=255)
+class Project(models.Model):
+    name = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
     homepage = models.CharField(max_length=255, default='', blank=True)
     is_public = models.BooleanField(default=True)
-    parent_id = models.ForeignKey('Projects')
+    parent_id = models.ForeignKey('Project', null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(null=True)
+    updated_on = models.DateTimeField(null=True, blank=True)
     identifier = models.CharField(max_length=255, null=True, blank=True, unique=True)
     status = models.IntegerField(default=1)     # built-in: open,closed
     inherit_members = models.BooleanField(default=False)
@@ -23,22 +23,22 @@ class Projects(models.Model):
 
 
 @python_2_unicode_compatible
-class Issues(models.Model):
-    issue_type = models.ForeignKey('IssueTypes')
-    project_id = models.ForeignKey('Projects')
+class Issue(models.Model):
+    issue_type = models.ForeignKey('IssueType')
+    project_id = models.ForeignKey('Project')
     subject = models.CharField(max_length=255, default='')
     description = models.TextField(null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
-    status = models.ForeignKey('IssueStatuses')
-    assigned_to = models.ForeignKey(User, null=True)
+    status = models.ForeignKey('IssueStatuse')
+    assigned_to = models.ForeignKey(User, null=True, blank=True)
     priority = models.IntegerField(default=1)       # built-in (low,normal,high,emergency,immediately)
-    version = models.ForeignKey('Versions')
+    version = models.ForeignKey('Version', null=True, blank=True)
     author =  models.ForeignKey(User, related_name='created_by')
     created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(null=True)
+    updated_on = models.DateTimeField(null=True, blank=True)
     done_ratio = models.IntegerField(default=0)
-    parent_id = models.ForeignKey('Issues')
+    parent_id = models.ForeignKey('Issue', null=True, blank=True)
     is_private = models.BooleanField(default=False)
 
     def __str__(self):
@@ -46,16 +46,16 @@ class Issues(models.Model):
 
 
 @python_2_unicode_compatible
-class IssueTypes(models.Model):
-    name = models.CharField(max_length=30, default='')
+class IssueType(models.Model):
+    name = models.CharField(max_length=30, default='', unique=True)
 
     def __str__(self):
         return self.name
 
 
 @python_2_unicode_compatible
-class IssueStatuses(models.Model):
-    name = models.CharField(max_length=30, default='')
+class IssueStatuse(models.Model):
+    name = models.CharField(max_length=30, default='', unique=True)
     default_done_ratio = models.IntegerField()
 
     def __str__(self):
@@ -63,12 +63,12 @@ class IssueStatuses(models.Model):
 
 
 @python_2_unicode_compatible
-class Versions(models.Model):
-    project = models.ForeignKey('Projects')
+class Version(models.Model):
+    project = models.ForeignKey('Project')
     name = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=255, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(null=True)
+    updated_on = models.DateTimeField(null=True, blank=True)
     wiki_page = models.CharField(max_length=255, null=True, blank=True)
     status = models.IntegerField(default=1)     # built-in (open,locked,closed)
     effective_date = models.DateTimeField()

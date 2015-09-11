@@ -16,14 +16,20 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 from apps.forms import PasswordResetByEmailForm
+from apps.project.views import ProjectList, ProjectDetail
+
 
 urlpatterns = [
 
-    url(r'^$', 'apps.views.home', name='home'),
+    url(r'^$', TemplateView.as_view(template_name="index.html"), name='home'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}),
     url(r'^password_reset/$', auth_views.password_reset, {'password_reset_form': PasswordResetByEmailForm}),
     url('^', include('django.contrib.auth.urls')),
+
+    url(r'^projects/$', ProjectList.as_view(), name='project_list'),
+    url(r'^project/(?P<pk>\d+)/$', ProjectDetail.as_view(), name='project_detail'),
 
     url(r'^admin/', include(admin.site.urls)),
 ]
