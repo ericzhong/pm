@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from apps.forms import PasswordResetByEmailForm
-from apps.project.views import ProjectList, ProjectDetail
+from apps.project.views import ProjectList, ProjectDetail, ProjectCreate, ProjectUpdate, ProjectDelete
 
 
 urlpatterns = [
@@ -30,6 +30,9 @@ urlpatterns = [
 
     url(r'^projects/$', ProjectList.as_view(), name='project_list'),
     url(r'^project/(?P<pk>\d+)/$', ProjectDetail.as_view(), name='project_detail'),
+    url(r'project/add/$', ProjectCreate.as_view(), name='project_add'),
+    url(r'project/(?P<pk>\d+)/update/$', ProjectUpdate.as_view(), name='project_update'),
+    url(r'project/(?P<pk>\d+)/delete/$', ProjectDelete.as_view(), name='project_delete'),
 
     url(r'^admin/', include(admin.site.urls)),
 ]

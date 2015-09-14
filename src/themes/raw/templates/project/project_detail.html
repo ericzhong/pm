@@ -3,6 +3,8 @@
 {% block content %}
   <h1># Project Detail</h1>
 
+  <p><a href="{% url 'project_update' project.id %}">Update</a> <a href="{% url 'project_delete' project.id %}">Delete</a></p>
+
   <table>
     <thead>
       <tr>

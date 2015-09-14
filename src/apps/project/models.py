@@ -13,7 +13,7 @@ class Project(models.Model):
     is_public = models.BooleanField(default=True)
     parent_id = models.ForeignKey('Project', null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(null=True, blank=True)
+    updated_on = models.DateTimeField(auto_now=True)
     identifier = models.CharField(max_length=255, null=True, blank=True, unique=True)
     status = models.IntegerField(default=1)     # built-in: open,closed
     inherit_members = models.BooleanField(default=False)
@@ -30,13 +30,13 @@ class Issue(models.Model):
     description = models.TextField(null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
-    status = models.ForeignKey('IssueStatuse')
+    status = models.ForeignKey('IssueStatus')
     assigned_to = models.ForeignKey(User, null=True, blank=True)
     priority = models.IntegerField(default=1)       # built-in (low,normal,high,emergency,immediately)
     version = models.ForeignKey('Version', null=True, blank=True)
     author =  models.ForeignKey(User, related_name='created_by')
     created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(null=True, blank=True)
+    updated_on = models.DateTimeField(auto_now=True)
     done_ratio = models.IntegerField(default=0)
     parent_id = models.ForeignKey('Issue', null=True, blank=True)
     is_private = models.BooleanField(default=False)
@@ -54,9 +54,9 @@ class IssueType(models.Model):
 
 
 @python_2_unicode_compatible
-class IssueStatuse(models.Model):
+class IssueStatus(models.Model):
     name = models.CharField(max_length=30, default='', unique=True)
-    default_done_ratio = models.IntegerField()
+    default_done_ratio = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -65,13 +65,16 @@ class IssueStatuse(models.Model):
 @python_2_unicode_compatible
 class Version(models.Model):
     project = models.ForeignKey('Project')
-    name = models.CharField(max_length=30, unique=True)
+    name = models.CharField(max_length=30)
     description = models.CharField(max_length=255, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(null=True, blank=True)
+    updated_on = models.DateTimeField(auto_now=True)
     wiki_page = models.CharField(max_length=255, null=True, blank=True)
     status = models.IntegerField(default=1)     # built-in (open,locked,closed)
     effective_date = models.DateTimeField()
+
+    class Meta:
+        unique_together = ("project", "name")
 
     def __str__(self):
         return self.name
