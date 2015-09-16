@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+  <h1># {% trans 'Version Detail' %}</h1>
+
+  <p><a href="{% url 'version_update' version.id %}">{% trans 'Update' %}</a> <a href="{% url 'version_delete' version.id %}">{% trans 'Delete' %}</a></p>
+
+  <table>
+    <tr><td>project</td><td>{{ version.project }}</td></tr>
+    <tr><td>name</td><td>{{ version.name }}</td></tr>
+    <tr><td>description</td><td>{{ version.description }}</td></tr>
+    <tr><td>created_on</td><td>{{ version.created_on }}</td></tr>
+    <tr><td>updated_on</td><td>{{ version.updated_on }}</td></tr>
+    <tr><td>wiki_page</td><td>{{ version.wiki_page }}</td></tr>
+    <tr><td>status</td><td>{{ version.status }}</td></tr>
+    <tr><td>effective_date</td><td>{{ version.effective_date }}</td></tr>
+  </table>
+{% endblock %}

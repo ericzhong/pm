@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+  <h1># {% trans 'Version Delete Confirm' %}</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="submit" value="{% trans 'Delete' %}"/>
+    <input type="button" value="{% trans 'Cancel' %}" onclick="javascript :history.back(-1)"/>
+  </form>
+{% endblock %}

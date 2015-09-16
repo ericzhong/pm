@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+  <h1># {% trans 'IssueType List' %}</h1>
+
+  <p><a href="{% url 'issue_type_add' %}">{% trans 'Add' %}</a></p>
+
+  <table>
+    <thead>
+      <tr>
+        <td>{% trans 'ID' %}</td>
+        <td>{% trans 'Name' %}</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for issue_type in issue_types %}
+        <tr>
+          <td>{{ issue_type.id }}</td>
+          <td><a href="{% url 'issue_type_detail' issue_type.id %}">{{ issue_type.name }}</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

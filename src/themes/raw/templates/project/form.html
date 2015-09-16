@@ -1,45 +1,48 @@
 {% extends "base.html" %}
 
+{% load i18n %}
+
 {% block content %}
-  <h1># Project Form</h1>
+
+  <h1># {% trans 'Project Form' %}</h1>
 
   <form method="post">
     {% csrf_token %}
     <table>
       <tr>
-        <td>Name</td>
+        <td>{% trans 'Name' %}</td>
         <td>{{ form.name }}{{ form.name.errors.0 }}</td>
       </tr>
       <tr>
-        <td>description</td>
+        <td>{% trans 'description' %}</td>
         <td>{{ form.description }}{{ form.description.errors.0 }}</td>
       </tr>
       <tr>
-        <td>homepage</td>
+        <td>{% trans 'homepage' %}</td>
         <td>{{ form.homepage }}{{ form.homepage.errors.0 }}</td>
       </tr>
       <tr>
-        <td>is_public</td>
+        <td>{% trans 'is_public' %}</td>
         <td>{{ form.is_public }}{{ form.is_public.errors.0 }}</td>
       </tr>
       <tr>
-        <td>parent_id</td>
+        <td>{% trans 'parent_id' %}</td>
         <td>{{ form.parent_id }}{{ form.parent_id.errors.0 }}</td>
       </tr>
       <tr>
-        <td>identifier</td>
+        <td>{% trans 'identifier' %}</td>
         <td>{{ form.identifier }}{{ form.identifier.errors.0 }}</td>
       </tr>
       <tr>
-        <td>status</td>
+        <td>{% trans 'status' %}</td>
         <td>{{ form.status }}{{ form.status.errors.0 }}</td>
       </tr>
       <tr>
-        <td>inherit_members</td>
+        <td>{% trans 'inherit_members' %}</td>
         <td>{{ form.inherit_members }}{{ form.inherit_members.errors.0 }}</td>
       </tr>
     </table>
-    <input type="submit" value="Submit"/>
-    <input type="button" value="Cancel" onclick="javascript :history.back(-1)"/>
+    <input type="submit" value="{% trans 'Submit' %}"/>
+    <input type="button" value="{% trans 'Cancel' %}" onclick="javascript :history.back(-1)"/>
   </form>
 {% endblock %}

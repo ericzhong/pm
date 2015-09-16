@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+  <h1># {% trans 'Version List' %}</h1>
+
+  <p><a href="{% url 'version_add' %}">{% trans 'Add' %}</a></p>
+
+  <table>
+    <thead>
+      <tr>
+        <td>{% trans 'ID' %}</td>
+        <td>{% trans 'Name' %}</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for version in versions %}
+        <tr>
+          <td>{{ version.id }}</td>
+          <td><a href="{% url 'version_detail' version.id %}">{{ version.name }}</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

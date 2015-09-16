@@ -13,3 +13,4 @@
 # Django
 migrations
 *.sqlite3
+*.mo

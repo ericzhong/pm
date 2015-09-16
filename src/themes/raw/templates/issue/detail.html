@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+  <h1># {% trans 'Issue Detail' %}</h1>
+
+  <p><a href="{% url 'issue_update' issue.id %}">{% trans 'Update' %}</a> <a href="{% url 'issue_delete' issue.id %}">{% trans 'Delete' %}</a></p>
+
+  <table>
+    <tr><td>Issue Type</td><td>{{ issue.issue_type }}</td></tr>
+    <tr><td>Project</td><td>{{ issue.project }}</td></tr>
+    <tr><td>Subject</td><td>{{ issue.subject }}</td></tr>
+    <tr><td>Description</td><td>{{ issue.description }}</td></tr>
+    <tr><td>Start date</td><td>{{ issue.start_date }}</td></tr>
+    <tr><td>Due date</td><td>{{ issue.due_date }}</td></tr>
+    <tr><td>Status</td><td>{{ issue.status }}</td></tr>
+    <tr><td>Assigned to</td><td>{{ issue.assigned_to }}</td></tr>
+    <tr><td>Priority</td><td>{{ issue.priority }}</td></tr>
+    <tr><td>Author</td><td>{{ issue.author }}</td></tr>
+    <tr><td>Version</td><td>{{ issue.version }}</td></tr>
+    <tr><td>Done Ratio</td><td>{{ issue.done_ratio }}</td></tr>
+    <tr><td>Parent</td><td>{{ issue.parent }}</td></tr>
+    <tr><td>Is private</td><td>{{ issue.is_private }}</td></tr>
+  </table>
+{% endblock %}

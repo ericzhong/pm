@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <!DOCTYPE html>
 
 <html>
@@ -6,22 +8,21 @@
   </head>
 
   <body>
-    <p><a href="/">Home</a></p>
+    <p><a href="/">{% trans 'Home' %}</a></p>
     <p>
       {% if user.is_authenticated %}
-        <p>Hello,{{ user.username }} <a href="{% url 'logout' %}">Logout</a></p>
-        <p><a href="{% url 'password_change' %}">Change Password</a></p>
+        <p>{% trans 'Hello' %}, {{ user.username }} <a href="{% url 'logout' %}">{% trans 'Logout' %}</a></p>
+        <p><a href="{% url 'password_change' %}">{% trans 'Change Password' %}</a></p>
 
         <ul>
-          <li><a href="{% url 'project_list' %}">Projects</a></li>
-          <li>Issues</li>
-          <li>IssueTypes</li>
-          <li>IssueStatuses</li>
-          <li>IssueStatuses</li>
-          <li>Versions</li>
+          <li><a href="{% url 'project_list' %}">{% trans 'Projects' %}</a></li>
+          <li><a href="{% url 'issue_list' %}">{% trans 'Issue' %}</a></li>
+          <li><a href="{% url 'issue_type_list' %}">{% trans 'IssueTypes' %}</a></li>
+          <li><a href="{% url 'issue_status_list' %}">{% trans 'IssueStatuses' %}</a></li>
+          <li><a href="{% url 'version_list' %}">{% trans 'Versions' %}</a></li>
         </ul>
       {% else %}
-        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'login' %}">{% trans 'Login' %}</a>
       {% endif %}
     </p>
 

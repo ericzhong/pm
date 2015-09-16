@@ -11,7 +11,7 @@ class Project(models.Model):
     description = models.TextField(null=True, blank=True)
     homepage = models.CharField(max_length=255, default='', blank=True)
     is_public = models.BooleanField(default=True)
-    parent_id = models.ForeignKey('Project', null=True, blank=True)
+    parent = models.ForeignKey('Project', null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     identifier = models.CharField(max_length=255, null=True, blank=True, unique=True)
@@ -25,20 +25,20 @@ class Project(models.Model):
 @python_2_unicode_compatible
 class Issue(models.Model):
     issue_type = models.ForeignKey('IssueType')
-    project_id = models.ForeignKey('Project')
+    project = models.ForeignKey('Project')
     subject = models.CharField(max_length=255, default='')
     description = models.TextField(null=True, blank=True)
-    start_date = models.DateTimeField(null=True, blank=True)
-    due_date = models.DateTimeField(null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    due_date = models.DateField(null=True, blank=True)
     status = models.ForeignKey('IssueStatus')
     assigned_to = models.ForeignKey(User, null=True, blank=True)
     priority = models.IntegerField(default=1)       # built-in (low,normal,high,emergency,immediately)
     version = models.ForeignKey('Version', null=True, blank=True)
-    author =  models.ForeignKey(User, related_name='created_by')
+    author = models.ForeignKey(User, related_name='created_by')
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     done_ratio = models.IntegerField(default=0)
-    parent_id = models.ForeignKey('Issue', null=True, blank=True)
+    parent = models.ForeignKey('Issue', null=True, blank=True)
     is_private = models.BooleanField(default=False)
 
     def __str__(self):
@@ -71,7 +71,7 @@ class Version(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     wiki_page = models.CharField(max_length=255, null=True, blank=True)
     status = models.IntegerField(default=1)     # built-in (open,locked,closed)
-    effective_date = models.DateTimeField()
+    effective_date = models.DateField()
 
     class Meta:
         unique_together = ("project", "name")

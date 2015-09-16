@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <h1># Project List</h1>
+{% load i18n %}
 
-  <p><a href="{% url 'project_add' %}">Add</a></p>
+{% block content %}
+  <h1># {% trans 'Project List' %}</h1>
+
+  <p><a href="{% url 'project_add' %}">{% trans 'Add' %}</a></p>
 
   <table>
     <thead>
       <tr>
-        <td>ID</td>
-        <td>Name</td>
+        <td>{% trans 'ID' %}</td>
+        <td>{% trans 'Name' %}</td>
       </tr>
     </thead>
     <tbody>
