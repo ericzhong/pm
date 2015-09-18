@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+
+  <h1># {% trans 'User Form' %}</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <table>
+      <tr>
+        <td>{% trans 'Username' %}</td>
+        <td>{{ form.username }}{{ form.username.errors.0 }}</td>
+      </tr>
+      <tr>
+        <td>{% trans 'First name' %}</td>
+        <td>{{ form.first_name }}{{ form.first_name.errors.0 }}</td>
+      </tr>
+      <tr>
+        <td>{% trans 'Last name' %}</td>
+        <td>{{ form.last_name }}{{ form.last_name.errors.0 }}</td>
+      </tr>
+      <tr>
+        <td>{% trans 'Email' %}</td>
+        <td>{{ form.email }}{{ form.email.errors.0 }}</td>
+      </tr>
+      <tr>
+        <td>{% trans 'Superuser' %}</td>
+        <td>{{ form.is_superuser }}{{ form.is_superuser.errors.0 }}</td>
+      </tr>
+      <tr>
+        <td>{% trans 'Active' %}</td>
+        <td>{{ form.active }}{{ form.active.errors.0 }}</td>
+      </tr>
+      <tr>
+        <td>{% trans 'Staff' %}</td>
+        <td>{{ form.staff }}{{ form.staff.errors.0 }}</td>
+      </tr>
+    </table>
+    <input type="submit" value="{% trans 'Submit' %}"/>
+    <input type="button" value="{% trans 'Cancel' %}" onclick="javascript :history.back(-1)"/>
+  </form>
+{% endblock %}

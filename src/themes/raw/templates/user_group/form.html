@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+
+  <h1># {% trans 'UserGroup Form' %}</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <table>
+      <tr>
+        <td>{% trans 'Name' %}</td>
+        <td>{{ form.name }}{{ form.name.errors.0 }}</td>
+      </tr>
+    </table>
+    <input type="submit" value="{% trans 'Submit' %}"/>
+    <input type="button" value="{% trans 'Cancel' %}" onclick="javascript :history.back(-1)"/>
+  </form>
+{% endblock %}

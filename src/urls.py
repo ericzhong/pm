@@ -18,12 +18,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from project.forms import PasswordResetByEmailForm
-from project.views import ProjectList, ProjectDetail, ProjectCreate, ProjectUpdate, ProjectDelete
-from project.views import IssueList, IssueDetail, IssueCreate, IssueUpdate, IssueDelete
-from project.views import IssueTypeList, IssueTypeDetail, IssueTypeCreate, IssueTypeUpdate, IssueTypeDelete
-from project.views import IssueStatusList, IssueStatusDetail, IssueStatusCreate, IssueStatusUpdate, IssueStatusDelete
-from project.views import VersionList, VersionDetail, VersionCreate, VersionUpdate, VersionDelete
-
+from project.views import user, project, issue, issue_status, issue_type, version, user_group
 
 
 urlpatterns = [
@@ -36,39 +31,54 @@ urlpatterns = [
     url('^', include('django.contrib.auth.urls')),
 
     # project
-    url(r'^projects/$', ProjectList.as_view(), name='project_list'),
-    url(r'^project/(?P<pk>\d+)/$', ProjectDetail.as_view(), name='project_detail'),
-    url(r'project/add/$', ProjectCreate.as_view(), name='project_add'),
-    url(r'project/(?P<pk>\d+)/update/$', ProjectUpdate.as_view(), name='project_update'),
-    url(r'project/(?P<pk>\d+)/delete/$', ProjectDelete.as_view(), name='project_delete'),
+    url(r'^projects/$', project.List.as_view(), name='project_list'),
+    url(r'^project/(?P<pk>\d+)/$', project.Detail.as_view(), name='project_detail'),
+    url(r'project/add/$', project.Create.as_view(), name='project_add'),
+    url(r'project/(?P<pk>\d+)/update/$', project.Update.as_view(), name='project_update'),
+    url(r'project/(?P<pk>\d+)/delete/$', project.Delete.as_view(), name='project_delete'),
 
     # issue
-    url(r'^issues/$', IssueList.as_view(), name='issue_list'),
-    url(r'^issue/(?P<pk>\d+)/$', IssueDetail.as_view(), name='issue_detail'),
-    url(r'issue/add/$', IssueCreate.as_view(), name='issue_add'),
-    url(r'issue/(?P<pk>\d+)/update/$', IssueUpdate.as_view(), name='issue_update'),
-    url(r'issue/(?P<pk>\d+)/delete/$', IssueDelete.as_view(), name='issue_delete'),
+    url(r'^issues/$', issue.List.as_view(), name='issue_list'),
+    url(r'^issue/(?P<pk>\d+)/$', issue.Detail.as_view(), name='issue_detail'),
+    url(r'issue/add/$', issue.Create.as_view(), name='issue_add'),
+    url(r'issue/(?P<pk>\d+)/update/$', issue.Update.as_view(), name='issue_update'),
+    url(r'issue/(?P<pk>\d+)/delete/$', issue.Delete.as_view(), name='issue_delete'),
 
     # issue type
-    url(r'^issue_types/$', IssueTypeList.as_view(), name='issue_type_list'),
-    url(r'^issue_type/(?P<pk>\d+)/$', IssueTypeDetail.as_view(), name='issue_type_detail'),
-    url(r'issue_type/add/$', IssueTypeCreate.as_view(), name='issue_type_add'),
-    url(r'issue_type/(?P<pk>\d+)/update/$', IssueTypeUpdate.as_view(), name='issue_type_update'),
-    url(r'issue_type/(?P<pk>\d+)/delete/$', IssueTypeDelete.as_view(), name='issue_type_delete'),
+    url(r'^issue_types/$', issue_type.List.as_view(), name='issue_type_list'),
+    url(r'^issue_type/(?P<pk>\d+)/$', issue_type.Detail.as_view(), name='issue_type_detail'),
+    url(r'issue_type/add/$', issue_type.Create.as_view(), name='issue_type_add'),
+    url(r'issue_type/(?P<pk>\d+)/update/$', issue_type.Update.as_view(), name='issue_type_update'),
+    url(r'issue_type/(?P<pk>\d+)/delete/$', issue_type.Delete.as_view(), name='issue_type_delete'),
 
     # issue status
-    url(r'^issue_statuses/$', IssueStatusList.as_view(), name='issue_status_list'),
-    url(r'issue_status/(?P<pk>\d+)/$', IssueStatusDetail.as_view(), name='issue_status_detail'),
-    url(r'issue_status/add/$', IssueStatusCreate.as_view(), name='issue_status_add'),
-    url(r'issue_status/(?P<pk>\d+)/update/$', IssueStatusUpdate.as_view(), name='issue_status_update'),
-    url(r'issue_status/(?P<pk>\d+)/delete/$', IssueStatusDelete.as_view(), name='issue_status_delete'),
+    url(r'^issue_statuses/$', issue_status.List.as_view(), name='issue_status_list'),
+    url(r'issue_status/(?P<pk>\d+)/$', issue_status.Detail.as_view(), name='issue_status_detail'),
+    url(r'issue_status/add/$', issue_status.Create.as_view(), name='issue_status_add'),
+    url(r'issue_status/(?P<pk>\d+)/update/$', issue_status.Update.as_view(), name='issue_status_update'),
+    url(r'issue_status/(?P<pk>\d+)/delete/$', issue_status.Delete.as_view(), name='issue_status_delete'),
 
     # version
-    url(r'^versions/$', VersionList.as_view(), name='version_list'),
-    url(r'^version/(?P<pk>\d+)/$', VersionDetail.as_view(), name='version_detail'),
-    url(r'version/add/$', VersionCreate.as_view(), name='version_add'),
-    url(r'version/(?P<pk>\d+)/update/$', VersionUpdate.as_view(), name='version_update'),
-    url(r'version/(?P<pk>\d+)/delete/$', VersionDelete.as_view(), name='version_delete'),
+    url(r'^versions/$', version.List.as_view(), name='version_list'),
+    url(r'^version/(?P<pk>\d+)/$', version.Detail.as_view(), name='version_detail'),
+    url(r'version/add/$', version.Create.as_view(), name='version_add'),
+    url(r'version/(?P<pk>\d+)/update/$', version.Update.as_view(), name='version_update'),
+    url(r'version/(?P<pk>\d+)/delete/$', version.Delete.as_view(), name='version_delete'),
+
+    # user
+    url(r'^users/$', user.List.as_view(), name='user_list'),
+    url(r'^user/(?P<pk>\d+)/$', user.Detail.as_view(), name='user_detail'),
+    url(r'user/add/$', user.Create.as_view(), name='user_add'),
+    url(r'user/(?P<pk>\d+)/update/$', user.Update.as_view(), name='user_update'),
+    url(r'user/(?P<pk>\d+)/delete/$', user.Delete.as_view(), name='user_delete'),
+
+    # user group
+    url(r'^user_groups/$', user_group.List.as_view(), name='user_group_list'),
+    url(r'^user_group/(?P<pk>\d+)/$', user_group.Detail.as_view(), name='user_group_detail'),
+    url(r'user_group/add/$', user_group.Create.as_view(), name='user_group_add'),
+    url(r'user_group/(?P<pk>\d+)/update/$', user_group.Update.as_view(), name='user_group_update'),
+    url(r'user_group/(?P<pk>\d+)/delete/$', user_group.Delete.as_view(), name='user_group_delete'),
+
 
     url(r'^admin/', include(admin.site.urls)),
 ]

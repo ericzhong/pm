@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+  <h1># {% trans 'UserGroup Detail' %}</h1>
+
+  <p><a href="{% url 'user_group_update' user_group.id %}">{% trans 'Update' %}</a> <a href="{% url 'user_group_delete' user_group.id %}">{% trans 'Delete' %}</a></p>
+
+  <table>
+    <tr><td>ID</td><td>{{ user_group.id }}</td></tr>
+    <tr><td>Name</td><td>{{ user_group.name }}</td></tr>
+
+  </table>
+{% endblock %}

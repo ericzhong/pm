@@ -1,7 +1,7 @@
 # coding:utf-8
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from .models import Project, Issue, IssueType, IssueStatus, Version
 
 
@@ -37,6 +37,17 @@ class VersionForm(forms.ModelForm):
         model = Version
         exclude = ["created_on", 'updated_on']
 
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        exclude = ["password", "date_joined", 'last_login']
+
+
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        exclude = [""]
 
 
 
