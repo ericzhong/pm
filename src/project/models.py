@@ -79,3 +79,11 @@ class Version(models.Model):
     def __str__(self):
         return self.name
 
+
+class Member(models.Model):
+    project = models.ForeignKey('Project')
+    user = models.ForeignKey(User, related_name='member')
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("project", "user")

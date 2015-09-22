@@ -5,7 +5,11 @@
 {% block content %}
   <h1># {% trans 'Project Detail' %}</h1>
 
-  <p><a href="{% url 'project_update' project.id %}">{% trans 'Update' %}</a> <a href="{% url 'project_delete' project.id %}">{% trans 'Delete' %}</a></p>
+  <p>
+    <a href="{% url 'project_update' project.id %}">{% trans 'Update' %}</a>
+    <a href="{% url 'project_delete' project.id %}">{% trans 'Delete' %}</a>
+    <a href="{% url 'member_list' project.id %}">{% trans 'Members' %}</a>
+  </p>
 
   <table>
     <tr><td>Name</td><td>{{ project.name }}</td></tr>
@@ -18,5 +22,6 @@
     <tr><td>identifier</td><td>{{ project.identifier }}</td></tr>
     <tr><td>status</td><td>{{ project.status }}</td></tr>
     <tr><td>inherit_members</td><td>{{ project.inherit_members }}</td></tr>
+    <tr><td>members</td><td>{% for member in project.members %}{{ member.user.username }} {% endfor %}</td></tr>
   </table>
 {% endblock %}

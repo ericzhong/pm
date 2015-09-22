@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User, Group
-from .models import Project, Issue, IssueType, IssueStatus, Version
+from .models import Project, Issue, IssueType, IssueStatus, Version, Member
 
 
 class ProjectForm(forms.ModelForm):
@@ -48,6 +48,12 @@ class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
         exclude = [""]
+
+
+class MemberForm(forms.ModelForm):
+    class Meta:
+        model = Member
+        exclude = ["created_on"]
 
 
 

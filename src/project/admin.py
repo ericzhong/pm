@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Project, Issue, IssueStatus, IssueType, Version
-from .forms import ProjectForm, IssueForm, IssueTypeForm, IssueStatusForm, VersionForm
+from .models import *
+from .forms import *
 
 
 
@@ -34,8 +34,16 @@ class VersionAdmin(admin.ModelAdmin):
     ordering = ('project', 'name')
 
 
+class MemberAdmin(admin.ModelAdmin):
+    form = MemberForm
+    list_display = ('project', 'user')
+    ordering = ('project',)
+
+
+
 admin.site.register(Project, ProjectModelAdmin)
 admin.site.register(Issue, IssueAdmin)
 admin.site.register(IssueType, IssueTypeAdmin)
 admin.site.register(IssueStatus, IssueStatusAdmin)
 admin.site.register(Version, VersionAdmin)
+admin.site.register(Member, MemberAdmin)

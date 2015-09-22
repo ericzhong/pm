@@ -5,7 +5,7 @@
 {% block content %}
   <h1># {% trans 'UserGroup List' %}</h1>
 
-  <p><a href="{% url 'user_group_add' %}">{% trans 'Add' %}</a></p>
+  <p><a href="{% url 'group_add' %}">{% trans 'Add' %}</a></p>
 
   <table>
     <thead>
@@ -15,10 +15,10 @@
       </tr>
     </thead>
     <tbody>
-      {% for user_group in user_groups %}
+      {% for group in groups %}
         <tr>
-          <td>{{ user_group.id }}</td>
-          <td><a href="{% url 'user_group_detail' user_group.id %}">{{ user_group.name }}</a></td>
+          <td>{{ group.id }}</td>
+          <td><a href="{% url 'group_detail' group.id %}">{{ group.name }}</a></td>
         </tr>
       {% endfor %}
     </tbody>

@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'project',
+    'project.templatetags.mytags',
 )
 
 
@@ -94,7 +95,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'zh'
+LANGUAGE_CODE = 'zh-hans'
 
 TIME_ZONE = 'UTC'
 
@@ -106,7 +107,7 @@ USE_TZ = True
 
 LANGUAGES = (
     ('en', _('English')),
-    ('zh', _('Simplified Chinese')),
+    ('zh-hans', _('Simplified Chinese')),
 )
 
 LOCALE_PATHS = (

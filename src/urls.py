@@ -18,10 +18,12 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from project.forms import PasswordResetByEmailForm
-from project.views import user, project, issue, issue_status, issue_type, version, user_group
+from project.views import user, project, issue, issue_status, issue_type, version, group
 
 
 urlpatterns = [
+
+    url(r'^admin/', include(admin.site.urls)),
 
     url(r'^$', TemplateView.as_view(template_name="index.html"), name='home'),
 
@@ -36,6 +38,8 @@ urlpatterns = [
     url(r'project/add/$', project.Create.as_view(), name='project_add'),
     url(r'project/(?P<pk>\d+)/update/$', project.Update.as_view(), name='project_update'),
     url(r'project/(?P<pk>\d+)/delete/$', project.Delete.as_view(), name='project_delete'),
+    url(r'project/(?P<pk>\d+)/members/$', project.ListMember.as_view(), name='member_list'),
+    url(r'project/(?P<pk>\d+)/member/(?P<id>\d+)$', project.DeleteMember.as_view(), name='member_delete'),
 
     # issue
     url(r'^issues/$', issue.List.as_view(), name='issue_list'),
@@ -72,13 +76,13 @@ urlpatterns = [
     url(r'user/(?P<pk>\d+)/update/$', user.Update.as_view(), name='user_update'),
     url(r'user/(?P<pk>\d+)/delete/$', user.Delete.as_view(), name='user_delete'),
 
-    # user group
-    url(r'^user_groups/$', user_group.List.as_view(), name='user_group_list'),
-    url(r'^user_group/(?P<pk>\d+)/$', user_group.Detail.as_view(), name='user_group_detail'),
-    url(r'user_group/add/$', user_group.Create.as_view(), name='user_group_add'),
-    url(r'user_group/(?P<pk>\d+)/update/$', user_group.Update.as_view(), name='user_group_update'),
-    url(r'user_group/(?P<pk>\d+)/delete/$', user_group.Delete.as_view(), name='user_group_delete'),
+    # group
+    url(r'^groups/$', group.List.as_view(), name='group_list'),
+    url(r'^group/(?P<pk>\d+)/$', group.Detail.as_view(), name='group_detail'),
+    url(r'group/add/$', group.Create.as_view(), name='group_add'),
+    url(r'group/(?P<pk>\d+)/update/$', group.Update.as_view(), name='group_update'),
+    url(r'group/(?P<pk>\d+)/delete/$', group.Delete.as_view(), name='group_delete'),
+    url(r'group/(?P<pk>\d+)/users/$', group.ListUser.as_view(), name='group_user_list'),
+    url(r'group/(?P<pk>\d+)/user/(?P<id>\d+)$', group.DeleteUser.as_view(), name='group_user_delete'),
 
-
-    url(r'^admin/', include(admin.site.urls)),
 ]
