@@ -3,10 +3,17 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext as _
 
 
 @python_2_unicode_compatible
 class Project(models.Model):
+
+    STATUS_CHOICES = (
+        (1, _('open')),
+        (2, _('closed')),
+    )
+
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
     homepage = models.CharField(max_length=255, default='', blank=True)
@@ -15,7 +22,7 @@ class Project(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     identifier = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    status = models.IntegerField(default=1)     # built-in: open,closed
+    status = models.IntegerField(default=1, choices=STATUS_CHOICES)
     inherit_members = models.BooleanField(default=False)
 
     def __str__(self):
@@ -24,6 +31,17 @@ class Project(models.Model):
 
 @python_2_unicode_compatible
 class Issue(models.Model):
+
+    PRIORITY_CHOICES = (
+        (1, _('Low')),
+        (2, _('Normal')),
+        (3, _('High')),
+        (4, _('Emergency')),
+        (5, _('Immediately')),
+    )
+
+    DONE_RATIO_CHOICES = tuple((n, str(n)+" %") for n in range(0, 101, 10))
+
     issue_type = models.ForeignKey('IssueType')
     project = models.ForeignKey('Project')
     subject = models.CharField(max_length=255, default='')
@@ -32,12 +50,12 @@ class Issue(models.Model):
     due_date = models.DateField(null=True, blank=True)
     status = models.ForeignKey('IssueStatus')
     assigned_to = models.ForeignKey(User, null=True, blank=True)
-    priority = models.IntegerField(default=1)       # built-in (low,normal,high,emergency,immediately)
+    priority = models.IntegerField(default=1, choices=PRIORITY_CHOICES)
     version = models.ForeignKey('Version', null=True, blank=True)
     author = models.ForeignKey(User, related_name='created_by')
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    done_ratio = models.IntegerField(default=0)
+    done_ratio = models.IntegerField(default=0, choices=DONE_RATIO_CHOICES)
     parent = models.ForeignKey('Issue', null=True, blank=True)
     is_private = models.BooleanField(default=False)
 
@@ -64,13 +82,20 @@ class IssueStatus(models.Model):
 
 @python_2_unicode_compatible
 class Version(models.Model):
+
+    STATUS_CHOICES = (
+        (1, _('open')),
+        (2, _('locked')),
+        (3, _('closed')),
+    )
+
     project = models.ForeignKey('Project')
     name = models.CharField(max_length=30)
     description = models.CharField(max_length=255, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     wiki_page = models.CharField(max_length=255, null=True, blank=True)
-    status = models.IntegerField(default=1)     # built-in (open,locked,closed)
+    status = models.IntegerField(default=1, choices=STATUS_CHOICES)
     effective_date = models.DateField()
 
     class Meta:
@@ -87,3 +112,11 @@ class Member(models.Model):
 
     class Meta:
         unique_together = ("project", "user")
+
+
+class Comment(models.Model):
+    issue = models.ForeignKey('Issue')
+    author = models.ForeignKey(User, related_name='author')
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+    content = models.TextField()
