@@ -47,6 +47,8 @@ urlpatterns = [
     url(r'issue/add/$', issue.Create.as_view(), name='issue_add'),
     url(r'issue/(?P<pk>\d+)/update/$', issue.Update.as_view(), name='issue_update'),
     url(r'issue/(?P<pk>\d+)/delete/$', issue.Delete.as_view(), name='issue_delete'),
+    url(r'comment/(?P<pk>\d+)/update/$', issue.CommentUpdate.as_view(), name='comment_update'),
+    url(r'comment/(?P<pk>\d+)/delete/$', issue.CommentDelete.as_view(), name='comment_delete'),
 
     # issue type
     url(r'^issue_types/$', issue_type.List.as_view(), name='issue_type_list'),

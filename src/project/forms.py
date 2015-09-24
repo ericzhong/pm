@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User, Group
-from .models import Project, Issue, IssueType, IssueStatus, Version, Member
+from .models import Project, Issue, IssueType, IssueStatus, Version, Member, Comment
 
 
 class ProjectForm(forms.ModelForm):
@@ -55,6 +55,11 @@ class MemberForm(forms.ModelForm):
         model = Member
         exclude = ["created_on"]
 
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        exclude = ["created_on", 'updated_on', 'issue', 'author']
 
 
 class PasswordResetByEmailForm(PasswordResetForm):

@@ -5,6 +5,7 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <script src="/static/js/jquery-2.1.4.min.js"></script>
   </head>
 
   <body>
@@ -28,7 +29,8 @@
       {% endif %}
     </p>
 
-
     {% block content %}{% endblock %}
+
+    {% block script %}{% endblock %}
   </body>
 </html>

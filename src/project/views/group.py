@@ -69,6 +69,5 @@ class ListUser(View):
 class DeleteUser(View):
 
     def get(self, request, pk, id):
-        #Group.objects.get(id=pk).user_set.remove(User.objects.get(id=id))
-        User.groups.through.objects.get(group__id=pk, user__id=id).delete()
+        Group.objects.get(id=pk).user_set.remove(User.objects.get(id=id))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

@@ -5,7 +5,7 @@
 {% block content %}
   <h1># {% trans 'Issue Detail' %}</h1>
 
-  <p><a href="{% url 'issue_update' issue.id %}">{% trans 'Update' %}</a> <a href="{% url 'issue_delete' issue.id %}">{% trans 'Delete' %}</a></p>
+  <p><a href="{% url 'issue_update' issue.id %}">{% trans 'Edit' %}</a> <a href="{% url 'issue_delete' issue.id %}">{% trans 'Delete' %}</a></p>
 
   <table>
     <tr><td>Issue Type</td><td>{{ issue.issue_type }}</td></tr>
@@ -23,4 +23,43 @@
     <tr><td>Parent</td><td>{{ issue.parent }}</td></tr>
     <tr><td>Is private</td><td>{{ issue.is_private }}</td></tr>
   </table>
+
+  <h2>Comment:</h2>
+  {% for comment in comments %}
+    <div>
+      <p>
+        <span>{{ comment.content }}</span>
+        <a comment_id={{ comment.id }} name="comment_edit" href="" update="{% url 'comment_update' comment.id %}">Edit</a>
+        <a href="{% url 'issue_update' issue.id %}?quote={{ comment.id }}">Quote</a>
+        <a href="{% url 'comment_delete' comment.id %}">Delete</a>
+      <p>
+    </div>
+  {% endfor %}
+
+
+  <div id="edit_form" hidden="hidden">
+    <form action="" method="post">
+      {% csrf_token %}
+      {{ comment_form.content }}
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+
+{% endblock %}
+
+
+{% block script %}
+  <script>
+    $('a[name=comment_edit]').click(function(){
+      editor = $('#edit_form').removeAttr('hidden');
+      content = $(this).parent().children('span').get(0).innerText;
+      editor.find('textarea').html(content);
+      editor.find('form').attr('action', $(this).attr('update'))
+      $(this).closest('div').html(editor);
+      //editor = $('#edit_form');
+      //console.log($(this).parent().children('span.first').get(0).innerText);
+
+      return false;
+    });
+  </script>
 {% endblock %}
