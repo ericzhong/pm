@@ -120,3 +120,14 @@ class Comment(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     content = models.TextField()
+
+
+class Worktime(models.Model):
+    project = models.ForeignKey('Project')
+    issue = models.ForeignKey('Issue')
+    author = models.ForeignKey(User)
+    hours = models.IntegerField()
+    date = models.DateField(auto_now_add=True)
+    comment = models.CharField(max_length=255, null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)

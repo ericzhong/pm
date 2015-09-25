@@ -4,9 +4,11 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
-from ..forms import IssueForm, CommentForm
-from ..models import Issue, Comment
+from django.db.models import Sum
+from ..forms import IssueForm, CommentForm, WorktimeForm
+from ..models import Issue, Comment, Worktime, Project
 from ..utils import Helper
+import time
 
 
 _model = Issue
@@ -35,10 +37,12 @@ class Detail(DetailView):
             object.due_date = object.due_date.strftime('%Y-%m-%d')
         return object
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, *args, **kwargs):
         context = super(Detail, self).get_context_data()
         context['comments'] = Comment.objects.filter(issue=context['object'])
         context['comment'] = CommentForm()
+        context['spent_time'] = Worktime.objects.filter(issue=kwargs['object'])\
+                                    .aggregate(Sum('hours')).get('hours__sum', 0) or 0
         return context
 
 
@@ -50,7 +54,7 @@ class Create(CreateView):
 
 
 class Update(View):
-    template_name = '%s/comment.html' % _template_dir
+    template_name = '%s/update.html' % _template_dir
 
     def get(self, request, **kwargs):
         issue = Issue.objects.get(pk=kwargs['pk'])
@@ -62,12 +66,14 @@ class Update(View):
             comment = Comment.objects.get(id=comment_id)
             comment.content = "%s:\n%s" % (comment.author.username, Helper.quote(comment.content))
         comment_form = CommentForm(instance=comment, prefix='comment')
-        return render(request, self.template_name, {'form': issue_form, 'comment': comment_form})
+        worktime_form = WorktimeForm(prefix='worktime')
+        return render(request, self.template_name, {'form': issue_form, 'comment': comment_form, 'worktime': worktime_form})
 
     def post(self, request, **kwargs):
         pk = kwargs['pk']
         issue_form = IssueForm(request.POST, prefix='issue')
         comment_form = CommentForm(request.POST, prefix='comment')
+        worktime_form = WorktimeForm(request.POST, prefix='worktime')
 
         if issue_form.is_valid():
             Issue.objects.filter(pk=pk).update(**issue_form.cleaned_data)
@@ -76,6 +82,13 @@ class Update(View):
                 comment_form.cleaned_data['issue_id'] = pk
                 comment_form.cleaned_data['author_id'] = request.user.id
                 Comment(**comment_form.cleaned_data).save()
+
+            if worktime_form.is_valid():
+                worktime_form.cleaned_data['project_id'] = Issue.objects.get(pk=pk).project_id
+                worktime_form.cleaned_data['issue_id'] = pk
+                worktime_form.cleaned_data['author_id'] = request.user.id
+                worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
+                Worktime(**worktime_form.cleaned_data).save()
             return HttpResponseRedirect(reverse('%s_detail' % _name, kwargs={'pk': pk}))
         else:
             return render(request, self.template_name, {'form': issue_form, 'comment': comment_form})
