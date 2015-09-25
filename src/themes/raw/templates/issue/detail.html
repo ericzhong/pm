@@ -29,9 +29,9 @@
     <div>
       <p>
         <span>{{ comment.content }}</span>
-        <a comment_id={{ comment.id }} name="comment_edit" href="" update="{% url 'comment_update' comment.id %}">Edit</a>
+        <a href="" comment_id={{ comment.id }} name="comment_edit" update="{% url 'comment_update' comment.id %}">Edit</a>
         <a href="{% url 'issue_update' issue.id %}?quote={{ comment.id }}">Quote</a>
-        <a href="{% url 'comment_delete' comment.id %}">Delete</a>
+        <a href="{% url 'comment_delete' comment.id %}" name="comment_delete">Delete</a>
       <p>
     </div>
   {% endfor %}
@@ -40,11 +40,17 @@
   <div id="edit_form" hidden="hidden">
     <form action="" method="post">
       {% csrf_token %}
-      {{ comment_form.content }}
+      {{ comment.content }}
       <input type="submit" value="Submit" />
     </form>
   </div>
 
+  <div id="delete_form" hidden="hidden">
+    <form action="" method="post">
+      {% csrf_token %}
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
 {% endblock %}
 
 
@@ -56,10 +62,11 @@
       editor.find('textarea').html(content);
       editor.find('form').attr('action', $(this).attr('update'))
       $(this).closest('div').html(editor);
-      //editor = $('#edit_form');
-      //console.log($(this).parent().children('span.first').get(0).innerText);
-
       return false;
+    });
+
+    $('a[name=comment_delete]').click(function(){
+      $('#delete_form').find('form').attr('action', $(this).attr('href')).submit();
     });
   </script>
 {% endblock %}

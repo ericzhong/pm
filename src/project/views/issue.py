@@ -38,7 +38,7 @@ class Detail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(Detail, self).get_context_data()
         context['comments'] = Comment.objects.filter(issue=context['object'])
-        context['comment_form'] = CommentForm()
+        context['comment'] = CommentForm()
         return context
 
 
@@ -50,20 +50,19 @@ class Create(CreateView):
 
 
 class Update(View):
-    template_name = '%s/form.html' % _template_dir
+    template_name = '%s/comment.html' % _template_dir
 
     def get(self, request, **kwargs):
         issue = Issue.objects.get(pk=kwargs['pk'])
         issue_form = IssueForm(prefix='issue', instance=issue)
 
-        # Quote
-        comment_id = request.GET.get('quote', None)
+        comment_id = request.GET.get('quote', None)     # url?quote=comment_id
         comment = None
         if comment_id is not None:
             comment = Comment.objects.get(id=comment_id)
             comment.content = "%s:\n%s" % (comment.author.username, Helper.quote(comment.content))
         comment_form = CommentForm(instance=comment, prefix='comment')
-        return render(request, self.template_name, {'form': {'issue': issue_form, 'comment': comment_form}})
+        return render(request, self.template_name, {'form': issue_form, 'comment': comment_form})
 
     def post(self, request, **kwargs):
         pk = kwargs['pk']
@@ -72,20 +71,20 @@ class Update(View):
 
         if issue_form.is_valid():
             Issue.objects.filter(pk=pk).update(**issue_form.cleaned_data)
+
             if comment_form.is_valid():
                 comment_form.cleaned_data['issue_id'] = pk
                 comment_form.cleaned_data['author_id'] = request.user.id
                 Comment(**comment_form.cleaned_data).save()
             return HttpResponseRedirect(reverse('%s_detail' % _name, kwargs={'pk': pk}))
         else:
-            return render(request, self.template_name, {'form': {'issue': issue_form, 'comment': comment_form}})
+            return render(request, self.template_name, {'form': issue_form, 'comment': comment_form})
 
 
 class Delete(DeleteView):
     model = _model
     template_name = '%s/confirm_delete.html' % _template_dir
     success_url = reverse_lazy('%s_list' % _name)
-
 
 
 class CommentUpdate(View):

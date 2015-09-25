@@ -11,67 +11,64 @@
     <table>
       <tr>
         <td>{% trans 'issue_type' %}</td>
-        <td>{{ form.issue.issue_type }}{{ form.issue.issue_type.errors.0 }}</td>
+        <td>{{ form.issue_type }}{{ form.issue_type.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'project' %}</td>
-        <td>{{ form.issue.project }}{{ form.issue.project.errors.0 }}</td>
+        <td>{{ form.project }}{{ form.project.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'subject' %}</td>
-        <td>{{ form.issue.subject }}{{ form.issue.subject.errors.0 }}</td>
+        <td>{{ form.subject }}{{ form.subject.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'description' %}</td>
-        <td>{{ form.issue.description }}{{ form.issue.description.errors.0 }}</td>
+        <td>{{ form.description }}{{ form.description.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'start_date' %}</td>
-        <td>{{ form.issue.start_date }}{{ form.issue.start_date.errors.0 }}</td>
+        <td>{{ form.start_date }}{{ form.start_date.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'due_date' %}</td>
-        <td>{{ form.issue.due_date }}{{ form.issue.due_date.errors.0 }}</td>
+        <td>{{ form.due_date }}{{ form.due_date.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'status' %}</td>
-        <td>{{ form.issue.status }}{{ form.issue.status.errors.0 }}</td>
+        <td>{{ form.status }}{{ form.status.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'assigned_to' %}</td>
-        <td>{{ form.issue.assigned_to }}{{ form.issue.assigned_to.errors.0 }}</td>
+        <td>{{ form.assigned_to }}{{ form.assigned_to.errors.0 }}</td>
       </tr>
             <tr>
         <td>{% trans 'priority' %}</td>
-        <td>{{ form.issue.priority }}{{ form.issue.priority.errors.0 }}</td>
+        <td>{{ form.priority }}{{ form.priority.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'version' %}</td>
-        <td>{{ form.issue.version }}{{ form.issue.version.errors.0 }}</td>
+        <td>{{ form.version }}{{ form.version.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'author' %}</td>
-        <td>{{ form.issue.author }}{{ form.issue.author.errors.0 }}</td>
+        <td>{{ form.author }}{{ form.author.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'done_ratio' %}</td>
-        <td>{{ form.issue.done_ratio }}{{ form.issue.done_ratio.errors.0 }}</td>
+        <td>{{ form.done_ratio }}{{ form.done_ratio.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'parent' %}</td>
-        <td>{{ form.issue.parent }}{{ form.issue.parent.errors.0 }}</td>
+        <td>{{ form.parent }}{{ form.parent.errors.0 }}</td>
       </tr>
       <tr>
         <td>{% trans 'is_private' %}</td>
-        <td>{{ form.issue.is_private }}{{ form.issue.is_private.errors.0 }}</td>
+        <td>{{ form.is_private }}{{ form.is_private.errors.0 }}</td>
       </tr>
     </table>
-    <table>
-      <tr>
-        <td>{% trans 'Comment' %}</td>
-        <td>{{ form.comment.content }}{{ form.comment.content.errors.0 }}</td>
-      </tr>
-    </table>
+
+    {% block comment %}{% endblock %}
+
     <input type="submit" value="{% trans 'Submit' %}"/>
     <input type="button" value="{% trans 'Cancel' %}" onclick="javascript :history.back(-1)"/>
   </form>
