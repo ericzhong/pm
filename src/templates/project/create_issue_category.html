@@ -1,0 +1,43 @@
+{% extends "project/base.html" %}
+
+{% block tab_toggle %}tab_settings{% endblock %}
+
+{% block tab_content %}
+  <div class="tab-caption">新建问题类别</div>
+  <div class="portlet light grey-cararra bordered">
+    <div class="portlet-body form">
+      <form action="javascript:;" class="form-horizontal">
+        <div class="form-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label col-md-2">名称<span class="required" aria-required="true">*</span></label>
+                <div class="col-md-3">
+                  <input type="text" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-md-2">指派给</label>
+                <div class="col-md-3">
+                  <select class="form-control">
+                    <option>aaa</option>
+                    <option>bbb</option>
+                    <option>ccc</option>
+                    <option>ddd</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <div class="row">
+            <div class="col-md-offset-2">
+              <button type="submit" class="btn green">创建</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

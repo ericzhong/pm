@@ -1,0 +1,100 @@
+{% extends "_admin/base.html" %}
+
+{% block tab_toggle %}tab_users{% endblock %}
+
+{% block tab_content %}
+  <div class="page-title">用户</div>
+  <div class="actions btn-set small btn-table">
+    <a href="/users/add"><i class="fa fa-plus"></i>新建用户</a>
+  </div>
+  <div class="dataTables_wrapper">
+    <div class="table-scrollable">
+      <table class="table table-light table-advance table-hover table-condensed second" aria-describedby="">
+        <thead>
+        <tr>
+          <th>登录名</th>
+          <th>名字</th>
+          <th>邮件地址</th>
+          <th>管理员</th>
+          <th>创建于</th>
+          <th>最后登录</th>
+          <th width="110px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><a href="/users/1/update"> Eric </a></td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>
+            <div class="actions btn-set small">
+              <a href=""><i class="fa fa-lock"></i>锁定</a>
+              <a href=""><i class="fa fa-trash-o"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>
+            <div class="actions btn-set small">
+              <a href=""><i class="fa fa-lock"></i>锁定</a>
+              <a href=""><i class="fa fa-trash-o"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>
+            <div class="actions btn-set small">
+              <a href=""><i class="fa fa-lock"></i>锁定</a>
+              <a href=""><i class="fa fa-trash-o"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>
+            <div class="actions btn-set small">
+              <a href=""><i class="fa fa-lock"></i>锁定</a>
+              <a href=""><i class="fa fa-trash-o"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>xxx</td>
+          <td>
+            <div class="actions btn-set small">
+              <a href=""><i class="fa fa-lock"></i>锁定</a>
+              <a href=""><i class="fa fa-trash-o"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    {% include "table_footer.html" %}
+  </div>
+{% endblock %}

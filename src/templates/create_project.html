@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block page-content %}
+  <div class="portlet light bordered">
+    <div class="portlet-title">
+      <div class="caption">
+        <span class="caption-subject font-green-sharp bold uppercase">{% trans 'Create Project' %}</span>
+      </div>
+    </div>
+    <div class="portlet-body">
+      <div class="portlet light grey-cararra bordered">
+        <div class="portlet-body form">
+          {% include 'project_form.html' %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

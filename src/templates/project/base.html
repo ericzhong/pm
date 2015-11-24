@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+
+{% block page-content %}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="portlet light bordered">
+        <div class="portlet-title">
+          <div class="caption">
+            <span class="caption-subject font-green-sharp bold uppercase">{{ project.name }}</span>
+          </div>
+          <div class="actions btn-set">
+            {% if project.CLOSED_STATUS != project.status %}
+              <a href="{% url 'project_add'  %}?parent={{ project.id }}" class="btn btn-default btn-circle"><i class="fa fa-plus"></i>新建子项目</a>
+            {% endif %}
+            {% if project.status == project.CLOSED_STATUS %}
+              <a href="{% url 'project_reopen' project.id %}" class="btn btn-default btn-circle"><i class="fa fa-unlock"></i>Reopen</a>
+            {% else %}
+              <a href="{% url 'project_close' project.id %}" class="btn btn-default btn-circle"><i class="fa fa-lock"></i>Close</a>
+            {% endif %}
+
+            <div class="btn-group">
+              <a class="btn btn-default btn-circle" href="javascript:;" data-toggle="dropdown">
+                <i class="fa fa-share"></i> 其它项目 <i class="fa fa-angle-down"></i>
+              </a>
+              <ul class="dropdown-menu pull-right">
+                <li><a href=""> aaa </a></li>
+                <li><a href=""> &nbsp;&nbsp;&nbsp;&nbsp;»bbb </a></li>
+                <li><a href=""> &nbsp;&nbsp;&nbsp;&nbsp;»ccc </a></li>
+                <li><a href=""> &nbsp;&nbsp;&nbsp;&nbsp;»ddd </a></li>
+                <li><a href=""> &nbsp;&nbsp;&nbsp;&nbsp;»eee </a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="portlet-body">
+          <div class="tabbable-line">
+            <ul class="nav nav-tabs">
+              <li id="tab_overview"><a href="{% url 'project_detail' project.id %}"> 概述 </a></li>
+              <li id="tab_roadmap"><a href="/projects/1/roadmap"> 路线图 </a></li>
+              <li id="tab_issues"><a href="/projects/1/issues"> 问题 </a></li>
+              <li id="tab_create_issue"><a href="/projects/1/issues/add"> 新建问题 </a></li>
+              <li id="tab_gantt"><a href="/projects/1/gantt"> 甘特图 </a></li>
+              <!--
+              <li id="tab_calendar"><a href="/projects/1/issues/calendar"> 日历 </a></li>
+              <li id="tab_news"><a href="/projects/1/news"> 新闻 </a></li>
+              <li id="tab_documents"><a href="/projects/1/documents"> 文档 </a></li>
+              -->
+              {% if project.CLOSED_STATUS != project.status %}
+                <li id="tab_settings"><a href="{% url 'project_settings' project.id %}"> 配置 </a></li>
+              {% endif %}
+            </ul>
+            <div class="tab-content no-space">
+              <div id="tab-content" tab-toggle="{% block tab_toggle %}{% endblock %}">
+                {% block tab_content %}{% endblock %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

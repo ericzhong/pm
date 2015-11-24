@@ -1,0 +1,70 @@
+{% extends "project/base.html" %}
+
+{% block tab_toggle %}tab_roadmap{% endblock %}
+
+{% block tab_content %}
+  <div class="tab-caption">
+    <span>路线图</span>
+    <div class="actions btn-set small">
+      <a href="/projects/1/versions/add"><i class="fa fa-plus"></i>新建版本</a>
+    </div>
+  </div>
+  <div class="version">
+    <div class="version-title"><i class="fa fa-cube"></i><a href="/versions/1">aaa</a></div>
+    <table class="version-progress">
+      <tr>
+        <td>
+          <div class="progress">
+            <span style="width: 40%;" class="progress-bar progress-bar-success"></span>
+          </div>
+        </td>
+        <td>
+          <span class="progress-value">40%</span>
+        </td>
+      </tr>
+    </table>
+    <div class="version-detail">
+      <span><a href="/issues">4 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;(0 关闭 — <a href="/issues">4 打开</a>)</span>
+    </div>
+  </div>
+  <div class="version">
+    <div class="version-title"><i class="fa fa-cube"></i><a>Version A</a></div>
+    <table class="version-progress">
+      <tr>
+        <td>
+          <div class="progress">
+            <span style="width: 40%;" class="progress-bar progress-bar-success"></span>
+          </div>
+        </td>
+        <td>
+          <span class="progress-value">40%</span>
+        </td>
+      </tr>
+    </table>
+    <div class="version-detail">
+      <span><a>4 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;(0 关闭 — <a>4 打开</a>)</span>
+    </div>
+  </div>
+  <div class="version">
+    <div class="version-title"><i class="fa fa-cube"></i><a>Version B</a></div>
+    <table class="version-progress">
+      <tr>
+        <td>
+          <div class="progress">
+            <span style="width: 40%;" class="progress-bar progress-bar-success"></span>
+          </div>
+        </td>
+        <td>
+          <span class="progress-value">40%</span>
+        </td>
+      </tr>
+    </table>
+    <div class="version-detail">
+      <span><a>4 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;(0 关闭 — <a>4 打开</a>)</span>
+    </div>
+  </div>
+  <div class="version">
+    <div class="version-title"><i class="fa fa-cube"></i><a>No Issue</a></div>
+    <div class="nodata">该版本没有问题</div>
+  </div>
+{% endblock %}

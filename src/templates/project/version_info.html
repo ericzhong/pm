@@ -1,0 +1,99 @@
+{% extends "project/base.html" %}
+
+{% block tab_toggle %}tab_roadmap{% endblock %}
+
+{% block tab_content %}
+  <div class="tab-caption">
+    <span>版本 >> aaa</span>
+    <div class="actions btn-set small">
+      <a href="/versions/1/update"><i class="fa fa-plus"></i>编辑</a>
+      <a><i class="fa fa-trash-o"></i>删除</a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="version">
+        <table class="version-progress">
+          <tr>
+            <td>
+              <div class="progress">
+                <span style="width: 40%;" class="progress-bar progress-bar-success"></span>
+              </div>
+            </td>
+            <td>
+              <span class="progress-value">40%</span>
+            </td>
+          </tr>
+        </table>
+        <div class="version-detail">
+          <span><a href="/issues">4 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;(0 关闭 — <a href="/issues">4 打开</a>)</span>
+        </div>
+      </div>
+      <h5>相关问题</h5>
+      <div class="table-scrollable">
+        <table class="table table-light table-advance table-hover table-condensed second">
+          <tbody>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-3 col-md-offset-1">
+      <div class="portlet solid small-box">
+        <div class="portlet-title">
+          <div class="caption"><span class="icon-clock"></span>&nbsp;时间跟踪</div>
+        </div>
+        <div class="portlet-body">
+          <table id="version-time-track">
+            <tbody>
+            <tr>
+              <td>预期时间:</td>
+              <td><span>128</span>.00 小时</td>
+            </tr>
+            <tr>
+              <td>耗时:</td>
+              <td><span>120</span>.00 小时</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block page_level_styles %}
+<style>
+  #version-time-track {
+      width: 100%;
+  }
+
+  #version-time-track td {
+      text-align: right;
+  }
+
+  #version-time-track td:first-child {
+      width: 40%;
+  }
+
+  #version-time-track span {
+      font-size: 18px;
+  }
+</style>
+{% endblock %}

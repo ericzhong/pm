@@ -1,0 +1,212 @@
+/* here you can put your own css to customize and override the theme */
+
+html, body, label {
+    font-size: 13px;
+    color: #666;
+}
+
+.page-title {
+    font-size: 17px;
+    padding-bottom: 5px;
+}
+
+.page-title + .tabbable {
+    padding-top: 20px;
+}
+
+.page-title + .portlet-body {
+    padding-top: 20px;
+}
+
+.form-control {
+    font-size: 13px;
+    color: #666;
+    height: 32px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-horizontal .icheck-inline {
+    margin-top: 7px;
+}
+
+.actions.btn-set {
+    float: right;
+    font-size: 13px;
+}
+
+.actions.btn-set .fa {
+    font-size: 13px;
+}
+
+.actions.btn-set > a {
+    padding: 0 2px 0 5px;
+}
+
+.actions.btn-set > a > i {
+    margin: 0 2px 0 0;
+}
+
+.actions.btn-set.small {
+    font-size: 13px;
+}
+
+.actions.btn-set.extra-small {
+    font-size: 12px;
+}
+
+.btn-table {
+    padding: 5px 0;
+}
+
+.nodata {
+    font-size: 11px;
+    color: #a0a0a0;
+    font-style: italic;
+}
+
+.project-list ol {
+    -webkit-padding-start: 20px;
+}
+
+.project-list ol:first-child {
+    -webkit-padding-start: 10px;
+}
+
+.project-list li {
+    font-size: 15px;
+    padding: 5px 0;
+}
+
+.table-caption {
+    font-size: 16px;
+    color: #666;
+}
+
+.portlet.solid.warning-box {
+    background-color: #fcf8e3;
+    /*color: #8a6d3b;*/
+    border: 1px solid #faebcc;
+}
+
+.portlet.solid.warning-box > .portlet-title > .caption {
+    font-size: 16px;
+}
+
+.tab-caption {
+    font-size: 17px;
+    padding: 20px 0 15px 0;
+}
+
+.nav-tabs.second > li > a {
+    line-height: 0.6;
+}
+
+.table-light.second > thead > tr > th {
+    color: #777;
+    background-color: #f5f5f5;
+}
+
+.table-light.second > thead > tr:hover > th {
+    background-color: #f5f5f5;
+}
+
+.date-picker button {
+    height: 32px;
+}
+
+.progress > .progress-bar-success {
+    background-color: #A2DAA8;
+}
+
+/* version begin */
+
+.version {
+    padding: 20px 0;
+}
+
+.version-progress .progress {
+    height: 10px;
+    /*margin-bottom: 0px;*/
+    /*border: 1px solid #e6e6e6;*/
+    margin: 5px 0;
+}
+
+.version-progress td:first-child {
+    width: 400px;
+}
+
+.progress-value {
+    margin-left: 10px;
+    font-size: 12px;
+}
+
+.version-title {
+    font-size: 14px;
+    font-weight: 700;
+    padding-bottom: 5px;
+}
+
+.version-title > i {
+    padding-right: 3px;
+    color: chocolate;
+}
+
+.version-detail {
+    font-size: 11px;
+}
+
+/* version end */
+
+.portlet.solid.small-box {
+    background-color: None;
+    border: 1px solid #ddd;
+}
+
+.portlet.solid.small-box > .portlet-title > .caption {
+    font-size: 15px;
+}
+
+.table-footer {
+    text-align: center;
+}
+
+.table-footer > form {
+    float: right;
+}
+
+.table-footer > span {
+    padding: 0 10px;
+}
+
+.table-footer > form > select {
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+}
+
+.table-footer > a:link,a:visited,a:hover,a:active {
+    text-decoration: none;
+}
+
+.table-options {
+    padding: 10px 0;
+}
+
+div.confirm {
+    text-align: center;
+}
+
+div.confirm .btn {
+    font-size: 13px;
+}
+
+div.warning {
+    text-align: center;
+    background-color: #FFEBC1;
+    color: #A6750C;
+    padding: 4px 4px 4px 30px;
+    margin-bottom: 12px;
+    border: 2px solid #FDBF3B;
+}

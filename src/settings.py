@@ -40,8 +40,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'project',
-    'project.templatetags.mytags',
+    'pm',
+    'widget_tweaks',
 )
 
 
@@ -59,12 +59,10 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
-THEME = 'raw'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'themes', THEME, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -111,7 +109,7 @@ LANGUAGES = (
 )
 
 LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'themes', THEME, 'locale'),
+    os.path.join(BASE_DIR, 'locale'),
 )
 
 
@@ -122,7 +120,7 @@ LOCALE_PATHS = (
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'themes', THEME, 'static'),
+    os.path.join(BASE_DIR, 'static'),
 )
 
 

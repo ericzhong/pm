@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block page-content %}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="portlet light bordered">
+        <div class="portlet-title">
+          <div class="caption">
+            <span class="caption-subject font-green-sharp bold uppercase">{% trans 'Projects' %}</span>
+          </div>
+          <div class="actions btn-set">
+            <a type="button" class="btn btn-default btn-circle" href="{% url 'project_add' %}"><i class="fa fa-plus"></i> 新建项目</a>
+            <a class="btn btn-default btn-circle" href="{% url 'issue_list' %}"> 查看所有问题</a>
+          </div>
+        </div>
+        <div class="portlet-body">
+          <div class="project-list">
+            <ol style="list-style-type: none">
+              {% if projects %}
+                {% for project in projects %}
+                  <li><a href="{% url 'project_detail' project.id %}"><i class="fa fa-star font-yellow-casablanca"></i> {{ project.name }} </a></li>
+                {% endfor %}
+              {% else %}
+                <div class="nodata"><span>暂无数据可显示</span></div>
+              {% endif %}
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "project/base.html" %}
+
+{% block tab_toggle %}tab_overview{% endblock %}
+
+{% block tab_content %}
+  <div class="tab-caption">概述</div>
+  {% if project.CLOSED_STATUS == project.status %}
+    <div class="warning"><i class="fa fa-lock"></i>当前项目已关闭，内容只读。</div>
+  {% endif %}
+  <p>{{ project.description }}</p>
+  <ul>
+    <li>子项目: 子项目1，子项目2，子项目3，子项目4，子项目5，子项目6，子项目7，子项目8，子项目9</li>
+  </ul>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="portlet solid warning-box">
+        <div class="portlet-title">
+          <div class="caption">
+            <i class="fa fa-list-alt"></i>
+            问题
+          </div>
+        </div>
+        <div class="portlet-body">
+          <ul>
+            <li>功能：<a href="/issues">89</a> 打开 / 229</li>
+            <li>支持：<a href="/issues">12</a> 打开 / 29</li>
+            <li>文档：<a href="/issues">9</a> 打开/ 10</li>
+            <li>测试：<a href="/issues">0</a> 打开 / 23</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="portlet solid warning-box">
+        <div class="portlet-title">
+          <div class="caption">
+            <i class="fa fa-user"></i>
+            成员
+          </div>
+        </div>
+        <div class="portlet-body">
+          管理人员：aaa<br/>
+          开发人员：aaa,bbb,ccc,ddd,eee,fff,ggg
+        </div>
+      </div>
+      <div class="portlet solid warning-box">
+        <div class="portlet-title">
+          <div class="caption">
+            <i class="fa fa-user"></i>
+            无数据样例
+          </div>
+        </div>
+        <div class="portlet-body">
+          <div class="nodata"><span>暂无数据可显示</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

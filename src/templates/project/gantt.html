@@ -1,0 +1,112 @@
+{% extends "project/base.html" %}
+
+{% block tab_toggle %}tab_gantt{% endblock %}
+
+{% block tab_content %}
+  <div class="tab-caption">甘特图</div>
+  {% verbatim %}
+  <div ng-app="angularGanttDemoApp" ng-strict-di>
+    <!--[if lt IE 7]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+      your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div ng-controller="MainCtrl">
+      <div class="container-content" ng-show="false">
+        <div class="container-fluid">
+          <div class="row top-buffer">
+            <div class="col-md-12">
+              <i class="fa fa-cog fa-spin"></i> Loading...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-inline" id="gantt-options">
+        <div class="form-group">
+          <input type="text" class="form-control" ng-model="options.filterRow" placeholder="Filter Rows">
+        </div>
+        <div class="form-group">
+          <div class="input-group input-large date-picker input-daterange" data-date-format="yyyy-mm-dd">
+            <input type="text" class="form-control"
+                   ng-model="options.fromDate" max-date="{{options.toDate}}">
+            <span class="input-group-addon"> to </span>
+            <input type="text" class="form-control"
+                   ng-model="options.toDate" min-date="{{options.fromDate}}">
+          </div>
+        </div>
+        <div class="form-group text-center">
+          <div class="btn-group">
+            <button class="btn btn-default" ng-click="expandAll()">Expand all</button>
+            <button class="btn btn-default" ng-click="collapseAll()">Collapse all</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default" id="gantt-table">
+        <div class="panel-collapse" bs-collapse-target>
+          <div class="panel-body">
+            <div gantt
+                 data="data"
+                 filter-row="{'name': options.filterRow}"
+                 column-width="getColumnWidth(1, 'day', 0.7)"
+                 auto-expand="options.autoExpand"
+                 from-date="options.fromDate"
+                 to-date="options.toDate"
+                 current-date="options.currentDate"
+                 current-date-value="options.currentDateValue"
+                 max-height=1000
+                 api="options.api">
+              <gantt-tree enabled=true
+                          header-content="options.treeHeaderContent"
+                          keep-ancestor-on-filter-row="true">
+              </gantt-tree>
+              <gantt-tooltips enabled=true content="'{{ task.model._milestone }}<br>状态: {{task.model._status}}<br>指派给: {{ task.model._assignee }}<br>时间: {{task.model._from}} ~ {{task.model._to}}'"></gantt-tooltips>
+              <gantt-progress></gantt-progress>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endverbatim %}
+{% endblock %}
+
+
+{% block page_level_styles %}
+  <link rel="stylesheet" href="/static/plugins/angular-ui-tree/dist/angular-ui-tree.min.css"/>
+  <link rel="stylesheet" href="/static/plugins/angular-gantt/dist/angular-gantt.css"/>
+  <link rel="stylesheet" href="/static/plugins/angular-gantt/dist/angular-gantt-plugins.css"/>
+
+  <link rel="stylesheet" href="/static/css/gantt.css">
+{% endblock %}
+
+
+{% block page-level-plugins %}
+  <!--[if lt IE 9]>
+  <script src="/static/plugins/es5-shim/es5-shim.js"></script>
+  <script src="/static/plugins/json3/lib/json3.js"></script>
+  <![endif]-->
+
+  <script src="/static/plugins/angular/angular.js"></script>
+  <script src="/static/plugins/angular-sanitize/angular-sanitize.js"></script>
+  <script src="/static/plugins/angular-animate/angular-animate.js"></script>
+  <script src="/static/plugins/angular-strap/dist/angular-strap.js"></script>
+  <script src="/static/plugins/angular-strap/dist/angular-strap.tpl.js"></script>
+  <script src="/static/plugins/angular-native-dragdrop/draganddrop.js"></script>
+  <script src="/static/plugins/angular-ui-tree/dist/angular-ui-tree.js"></script>
+  <script src="/static/plugins/moment/moment.js"></script>
+  <script src="/static/plugins/angular-moment/angular-moment.js"></script>
+  <script src="/static/plugins/angular-gantt/dist/angular-gantt.js"></script>
+  <script src="/static/plugins/angular-gantt/dist/angular-gantt-plugins.js"></script>
+  <script src="/static/plugins/moment-range/dist/moment-range.js"></script>
+  <script src="/static/plugins/css-element-queries/src/ElementQueries.js"></script>
+  <script src="/static/plugins/css-element-queries/src/ResizeSensor.js"></script>
+{% endblock %}
+
+
+{% block page-level-scripts %}
+  <script src="/static/js/gantt/app.js"></script>
+  <script src="/static/js/gantt/main.js"></script>
+  <script src="/static/js/gantt/sample.js"></script>
+{% endblock %}

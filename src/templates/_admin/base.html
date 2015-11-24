@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+
+{% block page-content %}
+  <div class="modal fade" id="portlet-config" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+          <h4 class="modal-title">Modal title</h4>
+        </div>
+        <div class="modal-body">
+           Widget settings form goes here
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn blue">Save changes</button>
+          <button type="button" class="btn default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="portlet light bordered">
+        <div class="portlet-title">
+          <div class="caption">
+            <span class="caption-subject font-green-sharp bold uppercase">管理</span>
+          </div>
+        </div>
+        <div class="portlet-body">
+          <div class="row profile-account">
+            <div class="col-md-3">
+              <ul class="ver-inline-menu tabbable margin-bottom-10">
+              <li id="tab_projects"><a href="{% url 'admin_project' %}"><i class="fa fa-cube"></i> 项目 </a></li>
+              <li id="tab_users"><a href="/users"><i class="fa fa-user"></i> 用户 </a></li>
+              <li id="tab_groups"><a href="/groups"><i class="fa fa-group"></i> 组 </a></li>
+              <li id="tab_roles"><a href="/roles"><i class="fa fa-key"></i> 角色与权限 </a></li>
+              <li id="tab_trackers"><a href="/trackers"><i class="fa fa-tags"></i> 跟踪标签 </a></li>
+              <li id="tab_issue_statuses"><a href="/issue_statuses"><i class="fa fa-edit"></i> 问题状态 </a></li>
+              <li id="tab_settings"><a href="/settings"><i class="fa fa-gear"></i> 配置 </a></li>
+            </ul>
+            </div>
+            <div class="col-md-9">
+              <div class="tab-content">
+                <div id="tab-content" tab-toggle="{% block tab_toggle %}{% endblock %}">
+                  {% block tab_content %}{% endblock %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

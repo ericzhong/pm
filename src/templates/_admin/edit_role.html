@@ -1,0 +1,207 @@
+{% extends "_admin/base.html" %}
+
+{% block tab_toggle %}tab_roles{% endblock %}
+
+
+{% block tab_content %}
+  <div class="page-title">角色 >> 开发者</div>
+  <div class="portlet-body">
+    <div class="portlet light grey-cararra bordered">
+      <div class="portlet-body form">
+        <form action="javascript:;" class="form-horizontal">
+          <div class="form-body">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label class="control-label col-md-2">名称<span class="required" aria-required="true">*</span></label>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" value="开发者">
+                  </div>
+                </div>
+                <h4 class="form-section">权限</h4>
+                <h5>项目</h5>
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="﻿role_permissions_add_project" type="checkbox"> 新建项目 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="﻿role_permissions_edit_project" type="checkbox"> 编辑项目 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="﻿role_permissions_close_project" type="checkbox"> 关闭/重开项目 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="﻿role_permissions_manage_members" type="checkbox"> 管理成员 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="﻿role_permissions_manage_versions" type="checkbox"> 管理版本 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="﻿role_permissions_add_subprojects" type="checkbox"> 新建子项目 </label>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <h5>甘特图</h5>
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="﻿role_permissions_view_gantt" type="checkbox"> 查看甘特图 </label>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <h5>问题跟踪</h5>
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_manage_categories" type="checkbox"> 管理问题类别 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_view_issues" type="checkbox"> 查看问题 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_add_issues" type="checkbox"> 新建问题 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_edit_issues" type="checkbox"> 更新问题 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_manage_issue_relations" type="checkbox"> 管理问题关联 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_manage_subtasks" type="checkbox"> 管理子任务 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_set_issues_private" type="checkbox"> 设置问题为公开或私有 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_set_own_issues_private" type="checkbox"> 设置自己的问题为公开或私有 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_add_issue_notes" type="checkbox"> 添加说明 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_edit_issue_notes" type="checkbox"> 编辑说明 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_edit_own_issue_notes" type="checkbox"> 编辑自己的说明 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_view_private_notes" type="checkbox"> 查看私有注解 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_set_notes_private" type="checkbox"> 设置为私有注解 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_delete_issues" type="checkbox"> 删除问题 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_manage_public_queries" type="checkbox"> 管理公开的查询 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_save_queries" type="checkbox"> 保存查询 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_view_issue_watchers" type="checkbox"> 查看跟踪者列表 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_add_issue_watchers" type="checkbox"> 添加跟踪者 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_delete_issue_watchers" type="checkbox"> 删除跟踪者 </label>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <h5>时间跟踪</h5>
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_log_time" type="checkbox"> 登记工时 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_view_time_entries" type="checkbox"> 查看耗时 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_edit_time_entries" type="checkbox"> 编辑耗时 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_edit_own_time_entries" type="checkbox"> 编辑自己的耗时 </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="icheck-inline">
+                      <label><input id="role_permissions_manage_project_activities" type="checkbox"> 管理项目活动 </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <div class="row">
+              <div class="col-md-offset-2">
+                <button type="submit" class="btn green" name="commit">保存</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

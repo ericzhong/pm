@@ -1,0 +1,125 @@
+{% extends "project/settings/base.html" %}
+
+{% block settings_tab_toggle %}tab_member{% endblock %}
+
+{% block settings_tab_content %}
+  <div class="actions btn-set small btn-table">
+    <a data-toggle="modal" href="#large"><i class="fa fa-plus"></i>新建成员</a>
+  </div>
+  <div class="dataTables_wrapper">
+    <div class="table-scrollable">
+      <table class="table table-light table-advance table-hover table-condensed second">
+        <thead>
+        <tr>
+          <th>用户/组</th>
+          <th>角色</th>
+          <th width="110px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>aaa</td>
+          <td>
+            <span>管理人员</span>
+            <form hidden>
+              <div><input type="checkbox" checked>管理人员</div>
+              <div><input type="checkbox">开发人员</div>
+              <div><input type="checkbox">报告人员</div>
+              <button type="submit">保存</button>
+              <button name="btn-cancel">取消</button>
+            </form>
+          </td>
+          <td>
+            <div class="actions btn-set small">
+              <a name="btn-edit"><i class="fa fa-edit"></i>编辑</a>
+              <a><i class="fa fa-trash-o"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>aaa</td>
+          <td>管理员</td>
+          <td>
+            <div class="actions btn-set small">
+              <a><i class="fa fa-edit"></i>编辑</a>
+              <a><i class="fa fa-trash-o"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>aaa</td>
+          <td>管理员</td>
+          <td>
+            <div class="actions btn-set small">
+              <a><i class="fa fa-edit"></i>编辑</a>
+              <a><i class="fa fa-trash-o"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>aaa</td>
+          <td>管理员</td>
+          <td>
+            <div class="actions btn-set small">
+              <a><i class="fa fa-edit"></i>编辑</a>
+              <a><i class="fa fa-trash-o"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    {% include "table_footer.html" %}
+  </div>
+  <div class="modal fade bs-modal-lg" id="large" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+          <h4 class="modal-title">新建成员</h4>
+        </div>
+        <div class="modal-body">
+           <form>
+            <div class="form-body">
+              <div class="form-group">
+                <div class="input-group">
+                  <label>用户/组：</label>
+                  <div class="icheck-inline">
+                    <div class="icheck-inline">
+                      <label><input type="checkbox"> aaa </label>
+                      <label><input type="checkbox"> bbb </label>
+                      <label><input type="checkbox"> ccc </label>
+                      <label><input type="checkbox"> ddd </label>
+                      <label><input type="checkbox"> eee </label>
+                      <label><input type="checkbox"> fff </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr>
+              <div class="form-group">
+                <div class="input-group">
+                  <label>角色：</label>
+                  <div class="icheck-inline">
+                    <div class="icheck-inline">
+                      <label><input type="checkbox"> aaa </label>
+                      <label><input type="checkbox"> bbb </label>
+                      <label><input type="checkbox"> ccc </label>
+                      <label><input type="checkbox"> ddd </label>
+                      <label><input type="checkbox"> eee </label>
+                      <label><input type="checkbox"> fff </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn default" data-dismiss="modal">关闭</button>
+          <button type="button" class="btn green">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

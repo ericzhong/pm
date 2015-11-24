@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+<meta charset="utf-8"/>
+<title>Metronic | Product Edit</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<meta content="Project Management Platform" name="description"/>
+<meta content="Eric Zhong" name="author"/>
+<meta content="ericiszhongwenjia@qq.com" name="email"/>
+
+<!-- BEGIN GLOBAL MANDATORY STYLES -->
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css">
+<link href="/static/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="/static/plugins/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+<link href="/static/plugins/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/static/plugins/jquery.uniform/themes/default/css/uniform.default.css" rel="stylesheet" type="text/css">
+<!-- END GLOBAL MANDATORY STYLES -->
+
+<!-- BEGIN PAGE LEVEL STYLES -->
+<link rel="stylesheet" type="text/css" href="/static/plugins/select2/dist/css/select2.css"/>
+<link rel="stylesheet" type="text/css" href="/static/plugins/datatables/media/css/dataTables.bootstrap.css"/>
+<link rel="stylesheet" type="text/css" href="/static/plugins/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css"/>
+<link href="/static/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css"/>
+<link href="/static/plugins/jasny-bootstrap/dist/css/jasny-bootstrap.css" rel="stylesheet" type="text/css">
+<link href="/static/css/todo.css" rel="stylesheet" type="text/css">
+<!-- END PAGE LEVEL STYLES -->
+
+<!-- BEGIN THEME STYLES -->
+<link href="/static/css/components-rounded.css" id="style_components" rel="stylesheet" type="text/css">
+<link href="/static/css/plugins.css" rel="stylesheet" type="text/css">
+<link href="/static/css/layout.css" rel="stylesheet" type="text/css">
+<link href="/static/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color">
+<link href="/static/css/custom.css" rel="stylesheet" type="text/css">
+<!-- END THEME STYLES -->
+
+{% block page_level_styles %}{% endblock %}
+
+<link rel="shortcut icon" href="/static/img/favicon.ico"/>
+</head>
+<!-- END HEAD -->
+
+<!-- BEGIN BODY -->
+<!-- DOC: Apply "page-header-menu-fixed" class to set the mega menu fixed  -->
+<!-- DOC: Apply "page-header-top-fixed" class to set the top menu fixed  -->
+<body>
+<!-- BEGIN HEADER -->
+<div class="page-header">
+	<!-- BEGIN HEADER TOP -->
+	<div class="page-header-top">
+		<div class="container">
+			<!-- BEGIN LOGO -->
+			<div class="page-logo">
+				<a href="/"><img src="/static/img/logo-default.png" alt="logo" class="logo-default"></a>
+			</div>
+			<!-- END LOGO -->
+			<!-- BEGIN RESPONSIVE MENU TOGGLER -->
+			<a href="javascript:;" class="menu-toggler"></a>
+			<!-- END RESPONSIVE MENU TOGGLER -->
+			<!-- BEGIN TOP NAVIGATION MENU -->
+			<div class="top-menu">
+				<ul class="nav navbar-nav pull-right">
+					<!-- BEGIN USER LOGIN DROPDOWN -->
+					<li class="dropdown dropdown-user dropdown-dark">
+						<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+						<img alt="" class="img-circle" src="/static/img/avatar9.jpg">
+						<span class="username username-hide-mobile">Nick</span>
+						</a>
+						<ul class="dropdown-menu dropdown-menu-default">
+							<li><a href="/my/account"><i class="icon-user"></i> 我的账户 </a></li>
+							<li class="divider">
+							</li><li><a href="/login"><i class="icon-key"></i> 退出 </a></li>
+						</ul>
+					</li>
+					<!-- END USER LOGIN DROPDOWN -->
+				</ul>
+			</div>
+			<!-- END TOP NAVIGATION MENU -->
+		</div>
+	</div>
+	<!-- END HEADER TOP -->
+	<!-- BEGIN HEADER MENU -->
+	<div class="page-header-menu">
+		<div class="container">
+			<!-- BEGIN HEADER SEARCH BOX -->
+			<form class="search-form" action="extra_search.html" method="GET">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Search" name="query">
+					<span class="input-group-btn">
+					<a href="javascript:;" class="btn submit"><i class="icon-magnifier"></i></a>
+					</span>
+				</div>
+			</form>
+			<!-- END HEADER SEARCH BOX -->
+			<!-- BEGIN MEGA MENU -->
+			<!-- DOC: Apply "hor-menu-light" class after the "hor-menu" class below to have a horizontal menu with white background -->
+			<!-- DOC: Remove data-hover="dropdown" and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
+			<div class="hor-menu ">
+				<ul class="nav navbar-nav">
+					<li><a href="/">主页</a></li>
+					<li><a href="/mypage">我的工作台</a></li>
+					<li><a href="/projects">项目</a></li>
+					<li><a href="/admin">管理</a></li>
+				</ul>
+			</div>
+			<!-- END MEGA MENU -->
+		</div>
+	</div>
+	<!-- END HEADER MENU -->
+</div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+	<!-- BEGIN PAGE CONTENT -->
+	<div class="page-content">
+		<div class="container">
+      {% block page-content %}{% endblock %}
+		</div>
+	</div>
+	<!-- END PAGE CONTENT -->
+</div>
+<!-- END PAGE CONTAINER -->
+
+<!-- BEGIN FOOTER -->
+<div class="page-footer">
+	<div class="container">
+		 2015 &copy; <a href="https://github.com/ericzhong/pm"> PM </a>  by Eric Zhong.
+	</div>
+</div>
+<div class="scroll-to-top">
+	<i class="icon-arrow-up"></i>
+</div>
+<!-- END FOOTER -->
+
+<!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
+<!-- BEGIN CORE PLUGINS -->
+<!--[if lt IE 9]>
+<script src="/static/plugins/respond.min.js"></script>
+<script src="/static/plugins/excanvas.min.js"></script> 
+<![endif]-->
+<script src="/static/plugins/jquery/dist/jquery.min.js" type="text/javascript"></script>
+<script src="/static/plugins/jquery-migrate/jquery-migrate.min.js" type="text/javascript"></script>
+<!-- IMPORTANT! Load jquery-ui.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
+<script src="/static/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<script src="/static/plugins/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/static/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
+<script src="/static/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+<script src="/static/plugins/blockUI/jquery.blockUI.js" type="text/javascript"></script>
+<script src="/static/plugins/jquery.cookie/jquery.cookie.js" type="text/javascript"></script>
+<script src="/static/plugins/jquery.uniform/jquery.uniform.min.js" type="text/javascript"></script>
+<!-- END CORE PLUGINS -->
+
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script type="text/javascript" src="/static/plugins/select2/dist/js/select2.min.js"></script>
+<script type="text/javascript" src="/static/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/plugins/datatables/media/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="/static/plugins/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="/static/plugins/bootstrap-maxlength/src/bootstrap-maxlength.js" type="text/javascript"></script>
+<script src="/static/plugins/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.js" type="text/javascript"></script>
+<script type="text/javascript" src="/static/plugins/fancybox/source/jquery.fancybox.pack.js"></script>
+<script src="/static/plugins/plupload/js/plupload.full.min.js" type="text/javascript"></script>
+<script src="/static/plugins/jasny-bootstrap/dist/js/jasny-bootstrap.min.js" type="text/javascript"></script>
+{% block page-level-plugins %}{% endblock %}
+<!-- END PAGE LEVEL PLUGINS -->
+
+<!-- BEGIN PAGE LEVEL SCRIPTS -->
+<script src="/static/js/metronic.js" type="text/javascript"></script>
+<script src="/static/js/layout.js" type="text/javascript"></script>
+<script src="/static/js/demo.js" type="text/javascript"></script>
+<script src="/static/js/datatable.js"></script>
+<script src="/static/js/ecommerce-products-edit.js"></script>
+<script src="/static/js/custom.js"></script>
+{% block page-level-scripts %}{% endblock %}
+<!-- END PAGE LEVEL SCRIPTS -->
+
+<script>
+jQuery(document).ready(function() {
+		Metronic.init(); // init metronic core components
+		Layout.init(); // init current layout
+    //Demo.init(); // init demo features
+		EcommerceProductsEdit.init();
+});
+</script>
+<!-- END JAVASCRIPTS -->
+</body>
+<!-- END BODY -->
+</html>

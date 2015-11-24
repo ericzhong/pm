@@ -17,15 +17,14 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
-from project.forms import PasswordResetByEmailForm
-from project.views import user, project, issue, issue_status, issue_type, version, group
+from pm.forms import PasswordResetByEmailForm
+from pm.views import user, project, issue, issue_status, issue_type, version, group
 
 
 urlpatterns = [
 
-    url(r'^admin/', include(admin.site.urls)),
-
     url(r'^$', TemplateView.as_view(template_name="index.html"), name='home'),
+    url(r'^admin/$', project.Admin.as_view(), name='admin'),
 
     # authentication
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}),
@@ -34,12 +33,18 @@ urlpatterns = [
 
     # project
     url(r'^projects/$', project.List.as_view(), name='project_list'),
-    url(r'^project/(?P<pk>\d+)/$', project.Detail.as_view(), name='project_detail'),
-    url(r'project/add/$', project.Create.as_view(), name='project_add'),
-    url(r'project/(?P<pk>\d+)/update/$', project.Update.as_view(), name='project_update'),
-    url(r'project/(?P<pk>\d+)/delete/$', project.Delete.as_view(), name='project_delete'),
-    url(r'project/(?P<pk>\d+)/members/$', project.ListMember.as_view(), name='member_list'),
-    url(r'project/(?P<pk>\d+)/member/(?P<id>\d+)$', project.DeleteMember.as_view(), name='member_delete'),
+    url(r'^projects/(?P<pk>\d+)/$', project.Detail.as_view(), name='project_detail'),
+    url(r'^projects/add/$', project.Create.as_view(), name='project_add'),
+    url(r'^projects/(?P<pk>\d+)/settings/$', project.Update.as_view(), name='project_settings'),
+    url(r'^projects/(?P<pk>\d+)/settings/info/$', project.Update.as_view(), name='project_update'),
+    url(r'^admin/projects/$', project.Admin.as_view(), name='admin_project'),
+    url(r'projects/(?P<pk>\d+)/delete/$', project.Delete.as_view(), name='project_delete'),
+    url(r'projects/(?P<pk>\d+)/close/$', project.Close.as_view(), name='project_close'),
+    url(r'projects/(?P<pk>\d+)/reopen/$', project.Reopen.as_view(), name='project_reopen'),
+
+    url(r'projects/(?P<pk>\d+)/issues/$', project.Issues.as_view(), name='project_issues'),
+    url(r'projects/(?P<pk>\d+)/members/$', project.ListMember.as_view(), name='member_list'),
+    url(r'projects/(?P<pk>\d+)/member/(?P<id>\d+)$', project.DeleteMember.as_view(), name='member_delete'),
 
     # issue
     url(r'^issues/$', issue.List.as_view(), name='issue_list'),
@@ -87,4 +92,5 @@ urlpatterns = [
     url(r'group/(?P<pk>\d+)/users/$', group.ListUser.as_view(), name='group_user_list'),
     url(r'group/(?P<pk>\d+)/user/(?P<id>\d+)$', group.DeleteUser.as_view(), name='group_user_delete'),
 
+    url(r'^django-admin/', include(admin.site.urls)),
 ]

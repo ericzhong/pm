@@ -1,0 +1,14 @@
+{% extends "project/settings/base.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block settings_tab_toggle %}tab_info{% endblock %}
+
+{% block settings_tab_content %}
+  <div class="portlet light grey-cararra bordered">
+    <div class="portlet-body form">
+      {% include "project_form.html" %}
+    </div>
+  </div>
+{% endblock %}

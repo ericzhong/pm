@@ -1,0 +1,245 @@
+{% extends "_admin/base.html" %}
+
+{% block tab_toggle %}tab_settings{% endblock %}
+
+{% block tab_content %}
+  <div class="page-title">配置</div>
+  <div class="tabbable">
+    <ul class="nav nav-tabs">
+      <li class="active">
+        <a href="#tab_settings_general" data-toggle="tab">
+        一般 </a>
+      </li>
+      <li>
+        <a href="#tab_settings_display" data-toggle="tab">
+        显示 </a>
+      </li>
+      <li>
+        <a href="#tab_settings_project" data-toggle="tab">
+        项目 </a>
+      </li>
+      <li>
+        <a href="#tab_settings_issue" data-toggle="tab">
+        问题 </a>
+      </li>
+    </ul>
+    <div class="tab-content no-space">
+      <div class="tab-pane active" id="tab_settings_general">
+        <div class="portlet light grey-cararra bordered">
+          <div class="portlet-body form">
+            <form action="javascript:;" class="form-horizontal">
+              <div class="form-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="control-label col-md-3">应用程序标题</label>
+                      <div class="col-md-4">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">欢迎文字</label>
+                      <div class="col-md-8">
+                        <textarea class="form-control" rows="3"></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">附件大小限制</label>
+                      <div class="col-md-2">
+                        <input type="text" class="form-control">
+                      </div>
+                      <span class="help-inline">KB</span>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">每页显示条目个数</label>
+                      <div class="col-md-4">
+                        <input type="text" class="form-control">
+                        <span class="help-block">多个数值请用","号分隔 </span>
+                      </div>
+
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">文本格式</label>
+                      <div class="col-md-2">
+                        <select class="form-control">
+                          <option>无</option>
+                          <option>Markdown</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">可直接显示的最大文本文件</label>
+                      <div class="col-md-2">
+                        <input type="text" class="form-control">
+                      </div>
+                      <span class="help-inline">KB</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <div class="row">
+                  <div class="col-md-offset-2">
+                    <button type="submit" class="btn green">保存</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="tab_settings_display">
+        <div class="portlet light grey-cararra bordered">
+          <div class="portlet-body form">
+            <form action="javascript:;" class="form-horizontal">
+              <div class="form-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="control-label col-md-3">默认语言</label>
+                      <div class="col-md-4">
+                        <select class="form-control">
+                          <option>Simplified Chinese (简体中文)</option>
+                          <option>English</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">强制登陆用户使用默认语言</label>
+                      <div class="col-md-4">
+                        <div class="icheck-inline">
+                          <input type="checkbox">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">日期格式</label>
+                      <div class="col-md-4">
+                        <select class="form-control">
+                          ﻿<option selected="selected" value="">根据用户的语言</option>
+                          ﻿<option value="%Y-%m-%d">2015-10-06 (yyyy-mm-dd)</option>
+                          <option value="%d/%m/%Y">06/10/2015 (dd/mm/yyyy)</option>
+                          <option value="%d.%m.%Y">06.10.2015 (dd.mm.yyyy)</option>
+                          <option value="%d-%m-%Y">06-10-2015 (dd-mm-yyyy)</option>
+                          <option value="%m/%d/%Y">10/06/2015 (mm/dd/yyyy)</option>
+                          <option value="%d %b %Y">06 10月 2015 (dd b yyyy)</option>
+                          <option value="%d %B %Y">06 十月 2015 (dd B yyyy)</option>
+                          <option value="%b %d, %Y">10月 06, 2015 (b dd, yyyy)</option>
+                          <option value="%B %d, %Y">十月 06, 2015 (B dd, yyyy)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">时间格式</label>
+                      <div class="col-md-4">
+                        <select class="form-control">
+                          ﻿<option selected="selected" value="">根据用户的语言</option>
+                          ﻿<option value="%H:%M">10:20</option>
+                          <option value="%I:%M %p">10:20 上午</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">用户显示格式</label>
+                      <div class="col-md-4">
+                        <select class="form-control">
+                          ﻿<option selected="selected" value="firstname_lastname">Eric Admin</option>
+                          <option value="firstname_lastinitial">Eric A.</option>
+                          <option value="firstinitial_lastname">E. Admin</option>
+                          <option value="firstname">Eric</option>
+                          <option value="lastname_firstname">Admin Eric</option>
+                          <option value="lastname_coma_firstname">Admin, Eric</option>
+                          <option value="lastname">Admin</option>
+                          <option value="username">eric</option></select></p>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <div class="row">
+                  <div class="col-md-offset-2">
+                    <button type="submit" class="btn green">保存</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="tab_settings_project">
+        <div class="portlet light grey-cararra bordered">
+          <div class="portlet-body form">
+            <form action="javascript:;" class="form-horizontal">
+              <div class="form-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="control-label col-md-3">新建项目默认为公开项目</label>
+                      <div class="col-md-4">
+                        <div class="icheck-inline">
+                          <input type="checkbox">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <div class="row">
+                  <div class="col-md-offset-2">
+                    <button type="submit" class="btn green">保存</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="tab_settings_issue">
+        <div class="portlet light grey-cararra bordered">
+          <div class="portlet-body form">
+            <form action="javascript:;" class="form-horizontal">
+              <div class="form-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="control-label col-md-3">允许问题被分配给组</label>
+                      <div class="col-md-4">
+                        <div class="icheck-inline">
+                          <input type="checkbox">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">使用当前日期作为新问题的开始日期</label>
+                      <div class="col-md-4">
+                        <div class="icheck-inline">
+                          <input type="checkbox">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3">甘特图显示的最大记录数</label>
+                      <div class="col-md-4">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <div class="row">
+                  <div class="col-md-offset-2">
+                    <button type="submit" class="btn green">保存</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,575 @@
+{% extends "project/base.html" %}
+
+{% block tab_toggle %}tab_issues{% endblock %}
+
+
+{% block tab_content %}
+  <div class="portlet issue-info">
+    <div class="portlet-title">
+      <div class="caption">
+        <span class="caption-subject">错误 #332</span>
+      </div>
+      <div class="actions btn-set small">
+        <a id="btn-edit-issue"><i class="fa fa-edit"></i>编辑</a>
+        <a href="/issues/1/worktime/add"><i class="fa fa-clock-o"></i>登记工时 </a>
+        <a><i class="fa fa-star-o"></i>跟踪 </a>
+        <a><i class="fa fa-copy"></i>复制 </a>
+        <a><i class="fa fa-trash-o"></i>删除 </a>
+      </div>
+    </div>
+    <div class="portlet-body">
+      <div class="alert alert-block alert-warning fade in">
+        <div class="issue-subject">这是一个测试问题</div>
+        <div class="issue-update">由 <a href="">Eric</a> 在 <a href="javascript:;">6 个月</a> 之前添加. 更新于 <a href="javascript:;">6 个月</a> 之前.</div>
+        <div class="row">
+          <div class="col-md-3"><label class="label-name">状态:</label></div><div class="col-md-3"><label  class="label-value">已解决</label></div>
+          <div class="col-md-3"><label class="label-name">开始日期:</label></div><div class="col-md-3"><label class="label-value">2015-04-23</label></div>
+        </div>
+        <div class="row">
+          <div class="col-md-3"><label class="label-name">优先级:</label></div><div class="col-md-3"><label class="label-value">普通</label></div>
+          <div class="col-md-3"><label class="label-name">完成日期:</label></div><div class="col-md-3"><label class="label-value">2015-04-23</label></div>
+        </div>
+        <div class="row">
+          <div class="col-md-3"><label class="label-name">指派给:</label></div><div class="col-md-3"><label class="label-value"><a href="/users/1">Eric</a></label></div>
+          <div class="col-md-3"><label class="label-name">%完成:</label></div><div class="col-md-3"><label class="label-value">100%</label></div>
+        </div>
+        <div class="row">
+          <div class="col-md-3"><label class="label-name">类别:</label></div><div class="col-md-3"><label class="label-value">-</label></div>
+          <div class="col-md-3"><label class="label-name">耗时:</label></div><div class="col-md-3"><label class="label-value"><a href="/issues/1/worktime">16 小时</a></label></div>
+        </div>
+        <div class="row">
+          <div class="col-md-3"><label class="label-name">目标版本:</label></div><div class="col-md-3"><label class="label-value"><a href="/versions/1">V1.0</a></label></div>
+        </div>
+        <hr>
+        <div class="related-info">
+          <div class="title">
+            <div class="caption">
+              <span>子任务</span>
+            </div>
+            <div class="actions btn-set extra-small">
+              <a href="/projects/1/issues/add">新增</a>
+            </div>
+          </div>
+          <div class="content">
+            <table>
+            <tr>
+              <td><a>错误 #3</a>: 这是一个子任务</td>
+              <td>新建</td>
+              <td>
+                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td><a>错误 #3</a>: aaa</td>
+              <td>新建</td>
+              <td>
+                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td><a>错误 #3</a>: aaa</td>
+              <td>新建</td>
+              <td>
+                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td><a>错误 #3</a>: aaa</td>
+              <td>新建</td>
+              <td>
+                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td><a>错误 #3</a>: aaa</td>
+              <td>新建</td>
+              <td>
+                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+              </td>
+            </tr>
+            </table>
+          </div>
+        </div>
+        <hr>
+        <div class="related-info">
+          <div class="title">
+            <div class="caption">
+              <span>相关问题</span>
+            </div>
+            <div class="actions btn-set extra-small">
+              <a href="/projects/1/issues/add/">新增</a>
+            </div>
+          </div>
+          <div class="content">
+            <table>
+            <tr>
+              <td><a>前置 #3</a>: aaa</td>
+              <td>新建</td>
+              <td>
+                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td><a>前置 #3</a>: aaa</td>
+              <td>新建</td>
+              <td>
+                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td><a>前置 #3</a>: aaa</td>
+              <td>新建</td>
+              <td>
+                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td><a>跟随 #3</a>: aaa</td>
+              <td>新建</td>
+              <td>
+                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td><a>跟随 #3</a>: aaa</td>
+              <td>新建</td>
+              <td>
+                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+              </td>
+            </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="history">
+        <div class="title">历史记录</div>
+        <div class="row">
+          <div class="col-md-12">
+            <ul class="media-list">
+            <li class="media">
+              <a class="pull-left" href="javascript:;">
+                <img class="todo-userpic" src="/static/img/avatar2.jpg" width="27px" height="27px">
+              </a>
+              <div class="media-body todo-comment">
+                <div class="actions btn-set todo-comment-btn small">
+                  <a name="btn-quote-comment" href="/issues/1/quote?note_id=1"><i class="fa fa-comment-o"></i>引用</a>
+                  <a name="btn-edit-comment"><i class="fa fa-edit"></i>编辑</a>
+                </div>
+                <p class="todo-comment-head">
+                  <span class="todo-comment-username">张三</span> &nbsp; <span class="todo-comment-date">1分钟之前</span>
+                </p>
+                <p class="todo-text-color">
+                  <ul>
+                    <li>状态: 由 <a>新建</a> 改为 <a>关闭</a></li>
+                    <li>%完成: 由 <a>10%</a> 改为 <a>100%</a></li>
+                  </ul>
+                </p>
+                <p name="comment-text" class="todo-text-color">修改了一处Bug...</p>
+              </div>
+            </li>
+            <li class="media">
+              <a class="pull-left" href="javascript:;">
+                <img class="todo-userpic" src="/static/img/avatar2.jpg" width="27px" height="27px">
+              </a>
+              <div class="media-body todo-comment">
+                <div class="actions btn-set todo-comment-btn small">
+                  <a name="btn-quote-comment" href="/issues/1/quote?note_id=1"><i class="fa fa-comment-o"></i>引用</a>
+                  <a name="btn-edit-comment"><i class="fa fa-edit"></i>编辑</a>
+                </div>
+                <p class="todo-comment-head">
+                  <span class="todo-comment-username">王五</span> &nbsp; <span class="todo-comment-date">刚刚</span>
+                </p>
+                <p name="comment-text" class="todo-text-color">fix a bug...</p>
+              </div>
+            </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div name="comment-editor" hidden>
+        <form>
+          <textarea class="form-control" rows="3"></textarea>
+          <div class="form-actions">
+            <button type="submit" class="btn green">保存</button>
+            <button name="btn-comment-cancel"  class="btn default">取消</button>
+          </div>
+        </form>
+      </div>
+      <div id="issue-editor" hidden>
+        <div class="title">编辑</div>
+        <div class="portlet light grey-cararra bordered">
+          <div class="portlet-body form">
+            <form action="javascript:;" class="form-horizontal">
+              <div class="form-body">
+                <h5>属性</h5>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group has-error">
+                      <label class="control-label col-md-2">项目<span class="required" aria-required="true">*</span></label>
+                      <div class="col-md-3">
+                        <select class="form-control">
+                          <option value="aaa">aaa</option>
+                          <option value="bbb">&nbsp;&nbsp;»bbb</option>
+                          <option value="ccc">&nbsp;&nbsp;»ccc</option>
+                          <option value="ddd">&nbsp;&nbsp;»ddd</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group has-error">
+                      <label class="control-label col-md-2">跟踪<span class="required" aria-required="true">*</span></label>
+                      <div class="col-md-3">
+                        <select class="form-control">
+                          <option>研发</option>
+                          <option>缺陷</option>
+                          <option>文档</option>
+                          <option>调研</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-2">主题<span class="required" aria-required="true">*</span></label>
+                      <div class="col-md-8">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-2">描述</label>
+                      <div class="col-md-8">
+                        <textarea class="form-control" rows="3"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label col-md-4">状态<span class="required" aria-required="true">*</span></label>
+                      <div class="col-md-6">
+                        <select class="form-control">
+                          <option>新建</option>
+                          <option>进行中</option>
+                          <option>已解决</option>
+                          <option>已关闭</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-4">优先级<span class="required" aria-required="true">*</span></label>
+                      <div class="col-md-6">
+                        <select class="form-control">
+                          <option>低</option>
+                          <option>普通</option>
+                          <option>高</option>
+                          <option>紧急</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-4">指派给</label>
+                      <div class="col-md-6">
+                        <select class="form-control">
+                          <option>aaa</option>
+                          <option>bbb</option>
+                          <option>ccc</option>
+                          <option>ddd</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-4">类别</label>
+                      <div class="col-md-6">
+                        <select class="form-control">
+                          <option>aaa</option>
+                          <option>bbb</option>
+                          <option>ccc</option>
+                          <option>ddd</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-4">目标版本</label>
+                      <div class="col-md-6">
+                        <select class="form-control">
+                          <option>研发</option>
+                          <option>缺陷</option>
+                          <option>文档</option>
+                          <option>调研</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label col-md-2">父任务</label>
+                      <div class="col-md-6">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label col-md-2">开始日期</label>
+                      <div class="col-md-6">
+                        <div class="input-group date date-picker" data-date-format="yyyy-mm-dd">
+                          <input type="text" class="form-control" readonly="" name="datepicker">
+                          <span class="input-group-btn">
+                          <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label col-md-2">完成日期</label>
+                      <div class="col-md-6">
+                        <div class="input-group date date-picker" data-date-format="yyyy-mm-dd">
+                          <input type="text" class="form-control" readonly="" name="datepicker">
+                          <span class="input-group-btn">
+                          <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label col-md-2">%完成</label>
+                      <div class="col-md-6">
+                        <select class="form-control">
+                          <option>%0</option>
+                          <option>%10</option>
+                          <option>%20</option>
+                          <option>%30</option>
+                          <option>%40</option>
+                          <option>%50</option>
+                          <option>%60</option>
+                          <option>%70</option>
+                          <option>%80</option>
+                          <option>%90</option>
+                          <option>%100</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <h5>工时</h5>
+                <div class="form-group">
+                  <label class="control-label col-md-2">耗时</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control input-inline input-xsmall">
+                    <span class="help-inline">小时</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-md-2">注释</label>
+                  <div class="col-md-6">
+                    <input type="text" class="form-control">
+                  </div>
+                </div>
+                <hr>
+                <h5>说明</h5>
+                <div class="form-group">
+                  <div class="col-md-12">
+                    <textarea id="comment-text" class="form-control" rows="3"></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <div class="row">
+                  <div class="col-md-offset-3">
+                    <button type="submit" class="btn green">创建</button>
+                    <a type="button" class="btn default" href="/issues/1">取消</a>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block page_level_styles %}
+<style>
+  .portlet.issue-info > .portlet-title {
+      border-bottom: none;
+      padding: 15px 0 0 0;
+      /*margin-bottom: 0px;*/
+      margin: 0 1px;
+  }
+
+  .portlet.issue-info > .portlet-title > .caption {
+      font-size: 14px;
+      color: #666;
+  }
+
+  .portlet.issue-info > .portlet-title > .btn-set {
+      margin-top: 6px;
+  }
+
+  .portlet.issue-info > .portlet-body {
+      padding-top: 0px;
+  }
+
+  .portlet.issue-info > .portlet-body > .alert-warning {
+      color: #666;
+  }
+
+  .portlet.issue-info > .portlet-body .issue-subject {
+      font-size: 16px;
+      padding-bottom: 20px;
+  }
+
+  .portlet.issue-info > .portlet-body .issue-update {
+      font-size: 12px;
+      padding-bottom: 15px;
+  }
+
+  .portlet.issue-info > .portlet-body label {
+      font-size: 13px;
+  }
+
+  .portlet.issue-info > .portlet-body label.label-name {
+      font-weight: 700;
+  }
+
+  .portlet.issue-info > .portlet-body label.label-value {
+      font-weight: 100;
+
+  }
+
+  .todo-comment-btn:hover {
+    /*color: #fff;*/
+    background-color: white;
+    /*border-color: #a1b6c2;*/
+  }
+
+  .portlet.issue-info .info-block .info-caption {
+      display: inline-block;
+  }
+
+  .portlet.issue-info .info-block .actions.btn-set {
+      display: inline-block;
+      float: right;
+  }
+
+  .portlet.issue-info .related-info > .title > .caption {
+      display: inline-block;
+      font-weight: 700;
+
+  }
+
+  .portlet.issue-info .related-info > .title > .actions.btn-set {
+      display: inline-block;
+      float: right;
+      font-size: 12px;
+  }
+
+  .portlet.issue-info .related-info > .content {
+      padding-top: 15px;
+  }
+
+  .portlet.issue-info .related-info > .content > table {
+      width: 100%;
+      max-width: 100%;
+      font-size: 12px;
+  }
+
+  .portlet.issue-info .related-info > .content > table td {
+      padding: 3px 0;
+  }
+
+  .portlet.issue-info .related-info > .content > table td:first-child {
+      width: 60%;
+  }
+
+  .portlet.issue-info .related-info > .content > table td:last-child {
+      width: 25%;
+  }
+
+  .portlet.issue-info .related-info > .content .progress {
+      width: 100px;
+      height: 10px;
+      margin-bottom: 0px;
+      /*border: 1px solid #e6e6e6;*/
+  }
+
+  .portlet.issue-info ul ul, ol ul {
+      list-style-type: disc;
+  }
+
+  .portlet.issue-info #history li {
+      font-size: 12px;
+  }
+
+  .portlet.issue-info .todo-text-color {
+      font-size: 13px;
+      color: #666;
+  }
+
+  .portlet.issue-info #history > .title {
+      padding: 20px 0 15px 0;
+      font-size: 17px;
+  }
+
+  .portlet.issue-info #issue-editor > .title {
+      padding: 20px 0 15px 0;
+      font-size: 17px;
+  }
+
+  [name="comment-editor"] .btn {
+      padding: 3px 10px;
+  }
+
+  [name="comment-editor"] .form-actions {
+      padding-top: 5px;
+  }
+</style>
+{% endblock %}
+
+
+
+{% block page-level-scripts %}
+<script>
+
+  show_issue_editor = function(){
+    $('#history').hide();
+    e = $('#issue-editor').show();
+    $('html,body').animate({scrollTop: e.offset().top}, 200);
+    return e;
+  };
+
+  $('#btn-edit-issue').click(function(){
+    show_issue_editor();
+    return false;
+  });
+
+  $('[name="btn-quote-comment"]').click(function(){
+    show_issue_editor();
+    text = $(this).closest('li').find('[name="comment-text"]').text();   // get text by ajax later
+    $('#comment-text').text(text);
+    return false;
+  });
+
+  $('[name="btn-edit-comment"]').click(function(){
+    if( 0 == $(this).closest('li').find('[name="comment-editor"]').length ) {
+      text = $(this).closest('li').find('[name="comment-text"]');
+      editor = $('[name="comment-editor"]:hidden').clone(true).show();
+      editor.find('textarea').text(text.text());
+      text.after(editor).hide();
+      return false;
+    }
+  });
+
+  $('[name="btn-comment-cancel"]').click(function(){
+    editor = $(this).closest('[name="comment-editor"]');
+    editor.siblings('[name="comment-text"]').show();
+    editor.remove();
+    return false;
+  });
+</script>
+{% endblock %}

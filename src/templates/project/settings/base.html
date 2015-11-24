@@ -1,0 +1,20 @@
+{% extends "project/base.html" %}
+
+{% block tab_toggle %}tab_settings{% endblock %}
+
+{% block tab_content %}
+  <div class="tab-caption">配置</div>
+  <div class="tabbable">
+    <ul class="nav nav-tabs second">
+      <li id="tab_info"><a href="{% url 'project_update' project.id %}"> 信息 </a></li>
+      <li id="tab_member"><a href="/projects/1/settings/members"> 成员 </a></li>
+      <li id="tab_version"><a href="/projects/1/settings/versions"> 版本 </a></li>
+      <li id="tab_issue_type"><a href="/projects/1/settings/categories"> 问题类别 </a></li>
+    </ul>
+    <div class="tab-content no-space">
+      <div id="settings-tab-content" tab-toggle="{% block settings_tab_toggle %}{% endblock %}">
+        {% block settings_tab_content %}{% endblock %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
