@@ -1,0 +1,39 @@
+{% extends "_admin/base.html" %}
+
+{% block tab_toggle %}tab_trackers{% endblock %}
+
+{% block tab_content %}
+  <div class="page-title">问题标签</div>
+  <div class="actions btn-set small btn-table">
+    <a href="{% url 'issue_tag_add' %}"><i class="fa fa-plus"></i>新建问题标签</a>
+  </div>
+  {% if issue_tags %}
+    <div class="dataTables_wrapper">
+      <div class="table-scrollable">
+        <table class="table table-light table-advance table-hover table-condensed second">
+          <thead>
+          <tr>
+            <th>跟踪标签</th>
+            <th width="110px"></th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for issue_tag in issue_tags %}
+            <tr>
+              <td><a href="{% url 'issue_tag_update' issue_tag.id %}">{{ issue_tag.name }}</a></td>
+              <td>
+                <div class="actions btn-set small">
+                  <a href="{% url 'issue_tag_delete' issue_tag.id %}"><i class="fa fa-trash-o"></i>删除</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include "table_footer.html" %}
+    </div>
+  {% else %}
+    <div class="nodata"><span>暂无数据可显示</span></div>
+  {% endif %}
+{% endblock %}

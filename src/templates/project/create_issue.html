@@ -6,7 +6,8 @@
 <div class="tab-caption">新建问题</div>
 <div class="portlet light grey-cararra bordered">
   <div class="portlet-body form">
-    <form action="javascript:;" class="form-horizontal">
+    <form class="form-horizontal" method="post">
+      {% csrf_token %}
       <div class="form-body">
         <div class="row">
           <div class="col-md-12">

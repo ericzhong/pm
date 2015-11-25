@@ -1,22 +1,28 @@
 {% extends "_admin/base.html" %}
 
+{% load i18n %}
+{% load widget_tweaks %}
 
-{% block tab_toggle %}tab_trackers{% endblock %}
+{% block tab_toggle %}tab_tags{% endblock %}
 
 
 {% block tab_content %}
-  <div class="page-title">跟踪标签 >> 新建</div>
+  <div class="page-title">问题标签 >> 编辑</div>
   <div class="portlet-body">
     <div class="portlet light grey-cararra bordered">
       <div class="portlet-body form">
-        <form action="javascript:;" class="form-horizontal">
+        <form class="form-horizontal" method="post">
+          {% csrf_token %}
           <div class="form-body">
             <div class="row">
               <div class="col-md-12">
-                <div class="form-group">
+                <div class="form-group {% if form.description.errors %}has-error{% endif %}">
                   <label class="control-label col-md-2">名称<span class="required" aria-required="true">*</span></label>
                   <div class="col-md-4">
-                    <input type="text" class="form-control">
+                    {{ form.name|add_class:"form-control" }}
+                    {% if form.name.errors %}
+                      <span class="help-block">{{ form.name.errors.0 }}</span>
+                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -25,8 +31,7 @@
           <div class="form-actions">
             <div class="row">
               <div class="col-md-offset-2">
-                <button type="submit" class="btn green" name="commit">创建</button>
-                <button type="submit" class="btn green" name="continue">创建并继续</button>
+                <button type="submit" class="btn green" name="commit">保存</button>
               </div>
             </div>
           </div>
@@ -35,4 +40,3 @@
     </div>
   </div>
 {% endblock %}
-

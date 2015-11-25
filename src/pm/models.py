@@ -45,7 +45,8 @@ class Issue(models.Model):
 
     DONE_RATIO_CHOICES = tuple((n, str(n)+" %") for n in range(0, 101, 10))
 
-    issue_type = models.ForeignKey('IssueType')
+    tag = models.ForeignKey('IssueTag')
+    category = models.ForeignKey('IssueCategory')
     project = models.ForeignKey('Project')
     subject = models.CharField(max_length=255, default='')
     description = models.TextField(null=True, blank=True)
@@ -67,8 +68,20 @@ class Issue(models.Model):
 
 
 @python_2_unicode_compatible
-class IssueType(models.Model):
-    name = models.CharField(max_length=30, default='', unique=True)
+class IssueCategory(models.Model):
+    project = models.ForeignKey('Project')
+    name = models.CharField(max_length=60)
+
+    class Meta:
+        unique_together = ("project", "name")
+
+    def __str__(self):
+        return self.name
+
+
+@python_2_unicode_compatible
+class IssueTag(models.Model):
+    name = models.CharField(max_length=60, unique=True)
 
     def __str__(self):
         return self.name

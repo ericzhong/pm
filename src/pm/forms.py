@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User, Group
-from .models import Project, Issue, IssueType, IssueStatus, Version, Member, Comment, Worktime
+from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Version, Member, Comment, Worktime
 
 
 class ProjectForm(forms.ModelForm):
@@ -20,9 +20,15 @@ class IssueForm(forms.ModelForm):
         exclude = ["created_on", 'updated_on']
 
 
-class IssueTypeForm(forms.ModelForm):
+class IssueCategoryForm(forms.ModelForm):
     class Meta:
-        model = IssueType
+        model = IssueCategory
+        exclude = ['project']
+
+
+class IssueTagForm(forms.ModelForm):
+    class Meta:
+        model = IssueTag
         exclude = ['']
 
 

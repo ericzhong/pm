@@ -1,10 +1,9 @@
 from django.contrib import admin
-from .models import *
 from .forms import *
 
 
 
-class ProjectModelAdmin(admin.ModelAdmin):
+class ProjectAdmin(admin.ModelAdmin):
     form = ProjectForm
     list_display = ('id', 'name')
     ordering = ('-id',)
@@ -16,10 +15,16 @@ class IssueAdmin(admin.ModelAdmin):
     ordering = ('-id',)
 
 
-class IssueTypeAdmin(admin.ModelAdmin):
-    form = IssueTypeForm
+class IssueTagAdmin(admin.ModelAdmin):
+    form = IssueTagForm
     list_display = ('id', 'name')
     ordering = ('id',)
+
+
+class IssueCategoryAdmin(admin.ModelAdmin):
+    form = IssueCategoryForm
+    list_display = ('id', 'project', 'name')
+    ordering = ('project',)
 
 
 class IssueStatusAdmin(admin.ModelAdmin):
@@ -41,9 +46,10 @@ class MemberAdmin(admin.ModelAdmin):
 
 
 
-admin.site.register(Project, ProjectModelAdmin)
+admin.site.register(Project, ProjectAdmin)
 admin.site.register(Issue, IssueAdmin)
-admin.site.register(IssueType, IssueTypeAdmin)
+admin.site.register(IssueTag, IssueTagAdmin)
+admin.site.register(IssueCategory, IssueCategoryAdmin)
 admin.site.register(IssueStatus, IssueStatusAdmin)
 admin.site.register(Version, VersionAdmin)
 admin.site.register(Member, MemberAdmin)

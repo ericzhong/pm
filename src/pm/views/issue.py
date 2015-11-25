@@ -13,15 +13,28 @@ import time
 
 _model = Issue
 _form = IssueForm
-_template_dir = 'issue'
-_name = 'issue'
-_plural = 'issues'
+_template_dir = ''
+_name = ''
+
+
+class Create(CreateView):
+    model = _model
+    template_name = 'project/create_issue.html'
+    form_class = _form
+
+    def get_context_data(self, **kwargs):
+        context = super(Create, self).get_context_data(**kwargs)
+        context['project'] = Project.objects.get(pk=self.kwargs.get('pk'))
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy('issue_list', kwargs={'pk': self.kwargs.get('pk')})
 
 
 class List(ListView):
     model = _model
-    template_name = '%s/list.html' % _template_dir
-    context_object_name = _plural
+    template_name = 'project/issues.html'
+    context_object_name = 'issues'
 
 
 class Detail(DetailView):
@@ -46,11 +59,7 @@ class Detail(DetailView):
         return context
 
 
-class Create(CreateView):
-    model = _model
-    template_name = '%s/form.html' % _template_dir
-    form_class = _form
-    success_url = reverse_lazy('%s_list' % _name)
+
 
 
 class Update(View):
