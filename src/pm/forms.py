@@ -17,7 +17,7 @@ class ProjectForm(forms.ModelForm):
 class IssueForm(forms.ModelForm):
     class Meta:
         model = Issue
-        exclude = ["created_on", 'updated_on']
+        exclude = ["created_on", 'updated_on', 'project', 'author']
 
 
 class IssueCategoryForm(forms.ModelForm):

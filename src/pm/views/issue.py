@@ -1,10 +1,11 @@
 # coding:utf-8
 from django.views.generic import ListView, DetailView, View
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.db.models import Sum
+from django.contrib.auth.models import User
 from ..forms import IssueForm, CommentForm, WorktimeForm
 from ..models import Issue, Comment, Worktime, Project
 from ..utils import Helper
@@ -19,8 +20,15 @@ _name = ''
 
 class Create(CreateView):
     model = _model
-    template_name = 'project/create_issue.html'
     form_class = _form
+    template_name = 'project/create_issue.html'
+
+    def form_valid(self, form):
+         form.instance.project = Project.objects.get(pk=self.kwargs.get('pk'))
+         # TODO: use login user
+         form.instance.author = User.objects.get(pk=1)
+         #form.instance.author = self.request.user
+         return super(Create, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super(Create, self).get_context_data(**kwargs)
@@ -36,22 +44,20 @@ class List(ListView):
     template_name = 'project/issues.html'
     context_object_name = 'issues'
 
+    def get_context_data(self, **kwargs):
+        context = super(List, self).get_context_data(**kwargs)
+        context['project'] = Project.objects.get(pk=self.kwargs.get('pk'))
+        return context
+
 
 class Detail(DetailView):
     model = _model
-    template_name = '%s/detail.html' % _template_dir
-    context_object_name = _name
-
-    def get_object(self):
-        object = super(Detail, self).get_object()
-        if object.start_date is not None:
-            object.start_date = object.start_date.strftime('%Y-%m-%d')
-        if object.due_date is not None:
-            object.due_date = object.due_date.strftime('%Y-%m-%d')
-        return object
+    template_name = 'project/issue_info.html'
+    context_object_name = 'issue'
 
     def get_context_data(self, *args, **kwargs):
         context = super(Detail, self).get_context_data()
+        context['project'] = self.object.project
         context['comments'] = Comment.objects.filter(issue=context['object'])
         context['comment'] = CommentForm()
         context['spent_time'] = Worktime.objects.filter(issue=kwargs['object'])\

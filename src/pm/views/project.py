@@ -42,8 +42,7 @@ class Create(CreateView):
     success_url = reverse_lazy('project_list')
 
     def get_initial(self):
-        initial = super(Create, self).get_initial()
-        initial = initial.copy()
+        initial = super(Create, self).get_initial().copy()
         initial['parent'] = self.request.GET.get('parent', None)
         return initial
 

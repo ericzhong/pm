@@ -1,5 +1,8 @@
 {% extends "project/base.html" %}
 
+{% load i18n %}
+{% load widget_tweaks %}
+
 {% block tab_toggle %}tab_create_issue{% endblock %}
 
 {% block tab_content %}
@@ -11,88 +14,87 @@
       <div class="form-body">
         <div class="row">
           <div class="col-md-12">
-            <div class="form-group has-error">
-              <label class="control-label col-md-2">跟踪<span class="required" aria-required="true">*</span></label>
+            <div class="form-group {% if form.tag.errors %}has-error{% endif %}">
+              <label class="control-label col-md-2">标签<span class="required">*</span></label>
               <div class="col-md-3">
-                <select class="form-control">
-                  <option>研发</option>
-                  <option>缺陷</option>
-                  <option>文档</option>
-                  <option>调研</option>
-                </select>
+                {{ form.tag|add_class:"form-control" }}
+                {% if form.tag.errors %}
+                  <span class="help-block">{{ form.tag.errors.0 }}</span>
+                {% endif %}
               </div>
             </div>
-            <div class="form-group">
-              <label class="control-label col-md-2">主题<span class="required" aria-required="true">*</span></label>
+            <div class="form-group {% if form.subject.errors %}has-error{% endif %}">
+              <label class="control-label col-md-2">主题<span class="required">*</span></label>
               <div class="col-md-8">
-                <input type="text" class="form-control">
+                {{ form.subject|add_class:"form-control" }}
+                {% if form.subject.errors %}
+                  <span class="help-block">{{ form.subject.errors.0 }}</span>
+                {% endif %}
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group {% if form.description.errors %}has-error{% endif %}">
               <label class="control-label col-md-2">描述</label>
               <div class="col-md-8">
-                <textarea class="form-control" rows="3"></textarea>
+                {{ form.description|add_class:"form-control"|attr:"rows:3" }}
+                {% if form.description.errors %}
+                  <span class="help-block">{{ form.description.errors.0 }}</span>
+                {% endif %}
               </div>
             </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-6">
-            <div class="form-group">
-              <label class="control-label col-md-4">状态<span class="required" aria-required="true">*</span></label>
+            <div class="form-group {% if form.status.errors %}has-error{% endif %}">
+              <label class="control-label col-md-4">状态<span class="required">*</span></label>
               <div class="col-md-6">
-                <select class="form-control">
-                  <option>新建</option>
-                  <option>进行中</option>
-                  <option>已解决</option>
-                  <option>已关闭</option>
-                </select>
+                {{ form.status|add_class:"form-control" }}
+                {% if form.status.errors %}
+                  <span class="help-block">{{ form.status.errors.0 }}</span>
+                {% endif %}
               </div>
             </div>
-            <div class="form-group">
-              <label class="control-label col-md-4">优先级<span class="required" aria-required="true">*</span></label>
+            <div class="form-group {% if form.priority.errors %}has-error{% endif %}">
+              <label class="control-label col-md-4">优先级<span class="required">*</span></label>
               <div class="col-md-6">
-                <select class="form-control">
-                  <option>低</option>
-                  <option>普通</option>
-                  <option>高</option>
-                  <option>紧急</option>
-                </select>
+                {{ form.priority|add_class:"form-control" }}
+                {% if form.priority.errors %}
+                  <span class="help-block">{{ form.priority.errors.0 }}</span>
+                {% endif %}
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group {% if form.assigned_to.errors %}has-error{% endif %}">
               <label class="control-label col-md-4">指派给</label>
               <div class="col-md-6">
-                <select class="form-control">
-                  <option>aaa</option>
-                  <option>bbb</option>
-                  <option>ccc</option>
-                  <option>ddd</option>
-                </select>
+                {{ form.assigned_to|add_class:"form-control" }}
+                {% if form.assigned_to.errors %}
+                  <span class="help-block">{{ form.assigned_to.errors.0 }}</span>
+                {% endif %}
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group {% if form.version.errors %}has-error{% endif %}">
               <label class="control-label col-md-4">目标版本</label>
               <div class="col-md-6">
-                <select class="form-control">
-                  <option>研发</option>
-                  <option>缺陷</option>
-                  <option>文档</option>
-                  <option>调研</option>
-                </select>
+                {{ form.version|add_class:"form-control" }}
+                {% if form.version.errors %}
+                  <span class="help-block">{{ form.version.errors.0 }}</span>
+                {% endif %}
               </div>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="form-group {% if form.parent.errors %}has-error{% endif %}">
               <label class="control-label col-md-2">父任务</label>
               <div class="col-md-6">
-                <input type="text" class="form-control">
+                {{ form.parent|add_class:"form-control" }}
+                {% if form.parent.errors %}
+                  <span class="help-block">{{ form.parent.errors.0 }}</span>
+                {% endif %}
               </div>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="form-group {% if form.start_date.errors %}has-error{% endif %}">
               <label class="control-label col-md-2">开始日期</label>
               <div class="col-md-6">
                 <div class="input-group date date-picker" data-date-format="yyyy-mm-dd">
@@ -105,7 +107,7 @@
             </div>
           </div>
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="form-group {% if form.due_date.errors %}has-error{% endif %}">
               <label class="control-label col-md-2">完成日期</label>
               <div class="col-md-6">
                 <div class="input-group date date-picker" data-date-format="yyyy-mm-dd">
@@ -118,22 +120,13 @@
             </div>
           </div>
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="form-group {% if form.done_ratio.errors %}has-error{% endif %}">
               <label class="control-label col-md-2">%完成</label>
               <div class="col-md-6">
-                <select class="form-control">
-                  <option>%0</option>
-                  <option>%10</option>
-                  <option>%20</option>
-                  <option>%30</option>
-                  <option>%40</option>
-                  <option>%50</option>
-                  <option>%60</option>
-                  <option>%70</option>
-                  <option>%80</option>
-                  <option>%90</option>
-                  <option>%100</option>
-                </select>
+                {{ form.done_ratio|add_class:"form-control" }}
+                {% if form.done_ratio.errors %}
+                  <span class="help-block">{{ form.done_ratio.errors.0 }}</span>
+                {% endif %}
               </div>
             </div>
           </div>

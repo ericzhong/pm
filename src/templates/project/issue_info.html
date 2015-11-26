@@ -7,7 +7,7 @@
   <div class="portlet issue-info">
     <div class="portlet-title">
       <div class="caption">
-        <span class="caption-subject">错误 #332</span>
+        <span class="caption-subject">{{ issue.tag }} #{{ issue.id }}</span>
       </div>
       <div class="actions btn-set small">
         <a id="btn-edit-issue"><i class="fa fa-edit"></i>编辑</a>
@@ -19,26 +19,35 @@
     </div>
     <div class="portlet-body">
       <div class="alert alert-block alert-warning fade in">
-        <div class="issue-subject">这是一个测试问题</div>
-        <div class="issue-update">由 <a href="">Eric</a> 在 <a href="javascript:;">6 个月</a> 之前添加. 更新于 <a href="javascript:;">6 个月</a> 之前.</div>
+        <div class="issue-subject">{{ issue.subject }}</div>
+        <div class="issue-update">由 <a href="">{{ issue.author }}</a> 在 <a href="javascript:;">{{ issue.created_on|date:'Y-m-d' }}</a> 添加. 更新于 <a href="javascript:;">{{ issue.updated_on|date:'Y-m-d' }}</a> .</div>
         <div class="row">
-          <div class="col-md-3"><label class="label-name">状态:</label></div><div class="col-md-3"><label  class="label-value">已解决</label></div>
-          <div class="col-md-3"><label class="label-name">开始日期:</label></div><div class="col-md-3"><label class="label-value">2015-04-23</label></div>
+          <div class="col-md-3"><label class="label-name">状态:</label></div>
+          <div class="col-md-3"><label  class="label-value">{{ issue.status }}</label></div>
+          <div class="col-md-3"><label class="label-name">开始日期:</label></div>
+          <div class="col-md-3"><label class="label-value">{% if issue.start_date %}{{ issue.start_date }}{% else %}-{% endif %}</label></div>
         </div>
         <div class="row">
-          <div class="col-md-3"><label class="label-name">优先级:</label></div><div class="col-md-3"><label class="label-value">普通</label></div>
-          <div class="col-md-3"><label class="label-name">完成日期:</label></div><div class="col-md-3"><label class="label-value">2015-04-23</label></div>
+          <div class="col-md-3"><label class="label-name">优先级:</label></div>
+          <div class="col-md-3"><label class="label-value">{{ issue.priority }}</label></div>
+          <div class="col-md-3"><label class="label-name">完成日期:</label></div>
+          <div class="col-md-3"><label class="label-value">{% if issue.due_date %}{{ issue.due_date }}{% else %}-{% endif %}</label></div>
         </div>
         <div class="row">
-          <div class="col-md-3"><label class="label-name">指派给:</label></div><div class="col-md-3"><label class="label-value"><a href="/users/1">Eric</a></label></div>
-          <div class="col-md-3"><label class="label-name">%完成:</label></div><div class="col-md-3"><label class="label-value">100%</label></div>
+          <div class="col-md-3"><label class="label-name">指派给:</label></div>
+          <div class="col-md-3"><label class="label-value"><a href="/users/1">{{ issue.author }}</a></label></div>
+          <div class="col-md-3"><label class="label-name">%完成:</label></div>
+          <div class="col-md-3"><label class="label-value">{{ issue.done_ratio }}%</label></div>
         </div>
         <div class="row">
-          <div class="col-md-3"><label class="label-name">类别:</label></div><div class="col-md-3"><label class="label-value">-</label></div>
-          <div class="col-md-3"><label class="label-name">耗时:</label></div><div class="col-md-3"><label class="label-value"><a href="/issues/1/worktime">16 小时</a></label></div>
+          <div class="col-md-3"><label class="label-name">类别:</label></div>
+          <div class="col-md-3"><label class="label-value">{% if issue.category %}{{ issue.category }}{% else %}-{% endif %}</label></div>
+          <div class="col-md-3"><label class="label-name">耗时:</label></div>
+          <div class="col-md-3"><label class="label-value"><a href="/issues/1/worktime">{{ spent_time }} 小时</a></label></div>
         </div>
         <div class="row">
-          <div class="col-md-3"><label class="label-name">目标版本:</label></div><div class="col-md-3"><label class="label-value"><a href="/versions/1">V1.0</a></label></div>
+          <div class="col-md-3"><label class="label-name">目标版本:</label></div>
+          <div class="col-md-3"><label class="label-value"><a href="/versions/1">{% if issue.version %}{{ issue.version }}{% else %}-{% endif %}</a></label></div>
         </div>
         <hr>
         <div class="related-info">

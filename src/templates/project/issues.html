@@ -6,16 +6,16 @@
     <div class="tab-caption">
     <span>问题</span>
     <div class="actions btn-set small">
-      <a href="/projects/1/issues/add"><i class="fa fa-plus"></i>新建问题</a>
+      <a href="{% url 'issue_add' project.id %}"><i class="fa fa-plus"></i>新建问题</a>
     </div>
   </div>
   {% if issues %}
   <div class="dataTables_wrapper">
     <div class="table-scrollable">
-      <table class="table table-light table-advance table-hover table-condensed second" aria-describedby="">
+      <table class="table table-light table-advance table-hover table-condensed second">
         <thead>
         <tr>
-          <th>类型</th>
+          <th>标签</th>
           <th>状态</th>
           <th>优先级</th>
           <th>主题</th>
@@ -25,14 +25,14 @@
         </thead>
         <tbody>
         {% for issue in issues %}
-        <tr>
-          <td>{{ issue.issue_type }}</td>
-          <td>{{ issue.status }}</td>
-          <td>{{ issue.priority }}</td>
-          <td><a href="/issues/1">{{ issue.subject }}</a></td>
-          <td><a href="/users/1">{{ issue.assigned_to }}</a></td>
-          <td>{{ issue.updated_on }}</td>
-        </tr>
+          <tr>
+            <td>{{ issue.tag }}</td>
+            <td>{{ issue.status }}</td>
+            <td>{{ issue.priority }}</td>
+            <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
+            <td><a href="/users/1">{{ issue.assigned_to }}</a></td>
+            <td>{{ issue.updated_on|date:'Y-m-d' }}</td>
+          </tr>
         {% endfor %}
         </tbody>
       </table>
