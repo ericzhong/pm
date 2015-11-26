@@ -15,6 +15,14 @@ $("button[name='btn-cancel']").click( function() {
 });
 
 
-// tab selected
+// tab active
 $('li#'+$('#tab-content').attr('tab-toggle')).attr('class', 'active');
 $('li#'+$('#settings-tab-content').attr('tab-toggle')).attr('class', 'active');
+
+
+// confirm delete
+$('#confirm-delete').on('show.bs.modal', function(e) {
+  $(e.target).find('form').attr('action', $(e.relatedTarget).attr('data-href'));
+  // v-align center
+  $(e.target).css('padding-top', $(document).height()/2-200);
+});
