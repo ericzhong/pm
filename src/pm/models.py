@@ -89,8 +89,8 @@ class IssueTag(models.Model):
 
 @python_2_unicode_compatible
 class IssueStatus(models.Model):
-    name = models.CharField(max_length=30, default='', unique=True)
-    default_done_ratio = models.IntegerField(null=True, blank=True)
+    name = models.CharField(max_length=60, unique=True)
+    #default_done_ratio = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name

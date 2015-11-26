@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
-{% block tab_toggle %}tab_tags{% endblock %}
+{% block tab_toggle %}tab_issue_tags{% endblock %}
 
 
 {% block tab_content %}
@@ -16,7 +16,7 @@
           <div class="form-body">
             <div class="row">
               <div class="col-md-12">
-                <div class="form-group {% if form.description.errors %}has-error{% endif %}">
+                <div class="form-group {% if form.name.errors %}has-error{% endif %}">
                   <label class="control-label col-md-2">名称<span class="required" aria-required="true">*</span></label>
                   <div class="col-md-4">
                     {{ form.name|add_class:"form-control" }}

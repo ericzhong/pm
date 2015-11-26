@@ -48,6 +48,12 @@ urlpatterns = [
     url(r'^issue_tags/(?P<pk>\d+)/update/$', issue_tag.Update.as_view(), name='issue_tag_update'),
     url(r'^issue_tags/(?P<pk>\d+)/delete/$', issue_tag.Delete.as_view(), name='issue_tag_delete'),
 
+    # issue status
+    url(r'^issue_statuses/$', issue_status.List.as_view(), name='issue_status_list'),
+    url(r'^issue_statuses/add/$', issue_status.Create.as_view(), name='issue_status_add'),
+    url(r'^issue_statuses/(?P<pk>\d+)/update/$', issue_status.Update.as_view(), name='issue_status_update'),
+    url(r'^issue_statuses/(?P<pk>\d+)/delete/$', issue_status.Delete.as_view(), name='issue_status_delete'),
+
     #url(r'^projects/(?P<pk>\d+)/issues/$', project.Issues.as_view(), name='project_issues'),
     #url(r'^projects/(?P<pk>\d+)/members/$', project.ListMember.as_view(), name='member_list'),
     #url(r'^projects/(?P<pk>\d+)/member/(?P<id>\d+)$', project.DeleteMember.as_view(), name='member_delete'),
@@ -62,20 +68,6 @@ urlpatterns = [
     url(r'^issue/(?P<pk>\d+)/delete/$', issue.Delete.as_view(), name='issue_delete'),
     url(r'^comment/(?P<pk>\d+)/update/$', issue.CommentUpdate.as_view(), name='comment_update'),
     url(r'^comment/(?P<pk>\d+)/delete/$', issue.CommentDelete.as_view(), name='comment_delete'),
-
-    # issue type
-    #url(r'^issue_types/$', issue_tag.List.as_view(), name='issue_type_list'),
-    #url(r'^issue_type/(?P<pk>\d+)/$', issue_tag.Detail.as_view(), name='issue_type_detail'),
-    #url(r'^issue_type/add/$', issue_tag.Create.as_view(), name='issue_type_add'),
-    #url(r'^issue_type/(?P<pk>\d+)/update/$', issue_tag.Update.as_view(), name='issue_type_update'),
-    #url(r'^issue_type/(?P<pk>\d+)/delete/$', issue_tag.Delete.as_view(), name='issue_type_delete'),
-
-    # issue status
-    url(r'^issue_statuses/$', issue_status.List.as_view(), name='issue_status_list'),
-    url(r'^issue_status/(?P<pk>\d+)/$', issue_status.Detail.as_view(), name='issue_status_detail'),
-    url(r'^issue_status/add/$', issue_status.Create.as_view(), name='issue_status_add'),
-    url(r'^issue_status/(?P<pk>\d+)/update/$', issue_status.Update.as_view(), name='issue_status_update'),
-    url(r'^issue_status/(?P<pk>\d+)/delete/$', issue_status.Delete.as_view(), name='issue_status_delete'),
 
     # version
     url(r'^versions/$', version.List.as_view(), name='version_list'),

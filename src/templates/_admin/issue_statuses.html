@@ -5,61 +5,57 @@
 {% block tab_content %}
   <div class="page-title">问题状态</div>
   <div class="actions btn-set small btn-table">
-    <a href="/issue_statuses/add"><i class="fa fa-plus"></i>新建问题状态</a>
+    <a href="{% url 'issue_status_add' %}"><i class="fa fa-plus"></i>新建问题状态</a>
   </div>
-  <div class="dataTables_wrapper">
-    <div class="table-scrollable">
-      <table class="table table-light table-advance table-hover table-condensed second">
-        <thead>
-        <tr>
-          <th>状态</th>
-          <th width="110px"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td><a href="/issue_statuses/1/update">新建</a></td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+
+  {% if issue_statuses %}
+    <div class="dataTables_wrapper">
+      <div class="table-scrollable">
+        <table class="table table-light table-advance table-hover table-condensed second">
+          <thead>
+          <tr>
+            <th>状态</th>
+            <th width="110px"></th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for issue_status in issue_statuses %}
+            <tr>
+              <td><a href="{% url 'issue_status_update' issue_status.id %}">{{ issue_status.name }}</a></td>
+              <td>
+                <div class="actions btn-set small">
+                  <a data-href="{% url 'issue_status_delete' issue_status.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include "table_footer.html" %}
     </div>
-    {% include "table_footer.html" %}
+  {% else %}
+    <div class="nodata"><span>暂无数据可显示</span></div>
+  {% endif %}
+
+  <div id="confirm-delete" class="modal" tabindex="-1" data-width="500">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <h4>Are you sure?</h4>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <form method="post">
+            {% csrf_token %}
+            <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+            <button type="submit" class="btn red">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 {% endblock %}
