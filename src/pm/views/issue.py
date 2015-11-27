@@ -1,11 +1,10 @@
 # coding:utf-8
 from django.views.generic import ListView, DetailView, View
-from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.db.models import Sum
-from django.contrib.auth.models import User
 from ..forms import IssueForm, CommentForm, WorktimeForm
 from ..models import Issue, Comment, Worktime, Project
 from ..utils import Helper
@@ -23,12 +22,16 @@ class Create(CreateView):
     form_class = _form
     template_name = 'project/create_issue.html'
 
-    def form_valid(self, form):
-         form.instance.project = Project.objects.get(pk=self.kwargs.get('pk'))
-         # TODO: use login user
-         form.instance.author = User.objects.get(pk=1)
-         #form.instance.author = self.request.user
-         return super(Create, self).form_valid(form)
+    def get_form_kwargs(self):
+        kwargs = super(Create, self).get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            data = self.request.POST.copy()
+            data['project'] = self.kwargs.get('pk')
+            data['author'] = u'1'                               # TODO: use login user
+            kwargs.update({
+                'data': data,
+            })
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super(Create, self).get_context_data(**kwargs)
@@ -55,22 +58,42 @@ class Detail(DetailView):
     template_name = 'project/issue_info.html'
     context_object_name = 'issue'
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(Detail, self).get_context_data()
+    def get_context_data(self, **kwargs):
+        context = super(Detail, self).get_context_data(**kwargs)
         context['project'] = self.object.project
         context['comments'] = Comment.objects.filter(issue=context['object'])
         context['comment'] = CommentForm()
         context['spent_time'] = Worktime.objects.filter(issue=kwargs['object'])\
                                     .aggregate(Sum('hours')).get('hours__sum', 0) or 0
+        context['form'] = _form(instance=self.object)
         return context
 
 
+class Update(UpdateView):
+    model = _model
+    form_class = _form
+    template_name = 'project/edit_issue.html'
+
+    def get_success_url(self):
+        return reverse_lazy('issue_detail', kwargs={'pk': self.kwargs.get('pk')})
+
+    def get_context_data(self, **kwargs):
+        context = super(Update, self).get_context_data(**kwargs)
+        context['project'] = self.object.project
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(Update, self).get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            data = self.request.POST.copy()
+            data['author'] = u'1'                               # TODO: use login user
+            kwargs.update({
+                'data': data,
+            })
+        return kwargs
 
 
-
-class Update(View):
-    template_name = '%s/update.html' % _template_dir
-
+    '''
     def get(self, request, **kwargs):
         issue = Issue.objects.get(pk=kwargs['pk'])
         issue_form = IssueForm(prefix='issue', instance=issue)
@@ -107,6 +130,7 @@ class Update(View):
             return HttpResponseRedirect(reverse('%s_detail' % _name, kwargs={'pk': pk}))
         else:
             return render(request, self.template_name, {'form': issue_form, 'comment': comment_form})
+    '''
 
 
 class Delete(DeleteView):

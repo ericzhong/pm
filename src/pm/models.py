@@ -25,7 +25,7 @@ class Project(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     identifier = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    status = models.IntegerField(default=1, choices=STATUS_CHOICES)
+    status = models.IntegerField(default=OPEN_STATUS, choices=STATUS_CHOICES)
     inherit_members = models.BooleanField(default=False)
 
     def __str__(self):
@@ -35,15 +35,21 @@ class Project(models.Model):
 @python_2_unicode_compatible
 class Issue(models.Model):
 
+    LOW_PRIORITY = 1
+    NORMAL_PRIORITY = 2
+    HIGH_PRIORITY = 3
+    EMERGENCY_PRIORITY = 4
+    IMMEDIATELY_PRIORITY = 5
+
     PRIORITY_CHOICES = (
-        (1, _('Low')),
-        (2, _('Normal')),
-        (3, _('High')),
-        (4, _('Emergency')),
-        (5, _('Immediately')),
+        (LOW_PRIORITY, _('Low')),
+        (NORMAL_PRIORITY, _('Normal')),
+        (HIGH_PRIORITY, _('High')),
+        (EMERGENCY_PRIORITY, _('Emergency')),
+        (IMMEDIATELY_PRIORITY, _('Immediately')),
     )
 
-    DONE_RATIO_CHOICES = tuple((n, str(n)+" %") for n in range(0, 101, 10))
+    DONE_RATIO_CHOICES = tuple((n, str(n)+"%") for n in range(0, 101, 10))
 
     tag = models.ForeignKey('IssueTag')
     category = models.ForeignKey('IssueCategory', null=True, blank=True)
@@ -54,7 +60,7 @@ class Issue(models.Model):
     due_date = models.DateField(null=True, blank=True)
     status = models.ForeignKey('IssueStatus')
     assigned_to = models.ForeignKey(User, null=True, blank=True)
-    priority = models.IntegerField(default=2, choices=PRIORITY_CHOICES)
+    priority = models.IntegerField(default=NORMAL_PRIORITY, choices=PRIORITY_CHOICES)
     version = models.ForeignKey('Version', null=True, blank=True)
     author = models.ForeignKey(User, related_name='created_by')
     created_on = models.DateTimeField(auto_now_add=True)
@@ -99,10 +105,14 @@ class IssueStatus(models.Model):
 @python_2_unicode_compatible
 class Version(models.Model):
 
+    OPEN_STATUS = 1
+    LOCKED_STATUS = 2
+    CLOSED_STATUS = 3
+
     STATUS_CHOICES = (
-        (1, _('open')),
-        (2, _('locked')),
-        (3, _('closed')),
+        (OPEN_STATUS, _('open')),
+        (LOCKED_STATUS, _('locked')),
+        (CLOSED_STATUS, _('closed')),
     )
 
     project = models.ForeignKey('Project')
@@ -111,7 +121,7 @@ class Version(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     wiki_page = models.CharField(max_length=255, null=True, blank=True)
-    status = models.IntegerField(default=1, choices=STATUS_CHOICES)
+    status = models.IntegerField(default=OPEN_STATUS, choices=STATUS_CHOICES)
     effective_date = models.DateField()
 
     class Meta:

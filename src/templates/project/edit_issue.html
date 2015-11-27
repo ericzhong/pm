@@ -1,0 +1,24 @@
+{% extends "project/base.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block tab_toggle %}tab_issues{% endblock %}
+
+
+{% block tab_content %}
+<div class="tab-caption">编辑</div>
+<div class="portlet light grey-cararra bordered">
+  <div class="portlet-body form">
+    {% include 'project/edit_issue_form.html' %}
+  </div>
+</div>
+{% endblock %}
+
+
+
+{% block page-level-scripts %}
+<script>
+  $('html,body').animate({scrollTop: $('.tab-caption').offset().top}, 1);
+</script>
+{% endblock %}

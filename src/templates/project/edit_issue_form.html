@@ -1,0 +1,56 @@
+{% load i18n %}
+{% load widget_tweaks %}
+
+<form action="{% url 'issue_update' issue.id %}" class="form-horizontal" method="post">
+  {% csrf_token %}
+  <div class="form-body">
+    <h5>属性</h5>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group {% if form.project.errors %}has-error{% endif %}">
+          <label class="control-label col-md-2">项目<span class="required">*</span></label>
+          <div class="col-md-3">
+            {{ form.project|add_class:"form-control" }}
+            {% if form.project.errors %}
+              <span class="help-block">{{ form.project.errors.0 }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% include 'project/create_issue_form.html' %}
+    <hr>
+    <h5>工时</h5>
+    <div class="form-group">
+      <label class="control-label col-md-2">耗时</label>
+      <div class="col-md-10">
+        <input type="text" class="form-control input-inline input-xsmall">
+        <span class="help-inline">小时</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-md-2">注释</label>
+      <div class="col-md-6">
+        <input type="text" class="form-control">
+      </div>
+    </div>
+    <hr>
+    <h5>说明</h5>
+    <div class="form-group">
+      <div class="col-md-12">
+        <textarea id="comment-text" class="form-control" rows="3"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="form-actions">
+    <div class="row">
+      <div class="col-md-offset-3">
+        <button type="submit" class="btn green">创建</button>
+        <a type="button" class="btn default" href="{% url 'issue_detail' issue.id %}">取消</a>
+      </div>
+    </div>
+  </div>
+</form>
+
+
+

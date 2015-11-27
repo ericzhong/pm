@@ -1,5 +1,8 @@
 {% extends "project/base.html" %}
 
+{% load i18n %}
+{% load widget_tweaks %}
+
 {% block tab_toggle %}tab_issues{% endblock %}
 
 
@@ -25,29 +28,29 @@
           <div class="col-md-3"><label class="label-name">状态:</label></div>
           <div class="col-md-3"><label  class="label-value">{{ issue.status }}</label></div>
           <div class="col-md-3"><label class="label-name">开始日期:</label></div>
-          <div class="col-md-3"><label class="label-value">{% if issue.start_date %}{{ issue.start_date }}{% else %}-{% endif %}</label></div>
+          <div class="col-md-3"><label class="label-value">{{ issue.start_date|default:"-" }}</label></div>
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">优先级:</label></div>
-          <div class="col-md-3"><label class="label-value">{{ issue.priority }}</label></div>
+          <div class="col-md-3"><label class="label-value">{{ issue.get_priority_display }}</label></div>
           <div class="col-md-3"><label class="label-name">完成日期:</label></div>
-          <div class="col-md-3"><label class="label-value">{% if issue.due_date %}{{ issue.due_date }}{% else %}-{% endif %}</label></div>
+          <div class="col-md-3"><label class="label-value">{{ issue.due_date|default:"-" }}</label></div>
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">指派给:</label></div>
           <div class="col-md-3"><label class="label-value"><a href="/users/1">{{ issue.author }}</a></label></div>
           <div class="col-md-3"><label class="label-name">%完成:</label></div>
-          <div class="col-md-3"><label class="label-value">{{ issue.done_ratio }}%</label></div>
+          <div class="col-md-3"><label class="label-value">{{ issue.get_done_ratio_display }}</label></div>
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">类别:</label></div>
-          <div class="col-md-3"><label class="label-value">{% if issue.category %}{{ issue.category }}{% else %}-{% endif %}</label></div>
+          <div class="col-md-3"><label class="label-value">{{ issue.category|default:"" }}</label></div>
           <div class="col-md-3"><label class="label-name">耗时:</label></div>
           <div class="col-md-3"><label class="label-value"><a href="/issues/1/worktime">{{ spent_time }} 小时</a></label></div>
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">目标版本:</label></div>
-          <div class="col-md-3"><label class="label-value"><a href="/versions/1">{% if issue.version %}{{ issue.version }}{% else %}-{% endif %}</a></label></div>
+          <div class="col-md-3"><label class="label-value"><a href="/versions/1">{{ issue.version|default:"-" }}</a></label></div>
         </div>
         <hr>
         <div class="related-info">
@@ -208,192 +211,7 @@
         <div class="title">编辑</div>
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
-            <form action="javascript:;" class="form-horizontal">
-              <div class="form-body">
-                <h5>属性</h5>
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="form-group has-error">
-                      <label class="control-label col-md-2">项目<span class="required" aria-required="true">*</span></label>
-                      <div class="col-md-3">
-                        <select class="form-control">
-                          <option value="aaa">aaa</option>
-                          <option value="bbb">&nbsp;&nbsp;»bbb</option>
-                          <option value="ccc">&nbsp;&nbsp;»ccc</option>
-                          <option value="ddd">&nbsp;&nbsp;»ddd</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group has-error">
-                      <label class="control-label col-md-2">跟踪<span class="required" aria-required="true">*</span></label>
-                      <div class="col-md-3">
-                        <select class="form-control">
-                          <option>研发</option>
-                          <option>缺陷</option>
-                          <option>文档</option>
-                          <option>调研</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="control-label col-md-2">主题<span class="required" aria-required="true">*</span></label>
-                      <div class="col-md-8">
-                        <input type="text" class="form-control">
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="control-label col-md-2">描述</label>
-                      <div class="col-md-8">
-                        <textarea class="form-control" rows="3"></textarea>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="control-label col-md-4">状态<span class="required" aria-required="true">*</span></label>
-                      <div class="col-md-6">
-                        <select class="form-control">
-                          <option>新建</option>
-                          <option>进行中</option>
-                          <option>已解决</option>
-                          <option>已关闭</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="control-label col-md-4">优先级<span class="required" aria-required="true">*</span></label>
-                      <div class="col-md-6">
-                        <select class="form-control">
-                          <option>低</option>
-                          <option>普通</option>
-                          <option>高</option>
-                          <option>紧急</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="control-label col-md-4">指派给</label>
-                      <div class="col-md-6">
-                        <select class="form-control">
-                          <option>aaa</option>
-                          <option>bbb</option>
-                          <option>ccc</option>
-                          <option>ddd</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="control-label col-md-4">类别</label>
-                      <div class="col-md-6">
-                        <select class="form-control">
-                          <option>aaa</option>
-                          <option>bbb</option>
-                          <option>ccc</option>
-                          <option>ddd</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="control-label col-md-4">目标版本</label>
-                      <div class="col-md-6">
-                        <select class="form-control">
-                          <option>研发</option>
-                          <option>缺陷</option>
-                          <option>文档</option>
-                          <option>调研</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="control-label col-md-2">父任务</label>
-                      <div class="col-md-6">
-                        <input type="text" class="form-control">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="control-label col-md-2">开始日期</label>
-                      <div class="col-md-6">
-                        <div class="input-group date date-picker" data-date-format="yyyy-mm-dd">
-                          <input type="text" class="form-control" readonly="" name="datepicker">
-                          <span class="input-group-btn">
-                          <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="control-label col-md-2">完成日期</label>
-                      <div class="col-md-6">
-                        <div class="input-group date date-picker" data-date-format="yyyy-mm-dd">
-                          <input type="text" class="form-control" readonly="" name="datepicker">
-                          <span class="input-group-btn">
-                          <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="control-label col-md-2">%完成</label>
-                      <div class="col-md-6">
-                        <select class="form-control">
-                          <option>%0</option>
-                          <option>%10</option>
-                          <option>%20</option>
-                          <option>%30</option>
-                          <option>%40</option>
-                          <option>%50</option>
-                          <option>%60</option>
-                          <option>%70</option>
-                          <option>%80</option>
-                          <option>%90</option>
-                          <option>%100</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <hr>
-                <h5>工时</h5>
-                <div class="form-group">
-                  <label class="control-label col-md-2">耗时</label>
-                  <div class="col-md-10">
-                    <input type="text" class="form-control input-inline input-xsmall">
-                    <span class="help-inline">小时</span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="control-label col-md-2">注释</label>
-                  <div class="col-md-6">
-                    <input type="text" class="form-control">
-                  </div>
-                </div>
-                <hr>
-                <h5>说明</h5>
-                <div class="form-group">
-                  <div class="col-md-12">
-                    <textarea id="comment-text" class="form-control" rows="3"></textarea>
-                  </div>
-                </div>
-              </div>
-              <div class="form-actions">
-                <div class="row">
-                  <div class="col-md-offset-3">
-                    <button type="submit" class="btn green">创建</button>
-                    <a type="button" class="btn default" href="/issues/1">取消</a>
-                  </div>
-                </div>
-              </div>
-            </form>
+            {% include 'project/edit_issue_form.html' %}
           </div>
         </div>
       </div>
@@ -544,7 +362,6 @@
 
 {% block page-level-scripts %}
 <script>
-
   show_issue_editor = function(){
     $('#history').hide();
     e = $('#issue-editor').show();
