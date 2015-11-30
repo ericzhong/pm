@@ -16,11 +16,19 @@ _form = IssueForm
 _template_dir = ''
 _name = ''
 
+_worktime_prefix = 'worktime'
+_comment_prefix = 'comment'
+
 
 class Create(CreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_issue.html'
+
+    def get_initial(self):
+        initial = super(Create, self).get_initial().copy()
+        initial['parent'] = self.request.GET.get('parent', None)
+        return initial
 
     def get_form_kwargs(self):
         kwargs = super(Create, self).get_form_kwargs()
@@ -39,7 +47,7 @@ class Create(CreateView):
         return context
 
     def get_success_url(self):
-        return reverse_lazy('issue_list', kwargs={'pk': self.kwargs.get('pk')})
+        return self.request.GET.get('redirect', None) or reverse_lazy('issue_list', kwargs={'pk': self.kwargs.get('pk')})
 
 
 class List(ListView):
@@ -61,11 +69,13 @@ class Detail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(Detail, self).get_context_data(**kwargs)
         context['project'] = self.object.project
-        context['comments'] = Comment.objects.filter(issue=context['object'])
-        context['comment'] = CommentForm()
-        context['spent_time'] = Worktime.objects.filter(issue=kwargs['object'])\
+        context['comments'] = Comment.objects.filter(issue=self.object)
+        context['comment_form'] = CommentForm(prefix=_comment_prefix)
+        context['worktime_form'] = WorktimeForm(prefix=_worktime_prefix)
+        context['spent_time'] = Worktime.objects.filter(issue=self.object)\
                                     .aggregate(Sum('hours')).get('hours__sum', 0) or 0
         context['form'] = _form(instance=self.object)
+        context['subissues'] = Issue.objects.filter(parent=self.object)
         return context
 
 
@@ -80,6 +90,8 @@ class Update(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(Update, self).get_context_data(**kwargs)
         context['project'] = self.object.project
+        context['worktime_form'] = WorktimeForm(prefix=_worktime_prefix)
+        context['comment_form'] = CommentForm(prefix=_comment_prefix)
         return context
 
     def get_form_kwargs(self):
@@ -91,6 +103,28 @@ class Update(UpdateView):
                 'data': data,
             })
         return kwargs
+
+    def form_valid(self, form):
+        worktime_form = WorktimeForm(self.request.POST, prefix=_worktime_prefix)
+        comment_form = CommentForm(self.request.POST, prefix='comment')
+        if worktime_form.is_valid():
+            worktime_form.cleaned_data['project'] = self.object.project
+            worktime_form.cleaned_data['issue'] = self.object
+            worktime_form.cleaned_data['author_id'] = u'1'              # TODO: use login user
+            worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
+            Worktime(**worktime_form.cleaned_data).save()
+        else:
+            if 'hours' in worktime_form.cleaned_data:
+                return super(Update, self).form_invalid(form)
+
+        if comment_form.is_valid():
+            comment_form.cleaned_data['issue'] = self.object
+            comment_form.cleaned_data['author_id'] = u'1'               # TODO: use login user
+            Comment(**comment_form.cleaned_data).save()
+        else:
+            return super(Update, self).form_invalid(form)
+
+        return super(Update, self).form_valid(form)
 
 
     '''
@@ -133,23 +167,20 @@ class Update(UpdateView):
     '''
 
 
-class Delete(DeleteView):
-    model = _model
-    template_name = '%s/confirm_delete.html' % _template_dir
-    success_url = reverse_lazy('%s_list' % _name)
+class Delete(View):
+    def post(self, request, *args, **kwargs):
+        issues = Issue.objects.filter(pk=kwargs['pk'])
+        project_id = issues[0].project.id
+        issues.delete()
+        return HttpResponseRedirect(reverse('issue_list', kwargs={'pk': project_id}))
 
 
 class CommentUpdate(View):
-    def post(self, request, **kwargs):
+    def post(self, request, *args, **kwargs):
         pk = kwargs['pk']
-        comment_form = CommentForm(request.POST)
+        comment_form = CommentForm(request.POST, prefix=_comment_prefix)
+
         if comment_form.is_valid():
             Comment.objects.filter(pk=pk).update(**comment_form.cleaned_data)
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-
-class CommentDelete(View):
-    def get(self, request, **kwargs):
-        pk = kwargs['pk']
-        Comment.objects.get(id=pk).delete()
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return HttpResponseRedirect(reverse('issue_detail', kwargs={'pk':pk}))

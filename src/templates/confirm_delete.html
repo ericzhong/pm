@@ -1,0 +1,20 @@
+<div id="confirm-delete" class="modal" tabindex="-1" data-width="500">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <h4>Are you sure?</h4>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <form method="post">
+          {% csrf_token %}
+          <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+          <button type="submit" class="btn red">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

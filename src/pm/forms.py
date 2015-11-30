@@ -65,13 +65,13 @@ class MemberForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        exclude = ["created_on", 'updated_on', 'issue', 'author']
+        fields = ["content"]
 
 
 class WorktimeForm(forms.ModelForm):
     class Meta:
         model = Worktime
-        fields = ["hours", 'comment']
+        fields = ["hours", 'description']
 
 
 class PasswordResetByEmailForm(PasswordResetForm):

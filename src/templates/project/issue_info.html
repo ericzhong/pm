@@ -17,7 +17,7 @@
         <a href="/issues/1/worktime/add"><i class="fa fa-clock-o"></i>登记工时 </a>
         <a><i class="fa fa-star-o"></i>跟踪 </a>
         <a><i class="fa fa-copy"></i>复制 </a>
-        <a><i class="fa fa-trash-o"></i>删除 </a>
+        <a data-href="{% url 'issue_delete' issue.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
       </div>
     </div>
     <div class="portlet-body">
@@ -59,96 +59,20 @@
               <span>子任务</span>
             </div>
             <div class="actions btn-set extra-small">
-              <a href="/projects/1/issues/add">新增</a>
+              <a href="{% url 'issue_add' project.id %}?parent={{ issue.id }}&redirect={% url 'issue_detail' issue.id %}">新增</a>
             </div>
           </div>
           <div class="content">
             <table>
-            <tr>
-              <td><a>错误 #3</a>: 这是一个子任务</td>
-              <td>新建</td>
-              <td>
-                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td><a>错误 #3</a>: aaa</td>
-              <td>新建</td>
-              <td>
-                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td><a>错误 #3</a>: aaa</td>
-              <td>新建</td>
-              <td>
-                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td><a>错误 #3</a>: aaa</td>
-              <td>新建</td>
-              <td>
-                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td><a>错误 #3</a>: aaa</td>
-              <td>新建</td>
-              <td>
-                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
-              </td>
-            </tr>
-            </table>
-          </div>
-        </div>
-        <hr>
-        <div class="related-info">
-          <div class="title">
-            <div class="caption">
-              <span>相关问题</span>
-            </div>
-            <div class="actions btn-set extra-small">
-              <a href="/projects/1/issues/add/">新增</a>
-            </div>
-          </div>
-          <div class="content">
-            <table>
-            <tr>
-              <td><a>前置 #3</a>: aaa</td>
-              <td>新建</td>
-              <td>
-                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td><a>前置 #3</a>: aaa</td>
-              <td>新建</td>
-              <td>
-                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td><a>前置 #3</a>: aaa</td>
-              <td>新建</td>
-              <td>
-                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td><a>跟随 #3</a>: aaa</td>
-              <td>新建</td>
-              <td>
-                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td><a>跟随 #3</a>: aaa</td>
-              <td>新建</td>
-              <td>
-                <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
-              </td>
-            </tr>
+            {% for subissue in subissues %}
+              <tr>
+                <td><a href="{% url 'issue_detail' subissue.id %}">{{ subissue.tag }} #{{ subissue.id }}</a>: {{ subissue.subject }}</td>
+                <td>{{ subissue.status }}</td>
+                <td>
+                  <div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" style="width: 40%"></div></div>
+                </td>
+              </tr>
+            {% endfor %}
             </table>
           </div>
         </div>
@@ -158,49 +82,39 @@
         <div class="row">
           <div class="col-md-12">
             <ul class="media-list">
-            <li class="media">
-              <a class="pull-left" href="javascript:;">
-                <img class="todo-userpic" src="/static/img/avatar2.jpg" width="27px" height="27px">
-              </a>
-              <div class="media-body todo-comment">
-                <div class="actions btn-set todo-comment-btn small">
-                  <a name="btn-quote-comment" href="/issues/1/quote?note_id=1"><i class="fa fa-comment-o"></i>引用</a>
-                  <a name="btn-edit-comment"><i class="fa fa-edit"></i>编辑</a>
+            {% for comment in comments %}
+              <li class="media">
+                <a class="pull-left" href="javascript:;">
+                  <img class="todo-userpic" src="/static/img/avatar2.jpg" width="27px" height="27px">
+                </a>
+                <div class="media-body todo-comment">
+                  <div class="actions btn-set todo-comment-btn small">
+                    <a name="btn-quote-comment" href="/issues/1/quote?note_id=1"><i class="fa fa-comment-o"></i>引用</a>
+                    <a data-href="{% url 'comment_update' comment.id %}" name="btn-edit-comment"><i class="fa fa-edit"></i>编辑</a>
+                  </div>
+                  <p class="todo-comment-head">
+                    <span class="todo-comment-username">{{ comment.author }}</span> &nbsp; <span class="todo-comment-date">{{ comment.updated_on|date:"Y-m-d H:i:s" }}</span>
+                  </p>
+                  <!--
+                  <p class="todo-text-color">
+                    <ul>
+                      <li>状态: 由 <a>新建</a> 改为 <a>关闭</a></li>
+                      <li>%完成: 由 <a>10%</a> 改为 <a>100%</a></li>
+                    </ul>
+                  </p>
+                  -->
+                  <p name="comment-text" class="todo-text-color">{{ comment.content }}</p>
                 </div>
-                <p class="todo-comment-head">
-                  <span class="todo-comment-username">张三</span> &nbsp; <span class="todo-comment-date">1分钟之前</span>
-                </p>
-                <p class="todo-text-color">
-                  <ul>
-                    <li>状态: 由 <a>新建</a> 改为 <a>关闭</a></li>
-                    <li>%完成: 由 <a>10%</a> 改为 <a>100%</a></li>
-                  </ul>
-                </p>
-                <p name="comment-text" class="todo-text-color">修改了一处Bug...</p>
-              </div>
-            </li>
-            <li class="media">
-              <a class="pull-left" href="javascript:;">
-                <img class="todo-userpic" src="/static/img/avatar2.jpg" width="27px" height="27px">
-              </a>
-              <div class="media-body todo-comment">
-                <div class="actions btn-set todo-comment-btn small">
-                  <a name="btn-quote-comment" href="/issues/1/quote?note_id=1"><i class="fa fa-comment-o"></i>引用</a>
-                  <a name="btn-edit-comment"><i class="fa fa-edit"></i>编辑</a>
-                </div>
-                <p class="todo-comment-head">
-                  <span class="todo-comment-username">王五</span> &nbsp; <span class="todo-comment-date">刚刚</span>
-                </p>
-                <p name="comment-text" class="todo-text-color">fix a bug...</p>
-              </div>
-            </li>
+              </li>
+            {% endfor %}
             </ul>
           </div>
         </div>
       </div>
       <div name="comment-editor" hidden>
-        <form>
-          <textarea class="form-control" rows="3"></textarea>
+        <form method="post">
+          {% csrf_token %}
+          {{ comment_form.content|add_class:"form-control"|attr:"rows:3" }}
           <div class="form-actions">
             <button type="submit" class="btn green">保存</button>
             <button name="btn-comment-cancel"  class="btn default">取消</button>
@@ -217,6 +131,8 @@
       </div>
     </div>
   </div>
+
+  {% include 'confirm_delete.html' %}
 {% endblock %}
 
 
@@ -386,6 +302,7 @@
       text = $(this).closest('li').find('[name="comment-text"]');
       editor = $('[name="comment-editor"]:hidden').clone(true).show();
       editor.find('textarea').text(text.text());
+      editor.find('form').attr('action', $(this).attr('data-href'))
       text.after(editor).hide();
       return false;
     }

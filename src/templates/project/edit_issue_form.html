@@ -24,7 +24,10 @@
     <div class="form-group">
       <label class="control-label col-md-2">耗时</label>
       <div class="col-md-10">
-        <input type="text" class="form-control input-inline input-xsmall">
+        {{ worktime_form.hours|add_class:"form-control input-inline input-xsmall" }}
+        {% if worktime_form.hours.errors %}
+          <span class="help-block">{{ worktime_form.hours.errors.0 }}</span>
+        {% endif %}
         <span class="help-inline">小时</span>
       </div>
     </div>
@@ -38,7 +41,10 @@
     <h5>说明</h5>
     <div class="form-group">
       <div class="col-md-12">
-        <textarea id="comment-text" class="form-control" rows="3"></textarea>
+        {{ comment_form.content|add_class:"form-control"|attr:"rows:3" }}
+        {% if comment_form.hours.errors %}
+          <span class="help-block">{{ comment_form.hours.errors.0 }}</span>
+        {% endif %}
       </div>
     </div>
   </div>

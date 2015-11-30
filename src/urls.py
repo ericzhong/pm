@@ -42,6 +42,9 @@ urlpatterns = [
     url(r'^projects/(?P<pk>\d+)/close/$', project.Close.as_view(), name='project_close'),
     url(r'^projects/(?P<pk>\d+)/reopen/$', project.Reopen.as_view(), name='project_reopen'),
 
+    #url(r'^projects/(?P<pk>\d+)/members/$', project.ListMember.as_view(), name='member_list'),
+    #url(r'^projects/(?P<pk>\d+)/member/(?P<id>\d+)$', project.DeleteMember.as_view(), name='member_delete'),
+
     # issue tag
     url(r'^issue_tags/$', issue_tag.List.as_view(), name='issue_tag_list'),
     url(r'^issue_tags/add/$', issue_tag.Create.as_view(), name='issue_tag_add'),
@@ -54,18 +57,13 @@ urlpatterns = [
     url(r'^issue_statuses/(?P<pk>\d+)/update/$', issue_status.Update.as_view(), name='issue_status_update'),
     url(r'^issue_statuses/(?P<pk>\d+)/delete/$', issue_status.Delete.as_view(), name='issue_status_delete'),
 
-    #url(r'^projects/(?P<pk>\d+)/members/$', project.ListMember.as_view(), name='member_list'),
-    #url(r'^projects/(?P<pk>\d+)/member/(?P<id>\d+)$', project.DeleteMember.as_view(), name='member_delete'),
-
     # issue
     url(r'^projects/(?P<pk>\d+)/issues/$', issue.List.as_view(), name='issue_list'),
     url(r'^projects/(?P<pk>\d+)/issues/add/$', issue.Create.as_view(), name='issue_add'),
     url(r'^issues/(?P<pk>\d+)/$', issue.Detail.as_view(), name='issue_detail'),
     url(r'^issues/(?P<pk>\d+)/update/$', issue.Update.as_view(), name='issue_update'),
-
     url(r'^issue/(?P<pk>\d+)/delete/$', issue.Delete.as_view(), name='issue_delete'),
     url(r'^comment/(?P<pk>\d+)/update/$', issue.CommentUpdate.as_view(), name='comment_update'),
-    url(r'^comment/(?P<pk>\d+)/delete/$', issue.CommentDelete.as_view(), name='comment_delete'),
 
     # version
     url(r'^versions/$', version.List.as_view(), name='version_list'),
