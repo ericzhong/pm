@@ -62,7 +62,8 @@ urlpatterns = [
     url(r'^projects/(?P<pk>\d+)/issues/add/$', issue.Create.as_view(), name='issue_add'),
     url(r'^issues/(?P<pk>\d+)/$', issue.Detail.as_view(), name='issue_detail'),
     url(r'^issues/(?P<pk>\d+)/update/$', issue.Update.as_view(), name='issue_update'),
-    url(r'^issue/(?P<pk>\d+)/delete/$', issue.Delete.as_view(), name='issue_delete'),
+    url(r'^issues/(?P<pk>\d+)/delete/$', issue.Delete.as_view(), name='issue_delete'),
+    url(r'^issues/(?P<pk>\d+)/quote/$', issue.Quote.as_view(), name='issue_quote'),
     url(r'^comment/(?P<pk>\d+)/update/$', issue.CommentUpdate.as_view(), name='comment_update'),
 
     # version

@@ -89,7 +89,7 @@
                 </a>
                 <div class="media-body todo-comment">
                   <div class="actions btn-set todo-comment-btn small">
-                    <a name="btn-quote-comment" href="/issues/1/quote?note_id=1"><i class="fa fa-comment-o"></i>引用</a>
+                    <a name="btn-quote-comment" data-href="{% url 'issue_quote' issue.id %}?comment={{ comment.id }}"><i class="fa fa-comment-o"></i>引用</a>
                     <a data-href="{% url 'comment_update' comment.id %}" name="btn-edit-comment"><i class="fa fa-edit"></i>编辑</a>
                   </div>
                   <p class="todo-comment-head">
@@ -292,8 +292,9 @@
 
   $('[name="btn-quote-comment"]').click(function(){
     show_issue_editor();
-    text = $(this).closest('li').find('[name="comment-text"]').text();   // get text by ajax later
-    $('#comment-text').text(text);
+    $.getJSON($(this).attr('data-href'), function(data) {
+      $('#issue-editor').find('[name="{{ comment_form.content.html_name }}"]').text(data.content);
+    });
     return false;
   });
 
@@ -302,7 +303,7 @@
       text = $(this).closest('li').find('[name="comment-text"]');
       editor = $('[name="comment-editor"]:hidden').clone(true).show();
       editor.find('textarea').text(text.text());
-      editor.find('form').attr('action', $(this).attr('data-href'))
+      editor.find('form').attr('action', $(this).attr('data-href'));
       text.after(editor).hide();
       return false;
     }

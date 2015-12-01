@@ -2,8 +2,7 @@
 from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Sum
 from ..forms import IssueForm, CommentForm, WorktimeForm
 from ..models import Issue, Comment, Worktime, Project
@@ -13,9 +12,6 @@ import time
 
 _model = Issue
 _form = IssueForm
-_template_dir = ''
-_name = ''
-
 _worktime_prefix = 'worktime'
 _comment_prefix = 'comment'
 
@@ -184,3 +180,15 @@ class CommentUpdate(View):
             Comment.objects.filter(pk=pk).update(**comment_form.cleaned_data)
 
         return HttpResponseRedirect(reverse('issue_detail', kwargs={'pk':pk}))
+
+
+class Quote(View):
+    def get(self, request, *args, **kwargs):
+        data = dict()
+        comment_id = request.GET.get('comment', None)             # URL?comment=id
+        if comment_id is not None:
+            comment = Comment.objects.get(pk=comment_id)
+            data['content'] = "%s wrote:\n%s" % (comment.author.username, Helper.quote(comment.content))
+        else:
+            data['content'] = ""
+        return JsonResponse(data)
