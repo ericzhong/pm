@@ -71,7 +71,7 @@ class CommentForm(forms.ModelForm):
 class WorktimeForm(forms.ModelForm):
     class Meta:
         model = Worktime
-        fields = ["hours", 'description']
+        exclude = ["created_on", 'updated_on']
 
 
 class PasswordResetByEmailForm(PasswordResetForm):

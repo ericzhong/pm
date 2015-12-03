@@ -66,6 +66,12 @@ urlpatterns = [
     url(r'^issues/(?P<pk>\d+)/quote/$', issue.Quote.as_view(), name='issue_quote'),
     url(r'^comment/(?P<pk>\d+)/update/$', issue.CommentUpdate.as_view(), name='comment_update'),
 
+    # worktime
+    url(r'^issues/(?P<pk>\d+)/worktimes/$', issue.WorktimeList.as_view(), name='worktime_list'),
+    url(r'^issues/(?P<pk>\d+)/worktimes/add$', issue.WorktimeCreate.as_view(), name='worktime_add'),
+    url(r'^worktimes/(?P<pk>\d+)/update/$', issue.WorktimeUpdate.as_view(), name='worktime_update'),
+    url(r'^worktimes/(?P<pk>\d+)/delete/$', issue.WorktimeDelete.as_view(), name='worktime_delete'),
+
     # version
     url(r'^versions/$', version.List.as_view(), name='version_list'),
     url(r'^version/(?P<pk>\d+)/$', version.Detail.as_view(), name='version_detail'),

@@ -102,7 +102,7 @@ class Update(UpdateView):
 
     def form_valid(self, form):
         worktime_form = WorktimeForm(self.request.POST, prefix=_worktime_prefix)
-        comment_form = CommentForm(self.request.POST, prefix='comment')
+        comment_form = CommentForm(self.request.POST, prefix=_comment_prefix)
         if worktime_form.is_valid():
             worktime_form.cleaned_data['project'] = self.object.project
             worktime_form.cleaned_data['issue'] = self.object
@@ -121,46 +121,6 @@ class Update(UpdateView):
             return super(Update, self).form_invalid(form)
 
         return super(Update, self).form_valid(form)
-
-
-    '''
-    def get(self, request, **kwargs):
-        issue = Issue.objects.get(pk=kwargs['pk'])
-        issue_form = IssueForm(prefix='issue', instance=issue)
-
-        comment_id = request.GET.get('quote', None)     # url?quote=comment_id
-        comment = None
-        if comment_id is not None:
-            comment = Comment.objects.get(id=comment_id)
-            comment.content = "%s:\n%s" % (comment.author.username, Helper.quote(comment.content))
-        comment_form = CommentForm(instance=comment, prefix='comment')
-        worktime_form = WorktimeForm(prefix='worktime')
-        return render(request, self.template_name, {'form': issue_form, 'comment': comment_form, 'worktime': worktime_form})
-
-    def post(self, request, **kwargs):
-        pk = kwargs['pk']
-        issue_form = IssueForm(request.POST, prefix='issue')
-        comment_form = CommentForm(request.POST, prefix='comment')
-        worktime_form = WorktimeForm(request.POST, prefix='worktime')
-
-        if issue_form.is_valid():
-            Issue.objects.filter(pk=pk).update(**issue_form.cleaned_data)
-
-            if comment_form.is_valid():
-                comment_form.cleaned_data['issue_id'] = pk
-                comment_form.cleaned_data['author_id'] = request.user.id
-                Comment(**comment_form.cleaned_data).save()
-
-            if worktime_form.is_valid():
-                worktime_form.cleaned_data['project_id'] = Issue.objects.get(pk=pk).project_id
-                worktime_form.cleaned_data['issue_id'] = pk
-                worktime_form.cleaned_data['author_id'] = request.user.id
-                worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
-                Worktime(**worktime_form.cleaned_data).save()
-            return HttpResponseRedirect(reverse('%s_detail' % _name, kwargs={'pk': pk}))
-        else:
-            return render(request, self.template_name, {'form': issue_form, 'comment': comment_form})
-    '''
 
 
 class Delete(View):
@@ -192,3 +152,80 @@ class Quote(View):
         else:
             data['content'] = ""
         return JsonResponse(data)
+
+
+class WorktimeList(ListView):
+    model = Worktime
+    template_name = 'project/worktimes.html'
+    context_object_name = 'worktimes'
+
+    def get_context_data(self, **kwargs):
+        context = super(WorktimeList, self).get_context_data(**kwargs)
+        issue = Issue.objects.get(pk=self.kwargs.get('pk'))
+        context['issue'] = issue
+        context['project'] = issue.project
+        return context
+
+
+class WorktimeCreate(CreateView):
+    model = Worktime
+    form_class = WorktimeForm
+    template_name = 'project/create_worktime.html'
+
+    def get_initial(self):
+        initial = super(WorktimeCreate, self).get_initial().copy()
+        initial['issue'] = self.kwargs.get('pk')
+        return initial
+
+    def get_success_url(self):
+        if 'continue' in self.request.POST:
+            return reverse_lazy('worktime_add', kwargs={'pk': self.kwargs['pk']})
+        else:
+            return reverse_lazy('worktime_list', kwargs={'pk': self.kwargs['pk']})
+
+
+    def get_context_data(self, **kwargs):
+        context = super(WorktimeCreate, self).get_context_data(**kwargs)
+        issue = Issue.objects.get(pk=self.kwargs.get('pk'))
+        context['issue'] = issue
+        context['project'] = issue.project
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(WorktimeCreate, self).get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            data = self.request.POST.copy()
+            data['project'] = Issue.objects.get(pk=self.kwargs['pk']).project.id
+            data['author'] = u'1'                               # TODO: use login user
+            kwargs.update({
+                'data': data,
+            })
+        return kwargs
+
+
+class WorktimeUpdate(UpdateView):
+    model = Worktime
+    form_class = WorktimeForm
+    template_name = 'project/edit_worktime.html'
+
+    def get_success_url(self):
+        issue = Worktime.objects.get(pk=self.kwargs.get('pk')).issue
+        return reverse_lazy('worktime_list', kwargs={'pk': issue.id})
+
+    def get_context_data(self, **kwargs):
+        context = super(WorktimeUpdate, self).get_context_data(**kwargs)
+        issue = Worktime.objects.get(pk=self.kwargs.get('pk')).issue
+        context['issue'] = issue
+        context['project'] = issue.project
+        return context
+
+
+class WorktimeDelete(View):
+    def post(self, request, *args, **kwargs):
+        worktime = Worktime.objects.filter(pk=kwargs['pk'])
+        issue_id = worktime[0].issue.id
+        worktime.delete()
+        return HttpResponseRedirect(reverse('worktime_list', kwargs={'pk': issue_id}))
+
+
+

@@ -1,0 +1,47 @@
+{% load i18n %}
+{% load widget_tweaks %}
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="form-group">
+      <label class="control-label col-md-2">问题<span class="required">*</span></label>
+      <div class="col-md-2">
+        {{ form.issue|add_class:"form-control" }}
+        {% if form.issue.errors %}
+          <span class="help-block">{{ form.issue.errors.0 }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-md-2">日期<span class="required">*</span></label>
+      <div class="col-md-2">
+        <div class="input-group date date-picker" data-date-format="yyyy-mm-dd">
+          {{ form.date|add_class:"form-control"|attr:"readonly" }}
+          <span class="input-group-btn">
+            <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-md-2">小时<span class="required">*</span></label>
+      <div class="col-md-2">
+        {{ form.hours|add_class:"form-control" }}
+        {% if form.hours.errors %}
+          <span class="help-block">{{ form.hours.errors.0 }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-md-2">注释</label>
+      <div class="col-md-8">
+        {{ form.description|add_class:"form-control" }}
+        {% if form.description.errors %}
+          <span class="help-block">{{ form.description.errors.0 }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+

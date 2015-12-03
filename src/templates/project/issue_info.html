@@ -14,7 +14,7 @@
       </div>
       <div class="actions btn-set small">
         <a id="btn-edit-issue"><i class="fa fa-edit"></i>编辑</a>
-        <a href="/issues/1/worktime/add"><i class="fa fa-clock-o"></i>登记工时 </a>
+        <a href="{% url 'worktime_add' issue.id %}"><i class="fa fa-clock-o"></i>登记工时 </a>
         <a><i class="fa fa-star-o"></i>跟踪 </a>
         <a><i class="fa fa-copy"></i>复制 </a>
         <a data-href="{% url 'issue_delete' issue.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
@@ -46,7 +46,7 @@
           <div class="col-md-3"><label class="label-name">类别:</label></div>
           <div class="col-md-3"><label class="label-value">{{ issue.category|default:"" }}</label></div>
           <div class="col-md-3"><label class="label-name">耗时:</label></div>
-          <div class="col-md-3"><label class="label-value"><a href="/issues/1/worktime">{{ spent_time }} 小时</a></label></div>
+          <div class="col-md-3"><label class="label-value"><a href="{% url 'worktime_list' issue.id %}">{{ spent_time }} 小时</a></label></div>
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">目标版本:</label></div>

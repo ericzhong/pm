@@ -1,0 +1,30 @@
+{% extends "project/base.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block tab_toggle %}tab_issues{% endblock %}
+
+{% block tab_content %}
+<div class="tab-caption">
+  <span><a href="{% url 'issue_detail' issue.id %}">{{ issue.tag }} #{{ issue.id }}</a> >> 工时</span>
+</div>
+<div class="portlet light grey-cararra bordered">
+  <div class="portlet-body form">
+    <form class="form-horizontal" method="post">
+      {% csrf_token %}
+      <div class="form-body">
+        {% include 'project/worktime_form.html' %}
+      </div>
+      <div class="form-actions">
+        <div class="row">
+          <div class="col-md-offset-2">
+            <button type="submit" class="btn green">创建</button>
+            <button type="submit" name="continue" class="btn green">创建并继续</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

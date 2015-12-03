@@ -34,7 +34,10 @@
     <div class="form-group">
       <label class="control-label col-md-2">注释</label>
       <div class="col-md-6">
-        <input type="text" class="form-control">
+        {{ worktime_form.description|add_class:"form-control" }}
+        {% if worktime_form.description.errors %}
+          <span class="help-block">{{ worktime_form.description.errors.0 }}</span>
+        {% endif %}
       </div>
     </div>
     <hr>

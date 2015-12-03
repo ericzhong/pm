@@ -153,7 +153,7 @@ class Worktime(models.Model):
     issue = models.ForeignKey('Issue')
     author = models.ForeignKey(User)
     hours = models.IntegerField()
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField()
     description = models.CharField(max_length=255, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)

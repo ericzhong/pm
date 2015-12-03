@@ -1,0 +1,42 @@
+{% extends "project/base.html" %}
+
+{% block tab_toggle %}tab_issues{% endblock %}
+
+{% block tab_content %}
+<div class="tab-caption">
+  <span><a href="{% url 'issue_detail' issue.id %}">{{ issue.tag }} #{{ issue.id }}</a> >> 工时</span>
+  <div class="actions btn-set small btn-table">
+    <a href="{% url 'worktime_add' issue.id %}"><i class="fa fa-plus"></i>登记工时</a>
+  </div>
+</div>
+<div class="table-scrollable">
+  <table class="table table-light table-advance table-hover table-condensed second">
+    <thead>
+      <tr>
+        <th>日期</th>
+        <th>用户</th>
+        <th>小时</th>
+        <th>注释</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for worktime in worktimes %}
+      <tr>
+        <td>{{ worktime.date|date:"Y-m-d" }}</td>
+        <td>{{ worktime.author }}</td>
+        <td>{{ worktime.hours }}</td>
+        <td>{{ worktime.description }}</td>
+        <td>
+          <div class="actions btn-set small">
+            <a href="{% url 'worktime_update' worktime.id %}"><i class="fa fa-pencil"></i></a>
+            <a data-href="{% url 'worktime_delete' worktime.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'confirm_delete.html' %}
+{% endblock %}
