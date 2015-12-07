@@ -1,55 +1,114 @@
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, View
 from django.core.urlresolvers import reverse_lazy, reverse
-from ..models import Version
+from django.http import HttpResponseRedirect
+from ..models import Version, Project
 from ..forms import VersionForm
 
 
 _model = Version
 _form = VersionForm
-_template_dir = 'version'
-_name = 'version'
-_plural = 'versions'
-
-
-class List(ListView):
-    model = _model
-    template_name = '%s/list.html' % _template_dir
-    context_object_name = _plural
-
-
-class Detail(DetailView):
-    model = _model
-    template_name = '%s/detail.html' % _template_dir
-    context_object_name = _name
-
-    def get_object(self):
-        object = super(Detail, self).get_object()
-        object.created_on = object.created_on.strftime('%Y-%m-%d %H:%M:%S')
-        object.updated_on = object.updated_on.strftime('%Y-%m-%d %H:%M:%S')
-        object.effective_date = object.effective_date.strftime('%Y-%m-%d')
-        return object
 
 
 class Create(CreateView):
     model = _model
-    template_name = '%s/form.html' % _template_dir
     form_class = _form
-    success_url = reverse_lazy('%s_list' % _name)
+    template_name = 'project/create_version.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(Create, self).get_context_data(**kwargs)
+        context['project'] = Project.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(Create, self).get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            data = self.request.POST.copy()
+            data['project'] = self.kwargs.get('pk')
+            kwargs.update({
+                'data': data,
+            })
+        return kwargs
+
+    def get_success_url(self):
+        backurl = self.request.GET.get('backurl', None)
+        if backurl is None:
+            return reverse_lazy('version_roadmap', kwargs={'pk': self.kwargs.get('pk')})
+        else:
+            return reverse_lazy('version_list', kwargs={'pk': self.kwargs.get('pk')})
+
+
+class List(ListView):
+    model = _model
+    template_name = 'project/settings/versions.html'
+    context_object_name = 'versions'
+
+    def get_context_data(self, **kwargs):
+        context = super(List, self).get_context_data(**kwargs)
+        context['project'] = Project.objects.get(pk=self.kwargs['pk'])
+        return context
 
 
 class Update(UpdateView):
     model = _model
-    template_name = '%s/form.html' % _template_dir
     form_class = _form
+    template_name = 'project/edit_version.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(Update, self).get_context_data(**kwargs)
+        context['project'] = Version.objects.get(pk=self.kwargs['pk']).project
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(Update, self).get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            data = self.request.POST.copy()
+            data['project'] = Version.objects.get(pk=self.kwargs['pk']).project.id
+            kwargs.update({
+                'data': data,
+            })
+        return kwargs
 
     def get_success_url(self):
-        return reverse('%s_detail' % _name, kwargs={'pk': self.object.pk})
+        backurl = self.request.GET.get('backurl', None)
+        if backurl is None:
+            return reverse_lazy('version_detail', kwargs={'pk': self.kwargs.get('pk')})
+        else:
+            versions = Version.objects.filter(pk=self.kwargs['pk'])
+            project_id = versions[0].project.id
+            return reverse_lazy('version_list', kwargs={'pk': project_id})
 
 
-class Delete(DeleteView):
+class Detail(DetailView):
     model = _model
-    template_name = '%s/confirm_delete.html' % _template_dir
-    success_url = reverse_lazy('%s_list' % _name)
+    template_name = 'project/version_info.html'
+    context_object_name = 'version'
+
+    def get_context_data(self, **kwargs):
+        context = super(Detail, self).get_context_data(**kwargs)
+        context['project'] = Version.objects.get(pk=self.kwargs['pk']).project
+        return context
 
 
+class Delete(View):
+    def post(self, request, *args, **kwargs):
+        versions = Version.objects.filter(pk=kwargs['pk'])
+        project_id = versions[0].project.id
+        versions.delete()
+
+        backurl = request.GET.get('backurl', None)
+        if backurl is None:
+            return HttpResponseRedirect(reverse('version_roadmap', kwargs={'pk': project_id}))
+        else:
+            return HttpResponseRedirect(reverse('version_list', kwargs={'pk': project_id}))
+
+
+class Roadmap(ListView):
+    model = _model
+    template_name = 'project/roadmap.html'
+    context_object_name = 'versions'
+
+    def get_context_data(self, **kwargs):
+        context = super(Roadmap, self).get_context_data(**kwargs)
+        context['project'] = Project.objects.get(pk=self.kwargs['pk'])
+        return context

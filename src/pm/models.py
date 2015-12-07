@@ -117,12 +117,12 @@ class Version(models.Model):
 
     project = models.ForeignKey('Project')
     name = models.CharField(max_length=30)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.CharField(max_length=255, default="", blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    wiki_page = models.CharField(max_length=255, null=True, blank=True)
+    wiki_page = models.CharField(max_length=255, default="", blank=True)
     status = models.IntegerField(default=OPEN_STATUS, choices=STATUS_CHOICES)
-    effective_date = models.DateField()
+    effective_date = models.DateField(null=True, blank=True)
 
     class Meta:
         unique_together = ("project", "name")

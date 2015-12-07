@@ -73,11 +73,12 @@ urlpatterns = [
     url(r'^worktimes/(?P<pk>\d+)/delete/$', issue.WorktimeDelete.as_view(), name='worktime_delete'),
 
     # version
-    url(r'^versions/$', version.List.as_view(), name='version_list'),
-    url(r'^version/(?P<pk>\d+)/$', version.Detail.as_view(), name='version_detail'),
-    url(r'^version/add/$', version.Create.as_view(), name='version_add'),
-    url(r'^version/(?P<pk>\d+)/update/$', version.Update.as_view(), name='version_update'),
-    url(r'^version/(?P<pk>\d+)/delete/$', version.Delete.as_view(), name='version_delete'),
+    url(r'^projects/(?P<pk>\d+)/roadmap/$', version.Roadmap.as_view(), name='version_roadmap'),
+    url(r'^projects/(?P<pk>\d+)/settings/versions/$', version.List.as_view(), name='version_list'),
+    url(r'^projects/(?P<pk>\d+)/versions/add/$', version.Create.as_view(), name='version_add'),
+    url(r'^versions/(?P<pk>\d+)/$', version.Detail.as_view(), name='version_detail'),
+    url(r'^versions/(?P<pk>\d+)/update/$', version.Update.as_view(), name='version_update'),
+    url(r'^versions/(?P<pk>\d+)/delete/$', version.Delete.as_view(), name='version_delete'),
 
     # user
     url(r'^users/$', user.List.as_view(), name='user_list'),

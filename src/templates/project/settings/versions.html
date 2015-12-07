@@ -4,67 +4,41 @@
 
 {% block settings_tab_content %}
   <div class="actions btn-set small btn-table">
-    <a href="/projects/1/versions/add"><i class="fa fa-plus"></i>新建版本</a>
+    <a href="{% url 'version_add' project.id %}?backurl="><i class="fa fa-plus"></i>新建版本</a>
   </div>
-  <div class="dataTables_wrapper">
-    <div class="table-scrollable">
-      <table class="table table-light table-advance table-hover table-condensed second" aria-describedby="">
-        <thead>
-        <tr>
-          <th>版本</th>
-          <th>描述</th>
-          <th>状态</th>
-          <th width="110px"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>版本1</td>
-          <td>bbb</td>
-          <td>打开</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href="/versions/1/update"><i class="fa fa-edit"></i>编辑</a>
-              <a><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>aaa</td>
-          <td>bbb</td>
-          <td>打开</td>
-          <td>
-            <div class="actions btn-set small">
-              <a><i class="fa fa-edit"></i>编辑</a>
-              <a><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>aaa</td>
-          <td>bbb</td>
-          <td>打开</td>
-          <td>
-            <div class="actions btn-set small">
-              <a><i class="fa fa-edit"></i>编辑</a>
-              <a><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>aaa</td>
-          <td>bbb</td>
-          <td>打开</td>
-          <td>
-            <div class="actions btn-set small">
-              <a><i class="fa fa-edit"></i>编辑</a>
-              <a><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+  {% if versions %}
+    <div class="dataTables_wrapper">
+      <div class="table-scrollable">
+        <table class="table table-light table-advance table-hover table-condensed second">
+          <thead>
+          <tr>
+            <th>版本</th>
+            <th>描述</th>
+            <th>状态</th>
+            <th width="110px"></th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for version in versions %}
+            <tr>
+              <td>{{ version.name }}</td>
+              <td>{{ version.description }}</td>
+              <td>{{ version.get_status_display }}</td>
+              <td>
+                <div class="actions btn-set small">
+                  <a href="{% url 'version_update' version.id %}?backurl="><i class="fa fa-edit"></i></a>
+                  <a data-href="{% url 'version_delete' version.id %}?backurl=" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include "table_footer.html" %}
     </div>
-    {% include "table_footer.html" %}
-  </div>
+    {% include 'confirm_delete.html' %}
+  {% else %}
+    <div class="nodata"><span>暂无数据可显示</span></div>
+  {% endif %}
 {% endblock %}

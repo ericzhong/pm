@@ -226,6 +226,3 @@ class WorktimeDelete(View):
         issue_id = worktime[0].issue.id
         worktime.delete()
         return HttpResponseRedirect(reverse('worktime_list', kwargs={'pk': issue_id}))
-
-
-

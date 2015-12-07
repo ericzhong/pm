@@ -4,10 +4,10 @@
 
 {% block tab_content %}
   <div class="tab-caption">
-    <span>版本 >> aaa</span>
+    <span>版本 >> {{ version.name }}</span>
     <div class="actions btn-set small">
-      <a href="/versions/1/update"><i class="fa fa-plus"></i>编辑</a>
-      <a><i class="fa fa-trash-o"></i>删除</a>
+      <a href="{% url 'version_update' version.id %}"><i class="fa fa-plus"></i>编辑</a>
+      <a data-href="{% url 'version_delete' version.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
     </div>
   </div>
   <div class="row">
@@ -75,6 +75,7 @@
       </div>
     </div>
   </div>
+  {% include 'confirm_delete.html' %}
 {% endblock %}
 
 
