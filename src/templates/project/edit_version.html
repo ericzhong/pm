@@ -6,7 +6,7 @@
 {% block tab_toggle %}tab_roadmap{% endblock %}
 
 {% block tab_content %}
-  <div class="tab-caption">编辑版本 >> {{ version.name }}</div>
+  <div class="tab-caption">编辑版本</div>
   <div class="portlet light grey-cararra bordered">
     <div class="portlet-body form">
       <form class="form-horizontal" method="post">
@@ -18,6 +18,7 @@
           <div class="row">
             <div class="col-md-offset-2">
               <button type="submit" class="btn green">保存</button>
+              <button type="button" onclick="window.location.href='{{ backurl }}'" class="btn default">返回</button>
             </div>
           </div>
         </div>

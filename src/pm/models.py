@@ -127,6 +127,38 @@ class Version(models.Model):
     class Meta:
         unique_together = ("project", "name")
 
+    def total_issue(self):
+        return Issue.objects.filter(version=self).count()
+
+    def total_open_issue(self):
+        # TODO
+        return 0
+
+    def total_closed_issue(self):
+        # TODO
+        return 0
+
+    def issues(self):
+        return Issue.objects.filter(version=self)
+
+    def progress(self):
+        # TODO
+        return "45%"
+
+    def estimated_time(self):
+        return 100
+
+    def spent_time(self):
+        return 100
+
+    total_issue = property(total_issue)
+    total_open_issue = property(total_open_issue)
+    total_closed_issue = property(total_closed_issue)
+    issues = property(issues)
+    progress = property(progress)
+    estimated_time = property(estimated_time)
+    spent_time = property(spent_time)
+
     def __str__(self):
         return self.name
 

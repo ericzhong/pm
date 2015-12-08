@@ -17,16 +17,16 @@
           <tr>
             <td>
               <div class="progress">
-                <span style="width: 40%;" class="progress-bar progress-bar-success"></span>
+                <span style="width: {{ version.progress }};" class="progress-bar progress-bar-success"></span>
               </div>
             </td>
             <td>
-              <span class="progress-value">40%</span>
+              <span class="progress-value">{{ version.progress }}</span>
             </td>
           </tr>
         </table>
         <div class="version-detail">
-          <span><a href="/issues">4 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;(0 关闭 — <a href="/issues">4 打开</a>)</span>
+          <span><a href="/issues">{{ version.total_issue }} 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;({{ version.total_closed_issue }} 关闭 — <a href="/issues">{{ version.total_open_issue }} 打开</a>)</span>
         </div>
       </div>
     {% endfor %}

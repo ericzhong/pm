@@ -21,37 +21,28 @@
               </div>
             </td>
             <td>
-              <span class="progress-value">40%</span>
+              <span class="progress-value">{{ version.progress }}</span>
             </td>
           </tr>
         </table>
         <div class="version-detail">
-          <span><a href="/issues">4 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;(0 关闭 — <a href="/issues">4 打开</a>)</span>
+          <span><a href="/issues">{{ version.total_issue }} 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;({{ version.total_closed_issue }} 关闭 — <a href="/issues">{{ version.total_open_issue }} 打开</a>)</span>
         </div>
       </div>
       <h5>相关问题</h5>
+      {% if version.issues %}
       <div class="table-scrollable">
         <table class="table table-light table-advance table-hover table-condensed second">
           <tbody>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
-          <tr><td><a href="/issues/1">错误 #1</a>: aaa</td></tr>
+          {% for issue in version.issues %}
+            <tr><td><a href="/issues/1">{{ issue.tag }} #{{ issue.id }}</a>: {{ issue.subject }}</td></tr>
+          {% endfor %}
           </tbody>
         </table>
       </div>
+      {% else %}
+        {% include 'no_data.html' %}
+      {% endif %}
     </div>
     <div class="col-md-3 col-md-offset-1">
       <div class="portlet solid small-box">
@@ -63,11 +54,11 @@
             <tbody>
             <tr>
               <td>预期时间:</td>
-              <td><span>128</span>.00 小时</td>
+              <td><span>{{ version.estimated_time }}</span>.00 小时</td>
             </tr>
             <tr>
               <td>耗时:</td>
-              <td><span>120</span>.00 小时</td>
+              <td><span>{{ version.spent_time }}</span>.00 小时</td>
             </tr>
             </tbody>
           </table>
