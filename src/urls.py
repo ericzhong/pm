@@ -65,6 +65,8 @@ urlpatterns = [
     url(r'^issues/(?P<pk>\d+)/delete/$', issue.Delete.as_view(), name='issue_delete'),
     url(r'^issues/(?P<pk>\d+)/quote/$', issue.Quote.as_view(), name='issue_quote'),
     url(r'^comment/(?P<pk>\d+)/update/$', issue.CommentUpdate.as_view(), name='comment_update'),
+    url(r'^issues/$', issue.AllIssues.as_view(), name='issue_all'),
+    url(r'^mypage/$', issue.MyPage.as_view(), name='my_page'),
 
     # worktime
     url(r'^issues/(?P<pk>\d+)/worktimes/$', issue.WorktimeList.as_view(), name='worktime_list'),
@@ -82,10 +84,12 @@ urlpatterns = [
 
     # user
     url(r'^users/$', user.List.as_view(), name='user_list'),
-    url(r'^user/(?P<pk>\d+)/$', user.Detail.as_view(), name='user_detail'),
-    url(r'^user/add/$', user.Create.as_view(), name='user_add'),
-    url(r'^user/(?P<pk>\d+)/update/$', user.Update.as_view(), name='user_update'),
-    url(r'^user/(?P<pk>\d+)/delete/$', user.Delete.as_view(), name='user_delete'),
+    url(r'^users/(?P<pk>\d+)/$', user.Detail.as_view(), name='user_detail'),
+    url(r'^users/add/$', user.Create.as_view(), name='user_add'),
+    url(r'^users/(?P<pk>\d+)/update/$', user.Update.as_view(), name='user_update'),
+    url(r'^users/(?P<pk>\d+)/delete/$', user.Delete.as_view(), name='user_delete'),
+    url(r'^users/(?P<pk>\d+)/lock/$', user.Lock.as_view(), name='user_lock'),
+    url(r'^users/(?P<pk>\d+)/unlock/$', user.Unlock.as_view(), name='user_unlock'),
 
     # group
     url(r'^groups/$', group.List.as_view(), name='group_list'),

@@ -1,20 +1,26 @@
 {% extends "_admin/base.html" %}
 
-{% block tab_toggle %}tab_users{% endblock %}
+{% load i18n %}
+{% load widget_tweaks %}
 
+{% block tab_toggle %}tab_users{% endblock %}
 
 {% block tab_content %}
   <div class="page-title">
-    <span>用户 >> Eric</span>
+    <span>编辑用户</span>
     <div class="actions btn-set small">
-      <a><i class="fa fa-lock"></i>锁定</a>
-      <a><i class="fa fa-trash-o"></i>删除</a>
+      {% if user.is_active %}
+        <a href="{% url 'user_lock' user.id %}"><i class="fa fa-lock"></i>锁定</a>
+      {% else %}
+        <a href="{% url 'user_unlock' user.id %}"><i class="fa fa-unlock"></i>打开</a>
+      {% endif %}
+      <a data-href="{% url 'user_delete' user.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
     </div>
   </div>
   <div class="tabbable">
     <ul class="nav nav-tabs">
       <li class="active">
-        <a href="#tab_user_general" data-toggle="tab" aria-expanded="false">
+        <a href="#tab_user_general" data-toggle="tab">
         一般 </a>
       </li>
       <li>
@@ -30,33 +36,35 @@
       <div class="tab-pane active" id="tab_user_general">
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
-            <form action="javascript:;" class="form-horizontal">
+            {{ form.errors }}
+            <form class="form-horizontal" method="post">
+              {% csrf_token %}
               <div class="form-body">
                 <div class="row">
                   <div class="col-md-12">
                     <h5>信息</h5>
                     <div class="form-group">
-                      <label class="control-label col-md-3">登录名<span class="required" aria-required="true">*</span></label>
+                      <label class="control-label col-md-3">登录名<span class="required">*</span></label>
                       <div class="col-md-4">
-                        <input type="text" class="form-control" value="Eric">
+                        {{ form.username|add_class:"form-control"|attr:'readonly' }}
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="control-label col-md-3">名字<span class="required" aria-required="true">*</span></label>
+                      <label class="control-label col-md-3">名字</label>
                       <div class="col-md-4">
-                        <input type="text" class="form-control">
+                        {{ form.first_name|add_class:"form-control" }}
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="control-label col-md-3">姓氏<span class="required" aria-required="true">*</span></label>
+                      <label class="control-label col-md-3">姓氏</label>
                       <div class="col-md-4">
-                        <input type="text" class="form-control">
+                        {{ form.last_name|add_class:"form-control" }}
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="control-label col-md-3">邮件地址<span class="required" aria-required="true">*</span></label>
+                      <label class="control-label col-md-3">邮件地址</label>
                       <div class="col-md-4">
-                        <input type="email" class="form-control">
+                        {{ form.email|add_class:"form-control" }}
                       </div>
                     </div>
                     <div class="form-group">
@@ -72,22 +80,22 @@
                       <label class="control-label col-md-3">管理员</label>
                       <div class="col-md-4">
                         <div class="icheck-inline">
-                          <input type="checkbox">
+                          {{ form.is_superuser }}
                         </div>
                       </div>
                     </div>
                     <hr>
                     <h5>认证</h5>
                     <div class="form-group">
-                      <label class="control-label col-md-3">密码<span class="required" aria-required="true">*</span></label>
+                      <label class="control-label col-md-3">密码</label>
                       <div class="col-md-4">
-                        <input type="password" class="form-control">
+                        {{ form.password1|add_class:"form-control" }}
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="control-label col-md-3">确认密码<span class="required" aria-required="true">*</span></label>
+                      <label class="control-label col-md-3">确认密码</label>
                       <div class="col-md-4">
-                        <input type="password" class="form-control">
+                        {{ form.password2|add_class:"form-control" }}
                       </div>
                     </div>
                     <div class="form-group">
@@ -441,4 +449,5 @@
       </div>
     </div>
   </div>
+  {% include 'confirm_delete.html' %}
 {% endblock %}

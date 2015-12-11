@@ -5,11 +5,11 @@
 {% block tab_content %}
   <div class="page-title">用户</div>
   <div class="actions btn-set small btn-table">
-    <a href="/users/add"><i class="fa fa-plus"></i>新建用户</a>
+    <a href="{% url 'user_add' %}"><i class="fa fa-plus"></i>新建用户</a>
   </div>
   <div class="dataTables_wrapper">
     <div class="table-scrollable">
-      <table class="table table-light table-advance table-hover table-condensed second" aria-describedby="">
+      <table class="table table-light table-advance table-hover table-condensed second">
         <thead>
         <tr>
           <th>登录名</th>
@@ -22,79 +22,30 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-          <td><a href="/users/1/update"> Eric </a></td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-lock"></i>锁定</a>
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-lock"></i>锁定</a>
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-lock"></i>锁定</a>
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-lock"></i>锁定</a>
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-lock"></i>锁定</a>
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
+        {% for user in users %}
+          <tr>
+            <td><a href="{% url 'user_update' user.id %}">{{ user.username }}</a></td>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>{{ user.email|default:'-' }}</td>
+            <td>{% if user.is_superuser %}<i class="fa fa-check"></i>{% else %}-{% endif %}</td>
+            <td>{{ user.date_joined|date:"Y-m-d"|default:"-" }}</td>
+            <td>{{ user.last_login|default:"-" }}</td>
+            <td>
+              <div class="actions btn-set small">
+                {% if user.is_active %}
+                  <a href="{% url 'user_lock' user.id %}"><i class="fa fa-lock"></i>锁定</a>
+                {% else %}
+                  <a href="{% url 'user_unlock' user.id %}"><i class="fa fa-unlock"></i>打开</a>
+                {% endif %}
+                <a data-href="{% url 'user_delete' user.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
         </tbody>
       </table>
     </div>
     {% include "table_footer.html" %}
   </div>
+  {% include 'confirm_delete.html' %}
 {% endblock %}

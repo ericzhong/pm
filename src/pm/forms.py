@@ -8,16 +8,16 @@ from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Versio
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        exclude = ["created_on", 'updated_on', 'status']
+        exclude = ['created_on', 'updated_on', 'status']
 
     def clean_identifier(self):
-        return self.cleaned_data.get('identifier') or None    # for "null=True, blank=True, unique=True"
+        return self.cleaned_data.get('identifier') or None    # for 'null=True, blank=True, unique=True'
 
 
 class IssueForm(forms.ModelForm):
     class Meta:
         model = Issue
-        exclude = ["created_on", 'updated_on']
+        exclude = ['created_on', 'updated_on']
 
 
 class IssueCategoryForm(forms.ModelForm):
@@ -41,43 +41,58 @@ class IssueStatusForm(forms.ModelForm):
 class VersionForm(forms.ModelForm):
     class Meta:
         model = Version
-        exclude = ["created_on", 'updated_on']
+        exclude = ['created_on', 'updated_on']
 
 
 class UserForm(forms.ModelForm):
+
+    password1 = forms.CharField(widget=forms.PasswordInput(), required=False)
+    password2 = forms.CharField(widget=forms.PasswordInput(), required=False)
+
     class Meta:
         model = User
-        exclude = ["password", "date_joined", 'last_login']
+        exclude = ['password', 'date_joined', 'last_login']
+
+    def clean(self):
+        cleaned_data = super(UserForm, self).clean()
+
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
+
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError('two different passwords')
+
+        return cleaned_data
 
 
 class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
-        exclude = [""]
+        exclude = ['']
 
 
 class MemberForm(forms.ModelForm):
     class Meta:
         model = Member
-        exclude = ["created_on"]
+        exclude = ['created_on']
 
 
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ["content"]
+        fields = ['content']
 
 
 class WorktimeForm(forms.ModelForm):
     class Meta:
         model = Worktime
-        exclude = ["created_on", 'updated_on']
+        exclude = ['created_on', 'updated_on']
 
 
 class PasswordResetByEmailForm(PasswordResetForm):
     def clean_email(self):
         email = self.cleaned_data['email']
         if not User.objects.filter(email__iexact=email, is_active=True).exists():
-            raise forms.ValidationError("This email is invalid.")
+            raise forms.ValidationError('This email is invalid.')
 
         return email

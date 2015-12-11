@@ -4,6 +4,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Sum
+from django.shortcuts import render
 from ..forms import IssueForm, CommentForm, WorktimeForm
 from ..models import Issue, Comment, Worktime, Project
 from ..utils import Helper
@@ -226,3 +227,15 @@ class WorktimeDelete(View):
         issue_id = worktime[0].issue.id
         worktime.delete()
         return HttpResponseRedirect(reverse('worktime_list', kwargs={'pk': issue_id}))
+
+
+class AllIssues(ListView):
+    model = _model
+    template_name = 'all_issues.html'
+    context_object_name = 'issues'
+
+
+class MyPage(View):
+    def get(self, request, *args, **kwargs):
+        assigned_issues = Issue.objects.filter(assigned_to=1)     # TODO: use login user
+        return render(request, 'my_page.html', {'assigned_issues': assigned_issues})
