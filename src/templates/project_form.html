@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
+{{ form.errors }}
 <form class="form-horizontal" method="post">
   {% csrf_token %}
   <div class="form-body">

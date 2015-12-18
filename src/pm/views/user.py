@@ -1,9 +1,10 @@
 from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.contrib.auth.models import User
-from django.shortcuts import redirect
+from django.contrib.auth.models import User, Group
+from django.shortcuts import redirect, HttpResponseRedirect
 from ..forms import UserForm
+from ..models import Project, Member
 
 
 _model = User
@@ -28,17 +29,34 @@ class Create(CreateView):
     template_name = '_admin/create_user.html'
     success_url = reverse_lazy('user_list')
 
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.set_password(form.cleaned_data['password1'])
-        return super(Create, self).form_valid(form)
-
 
 class Update(UpdateView):
     model = _model
     template_name = '_admin/edit_user.html'
     form_class = _form
     success_url = reverse_lazy('user_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(Update, self).get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            data = self.request.POST.copy()
+            data['username'] = self.object.username
+            kwargs.update({
+                'data': data,
+            })
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(Update, self).get_context_data(**kwargs)
+
+        context['joined_projects'] = [ m.project for m in Member.objects.filter(user=self.object) ]
+        projects = Project.objects.all()
+        context['not_joined_projects'] = list(set(projects)-set(context['joined_projects']))
+
+        context['joined_groups'] = self.object.groups.all()
+        groups = Group.objects.all()
+        context['not_joined_groups'] = list(set(groups)-set(context['joined_groups']))
+        return context
 
 
 class Delete(DeleteView):
@@ -65,3 +83,32 @@ class Unlock(View):
             user.is_active = True
             user.save()
         return redirect('user_list')
+
+
+class JoinProjects(View):
+    def post(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        join_projects = request.POST.getlist('project')
+        Member.objects.bulk_create([ Member(project_id=id, user_id=pk) for id in join_projects ])
+        return HttpResponseRedirect(reverse('user_update', args=(pk,))+'#tab_user_project')
+
+
+class QuitProject(View):
+    def post(self, request, *args, **kwargs):
+        Member.objects.filter(user_id=kwargs['pk'], project_id=kwargs['id']).delete()
+        return HttpResponseRedirect(reverse('user_update', args=(kwargs['pk'],))+'#tab_user_project')
+
+
+class JoinGroups(View):
+    def post(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        join_groups = request.POST.getlist('group')
+        through = User.groups.through
+        through.objects.bulk_create([ through(user_id=pk, group_id=id) for id in join_groups ])
+        return HttpResponseRedirect(reverse('user_update', args=(pk,))+'#tab_user_group')
+
+
+class QuitGroup(View):
+    def post(self, request, *args, **kwargs):
+        User.groups.through.objects.filter(user_id=kwargs['pk'], group_id=kwargs['id']).delete()
+        return HttpResponseRedirect(reverse('user_update', args=(kwargs['pk'],))+'#tab_user_group')

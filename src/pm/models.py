@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils.translation import ugettext as _
 
 
@@ -27,6 +27,8 @@ class Project(models.Model):
     identifier = models.CharField(max_length=255, null=True, blank=True, unique=True)
     status = models.IntegerField(default=OPEN_STATUS, choices=STATUS_CHOICES)
     inherit_members = models.BooleanField(default=False)
+    members = models.ManyToManyField(User, through='Member')
+    groups = models.ManyToManyField(Group, through='Project_Groups')
 
     def __str__(self):
         return self.name
@@ -165,11 +167,20 @@ class Version(models.Model):
 
 class Member(models.Model):
     project = models.ForeignKey('Project')
-    user = models.ForeignKey(User, related_name='member')
+    user = models.ForeignKey(User)
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("project", "user")
+
+
+class Project_Groups(models.Model):
+    project = models.ForeignKey('Project')
+    group = models.ForeignKey(Group)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("project", "group")
 
 
 class Comment(models.Model):
@@ -189,3 +200,4 @@ class Worktime(models.Model):
     description = models.CharField(max_length=255, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+

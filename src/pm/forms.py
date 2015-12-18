@@ -2,13 +2,14 @@
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User, Group
+from django.contrib.auth.hashers import make_password
 from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Version, Member, Comment, Worktime
 
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        exclude = ['created_on', 'updated_on', 'status']
+        exclude = ['created_on', 'updated_on', 'status', 'members', 'groups']
 
     def clean_identifier(self):
         return self.cleaned_data.get('identifier') or None    # for 'null=True, blank=True, unique=True'
@@ -59,10 +60,22 @@ class UserForm(forms.ModelForm):
         password1 = cleaned_data.get('password1')
         password2 = cleaned_data.get('password2')
 
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError('two different passwords')
+        if password1 or password2:
+            if password1 != password2:
+                raise forms.ValidationError('two different passwords')
+            else:
+                cleaned_data['password'] = make_password(cleaned_data.get('password1'))
 
         return cleaned_data
+
+    def save(self, commit=True):
+        instance = super(UserForm, self).save(commit=False)
+        instance.password = self.cleaned_data.get('password', '')
+
+        if commit:
+            instance.save()
+
+        return instance
 
 
 class GroupForm(forms.ModelForm):
@@ -72,6 +85,7 @@ class GroupForm(forms.ModelForm):
 
 
 class MemberForm(forms.ModelForm):
+
     class Meta:
         model = Member
         exclude = ['created_on']

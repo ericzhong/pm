@@ -84,21 +84,26 @@ urlpatterns = [
 
     # user
     url(r'^users/$', user.List.as_view(), name='user_list'),
-    url(r'^users/(?P<pk>\d+)/$', user.Detail.as_view(), name='user_detail'),
     url(r'^users/add/$', user.Create.as_view(), name='user_add'),
+    #url(r'^users/(?P<pk>\d+)/$', user.Detail.as_view(), name='user_detail'),
     url(r'^users/(?P<pk>\d+)/update/$', user.Update.as_view(), name='user_update'),
     url(r'^users/(?P<pk>\d+)/delete/$', user.Delete.as_view(), name='user_delete'),
     url(r'^users/(?P<pk>\d+)/lock/$', user.Lock.as_view(), name='user_lock'),
     url(r'^users/(?P<pk>\d+)/unlock/$', user.Unlock.as_view(), name='user_unlock'),
+    url(r'^users/(?P<pk>\d+)/join_projects/$', user.JoinProjects.as_view(), name='user_join_projects'),
+    url(r'^users/(?P<pk>\d+)/quit_project/(?P<id>\d+)$', user.QuitProject.as_view(), name='user_quit_project'),
+    url(r'^users/(?P<pk>\d+)/join_groups/$', user.JoinGroups.as_view(), name='user_join_groups'),
+    url(r'^users/(?P<pk>\d+)/quit_group/(?P<id>\d+)$', user.QuitGroup.as_view(), name='user_quit_group'),
 
     # group
     url(r'^groups/$', group.List.as_view(), name='group_list'),
-    url(r'^group/(?P<pk>\d+)/$', group.Detail.as_view(), name='group_detail'),
-    url(r'^group/add/$', group.Create.as_view(), name='group_add'),
-    url(r'^group/(?P<pk>\d+)/update/$', group.Update.as_view(), name='group_update'),
-    url(r'^group/(?P<pk>\d+)/delete/$', group.Delete.as_view(), name='group_delete'),
-    url(r'^group/(?P<pk>\d+)/users/$', group.ListUser.as_view(), name='group_user_list'),
-    url(r'^group/(?P<pk>\d+)/user/(?P<id>\d+)$', group.DeleteUser.as_view(), name='group_user_delete'),
+    url(r'^groups/add/$', group.Create.as_view(), name='group_add'),
+    url(r'^groups/(?P<pk>\d+)/update/$', group.Update.as_view(), name='group_update'),
+    url(r'^groups/(?P<pk>\d+)/delete/$', group.Delete.as_view(), name='group_delete'),
+    url(r'^groups/(?P<pk>\d+)/add_users/$', group.AddUsers.as_view(), name='group_add_users'),
+    url(r'^groups/(?P<pk>\d+)/delete_user/(?P<id>\d+)$', group.DeleteUser.as_view(), name='group_delete_user'),
+    url(r'^groups/(?P<pk>\d+)/join_projects/$', group.JoinProjects.as_view(), name='group_join_projects'),
+    url(r'^groups/(?P<pk>\d+)/quit_project/(?P<id>\d+)$', group.QuitProject.as_view(), name='group_quit_project'),
 
     url(r'^django-admin/', include(admin.site.urls)),
 ]
