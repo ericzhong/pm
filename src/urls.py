@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from pm.forms import PasswordResetByEmailForm
-from pm.views import user, project, issue, issue_status, issue_tag, version, group
+from pm.views import user, project, issue, issue_status, issue_tag, version, group, role
 
 
 urlpatterns = [
@@ -104,6 +104,12 @@ urlpatterns = [
     url(r'^groups/(?P<pk>\d+)/delete_user/(?P<id>\d+)$', group.DeleteUser.as_view(), name='group_delete_user'),
     url(r'^groups/(?P<pk>\d+)/join_projects/$', group.JoinProjects.as_view(), name='group_join_projects'),
     url(r'^groups/(?P<pk>\d+)/quit_project/(?P<id>\d+)$', group.QuitProject.as_view(), name='group_quit_project'),
+
+    # Role
+    url(r'^roles/$', role.List.as_view(), name='role_list'),
+    url(r'^roles/add/$', role.Create.as_view(), name='role_add'),
+    url(r'^roles/(?P<pk>\d+)/update/$', role.Update.as_view(), name='role_update'),
+    url(r'^roles/(?P<pk>\d+)/delete/$', role.Delete.as_view(), name='role_delete'),
 
     url(r'^django-admin/', include(admin.site.urls)),
 ]

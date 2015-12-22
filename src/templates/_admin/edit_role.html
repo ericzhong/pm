@@ -1,21 +1,25 @@
 {% extends "_admin/base.html" %}
 
+{% load i18n %}
+{% load widget_tweaks %}
+
 {% block tab_toggle %}tab_roles{% endblock %}
 
-
 {% block tab_content %}
-  <div class="page-title">角色 >> 开发者</div>
+  <div class="page-title">编辑角色 >> {{ role.name }}</div>
   <div class="portlet-body">
     <div class="portlet light grey-cararra bordered">
       <div class="portlet-body form">
-        <form action="javascript:;" class="form-horizontal">
+        {{ form.errors }}
+        <form class="form-horizontal" method="post">
+          {% csrf_token %}
           <div class="form-body">
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
                   <label class="control-label col-md-2">名称<span class="required" aria-required="true">*</span></label>
                   <div class="col-md-4">
-                    <input type="text" class="form-control" value="开发者">
+                    {{ form.name|add_class:"form-control" }}
                   </div>
                 </div>
                 <h4 class="form-section">权限</h4>

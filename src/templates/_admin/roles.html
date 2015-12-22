@@ -5,66 +5,38 @@
 {% block tab_content %}
   <div class="page-title">角色</div>
   <div class="actions btn-set small btn-table">
-    <a href="/roles/add"><i class="fa fa-plus"></i>新建角色</a>
+    <a href="{% url 'role_add' %}"><i class="fa fa-plus"></i>新建角色</a>
   </div>
-  <div class="dataTables_wrapper">
-    <div class="table-scrollable">
-      <table class="table table-light table-advance table-hover table-condensed second" aria-describedby="">
-        <thead>
-        <tr>
-          <th>角色</th>
-          <th width="110px"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td><a href="/roles/1/update">开发者</a></td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-copy"></i>复制</a>
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-copy"></i>复制</a>
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-copy"></i>复制</a>
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-copy"></i>复制</a>
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>xxx</td>
-          <td>
-            <div class="actions btn-set small">
-              <a href=""><i class="fa fa-copy"></i>复制</a>
-              <a href=""><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-    {% include "table_footer.html" %}
+  {% if roles %}
+    <div class="dataTables_wrapper">
+      <div class="table-scrollable">
+        <table class="table table-light table-advance table-hover table-condensed second">
+          <thead>
+          <tr>
+            <th>角色</th>
+            <th width="110px"></th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for role in roles %}
+            <tr>
+              <td><a href="{% url 'role_update' role.id %}">{{ role.name }}</a></td>
+              <td>
+                <div class="actions btn-set small">
+                  <a href=""><i class="fa fa-copy"></i>复制</a>
+                  <a data-href="{% url 'role_delete' role.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include "table_footer.html" %}
+    {% else %}
+      {% include "no_data.html" %}
+    {% endif %}
   </div>
+
+  {% include 'confirm_delete.html' %}
 {% endblock %}

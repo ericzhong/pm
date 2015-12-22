@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
 from django.utils.translation import ugettext as _
 
 
@@ -201,3 +201,12 @@ class Worktime(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
+
+@python_2_unicode_compatible
+class Role(models.Model):
+    name = models.CharField(max_length=60, unique=True)
+    permissions = models.ManyToManyField(Permission)
+    users = models.ManyToManyField(User)
+
+    def __str__(self):
+        return self.name

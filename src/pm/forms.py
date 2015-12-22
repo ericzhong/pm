@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.hashers import make_password
-from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Version, Member, Comment, Worktime
+from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Version, Member, Comment, Worktime, Role
 
 
 class ProjectForm(forms.ModelForm):
@@ -110,3 +110,9 @@ class PasswordResetByEmailForm(PasswordResetForm):
             raise forms.ValidationError('This email is invalid.')
 
         return email
+
+
+class RoleForm(forms.ModelForm):
+    class Meta:
+        model = Role
+        fields = ['name']
