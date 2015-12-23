@@ -420,29 +420,30 @@
                     <div class="form-group">
                       <div class="input-group">
                         <label>项目：</label>
-                        <div class="icheck-inline">
-                          {% if not_joined_projects %}
+                        {% if not_joined_projects %}
+                          <div class="icheck-inline">
                             {% for project in not_joined_projects %}
                               <label><input type="checkbox" name="project" value="{{ project.id }}" {% if project in joined_projects %}checked{% endif %}>{{ project.name }}</label>
                             {% endfor %}
-                          {% else %}
-                            {% include "no_data.html" %}
-                          {% endif %}
-                        </div>
+                          </div>
+                        {% else %}
+                          {% include "no_data.html" %}
+                        {% endif %}
                       </div>
                     </div>
                     <hr>
                     <div class="form-group">
                       <div class="input-group">
                         <label>角色：</label>
-                        <div class="icheck-inline">
-                          <label><input type="checkbox"> aaa </label>
-                          <label><input type="checkbox"> bbb </label>
-                          <label><input type="checkbox"> ccc </label>
-                          <label><input type="checkbox"> ddd </label>
-                          <label><input type="checkbox"> eee </label>
-                          <label><input type="checkbox"> fff </label>
-                        </div>
+                        {% if roles %}
+                          <div class="icheck-inline">
+                            {% for role in roles %}
+                              <label><input name="role" type="checkbox" value="{{ role.id }}">{{ role.name }}</label>
+                            {% endfor %}
+                          </div>
+                        {% else %}
+                          {% include 'no_data.html' %}
+                        {% endif %}
                       </div>
                     </div>
                   </div>

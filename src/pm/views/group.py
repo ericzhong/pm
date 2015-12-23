@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, Group
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from ..forms import GroupForm
-from ..models import Project, Project_Groups
+from ..models import Project, Project_Groups, Role, Group_Project_Role
 
 
 _model = Group
@@ -52,6 +52,8 @@ class Update(UpdateView):
         context['joined_projects'] = self.object.project_set.all()
         projects = Project.objects.all()
         context['not_joined_projects'] = list(set(projects)-set(context['joined_projects']))
+
+        context['roles'] = Role.objects.all()
         return context
 
 
@@ -82,11 +84,18 @@ class JoinProjects(View):
     def post(self, request, *args, **kwargs):
         pk = kwargs['pk']
         join_projects = request.POST.getlist('project')
-        Project_Groups.objects.bulk_create([ Project_Groups(project_id=id, group_id=pk) for id in join_projects ])
+        roles = request.POST.getlist('role')
+        if len(join_projects):
+            Project_Groups.objects.bulk_create([ Project_Groups(project_id=id, group_id=pk) for id in join_projects ])
+            Group_Project_Role.objects.bulk_create(
+                    [ Group_Project_Role(project_id=p, group_id=pk, role_id=r) for p in join_projects for r in roles ])
         return HttpResponseRedirect(reverse('group_update', args=(pk,))+'#tab_group_project')
 
 
 class QuitProject(View):
     def post(self, request, *args, **kwargs):
-        Project_Groups.objects.filter(project_id=kwargs['id'], group_id=kwargs['pk']).delete()
+        group_id = kwargs['pk']
+        project_id = kwargs['id']
+        Project_Groups.objects.filter(group_id=group_id, project_id=project_id).delete()
+        Group_Project_Role.objects.filter(group_id=group_id, project_id=project_id).delete()
         return HttpResponseRedirect(reverse('group_update', args=(kwargs['pk'],))+'#tab_group_project')

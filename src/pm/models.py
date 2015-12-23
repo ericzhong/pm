@@ -210,3 +210,22 @@ class Role(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class User_Project_Role(models.Model):
+    user = models.ForeignKey(User)
+    project = models.ForeignKey(Project)
+    role = models.ForeignKey(Role)
+
+    class Meta:
+        unique_together = ("user", "project", "role")
+
+
+class Group_Project_Role(models.Model):
+    group = models.ForeignKey(Group)
+    project = models.ForeignKey(Project)
+    role = models.ForeignKey(Role)
+
+    class Meta:
+        unique_together = ("group", "project", "role")
+
