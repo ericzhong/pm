@@ -49,9 +49,14 @@ class Update(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(Update, self).get_context_data(**kwargs)
 
-        context['joined_projects'] = [ m.project for m in Member.objects.filter(user=self.object) ]
+        joined_projects = [ m.project for m in Member.objects.filter(user=self.object) ]
+        roles = list()
+        for p in joined_projects:
+            roles.append([ r.role for r in User_Project_Role.objects.filter(user=self.object, project=p) ])
+        context['joined_projects'] = zip(joined_projects, roles)
+
         projects = Project.objects.all()
-        context['not_joined_projects'] = list(set(projects)-set(context['joined_projects']))
+        context['not_joined_projects'] = list(set(projects)-set(joined_projects))
 
         context['joined_groups'] = self.object.groups.all()
         groups = Group.objects.all()

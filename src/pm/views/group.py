@@ -49,9 +49,14 @@ class Update(UpdateView):
         users = User.objects.all()
         context['not_joined_users'] = list(set(users)-set(context['joined_users']))
 
-        context['joined_projects'] = self.object.project_set.all()
+        joined_projects = self.object.project_set.all()
+        roles = list()
+        for p in joined_projects:
+            roles.append([ r.role for r in Group_Project_Role.objects.filter(group=self.object, project=p) ])
+        context['joined_projects'] = zip(joined_projects, roles)
+
         projects = Project.objects.all()
-        context['not_joined_projects'] = list(set(projects)-set(context['joined_projects']))
+        context['not_joined_projects'] = list(set(projects)-set(joined_projects))
 
         context['roles'] = Role.objects.all()
         return context
