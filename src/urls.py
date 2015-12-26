@@ -94,6 +94,7 @@ urlpatterns = [
     url(r'^users/(?P<pk>\d+)/quit_project/(?P<id>\d+)$', user.QuitProject.as_view(), name='user_quit_project'),
     url(r'^users/(?P<pk>\d+)/join_groups/$', user.JoinGroups.as_view(), name='user_join_groups'),
     url(r'^users/(?P<pk>\d+)/quit_group/(?P<id>\d+)$', user.QuitGroup.as_view(), name='user_quit_group'),
+    url(r'^users/(?P<pk>\d+)/projects/(?P<id>\d+)/roles$', user.Roles.as_view(), name='user_roles'),
 
     # group
     url(r'^groups/$', group.List.as_view(), name='group_list'),
@@ -104,6 +105,7 @@ urlpatterns = [
     url(r'^groups/(?P<pk>\d+)/delete_user/(?P<id>\d+)$', group.DeleteUser.as_view(), name='group_delete_user'),
     url(r'^groups/(?P<pk>\d+)/join_projects/$', group.JoinProjects.as_view(), name='group_join_projects'),
     url(r'^groups/(?P<pk>\d+)/quit_project/(?P<id>\d+)$', group.QuitProject.as_view(), name='group_quit_project'),
+    url(r'^groups/(?P<pk>\d+)/projects/(?P<id>\d+)/roles$', group.Roles.as_view(), name='group_roles'),
 
     # Role
     url(r'^roles/$', role.List.as_view(), name='role_list'),

@@ -2,10 +2,10 @@ from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.models import User, Group
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import redirect, HttpResponseRedirect, HttpResponse
 from ..forms import GroupForm
 from ..models import Project, Project_Groups, Role, Group_Project_Role
+import json
 
 
 _model = Group
@@ -104,3 +104,24 @@ class QuitProject(View):
         Project_Groups.objects.filter(group_id=group_id, project_id=project_id).delete()
         Group_Project_Role.objects.filter(group_id=group_id, project_id=project_id).delete()
         return HttpResponseRedirect(reverse('group_update', args=(kwargs['pk'],))+'#tab_group_project')
+
+
+class Roles(View):
+    def get(self, request, *args, **kwargs):
+        group_id = kwargs['pk']
+        project_id = kwargs['id']
+        data = dict()
+        data['all'] = [ {'id':n.id, 'name':n.name} for n in Role.objects.all() ]
+        data['selected'] = [ n.role_id for n in Group_Project_Role.objects.filter(group_id=group_id, project_id=project_id) ]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
+    def post(self, request, *args, **kwargs):
+        group_id = kwargs['pk']
+        project_id = kwargs['id']
+        new = set(map(int, request.POST.getlist('item')))
+        old = set([ n.role_id for n in Group_Project_Role.objects.filter(group_id=group_id, project_id=project_id) ])
+        select = list(new - old)
+        unselect = list(old - new)
+        Group_Project_Role.objects.bulk_create( [Group_Project_Role(group_id=group_id, project_id=project_id, role_id=id) for id in select ] )
+        Group_Project_Role.objects.filter(group_id=group_id, project_id=project_id, role__pk__in=unselect).delete()
+        return HttpResponseRedirect(reverse('group_update', args=(group_id,))+'#tab_group_project')

@@ -1,16 +1,28 @@
 
-// show editor in table
-$("a[name='btn-edit']").click( function() {
-  td = $(this).closest('tr').children('td').eq(1);
-  td.children('span').eq(0).hide();
-  td.children('form').eq(0).show();
+// show checkboxlist in table
+$("a[name='btn-show-checkboxlist']").click( function() {
+  url = $(this).attr('data-href');
+  td = $(this).closest('tr').find("td[data-toggle='checkboxlist_form']");
+  $.getJSON( url, function( data ) {
+    f = $('#checkboxlist_form').clone().show().removeAttr('id').attr('action', url);
+    c = f.find("div[name='content']");
+    $.each( data.all, function( key, item ) {
+      if( 0 > $.inArray( item.id, data.selected ) ) {
+        c.append("<div><input name='item' type='checkbox' value='"+ item.id +"'> "+ item.name +"</div>");
+      }else{
+        c.append("<div><input name='item' type='checkbox' value='"+ item.id +"' checked> "+ item.name +"</div>");
+      }
+    });
+    td.children().hide();
+    td.append(f);
+  });
 });
 
-// hide editor in table
-$("button[name='btn-cancel']").click( function() {
-  td = $(this).closest('tr').children('td').eq(1);
-  td.children('span').eq(0).show();
-  td.children('form').eq(0).hide();
+// hide checkboxlist in table
+$("button[name='btn-hide-checkboxlist']").live('click', function() {
+  td = $(this).closest('tr').find("td[data-toggle='checkboxlist_form']");
+  td.children().show();
+  $(this).closest('td').find('form').remove();    // prevent click "edit" repeated
   return false;
 });
 

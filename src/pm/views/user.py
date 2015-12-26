@@ -2,9 +2,10 @@ from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.models import User, Group
-from django.shortcuts import redirect, HttpResponseRedirect
+from django.shortcuts import redirect, HttpResponseRedirect, HttpResponse
 from ..forms import UserForm
 from ..models import Project, Member, Role, User_Project_Role
+import json
 
 
 _model = User
@@ -126,3 +127,24 @@ class QuitGroup(View):
     def post(self, request, *args, **kwargs):
         User.groups.through.objects.filter(user_id=kwargs['pk'], group_id=kwargs['id']).delete()
         return HttpResponseRedirect(reverse('user_update', args=(kwargs['pk'],))+'#tab_user_group')
+
+
+class Roles(View):
+    def get(self, request, *args, **kwargs):
+        user_id = kwargs['pk']
+        project_id = kwargs['id']
+        data = dict()
+        data['all'] = [ {'id':n.id, 'name':n.name} for n in Role.objects.all() ]
+        data['selected'] = [ n.role_id for n in User_Project_Role.objects.filter(user_id=user_id, project_id=project_id) ]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
+    def post(self, request, *args, **kwargs):
+        user_id = kwargs['pk']
+        project_id = kwargs['id']
+        new = set(map(int, request.POST.getlist('item')))
+        old = set([ n.role_id for n in User_Project_Role.objects.filter(user_id=user_id, project_id=project_id) ])
+        select = list(new - old)
+        unselect = list(old - new)
+        User_Project_Role.objects.bulk_create( [User_Project_Role(user_id=user_id, project_id=project_id, role_id=id) for id in select ] )
+        User_Project_Role.objects.filter(user_id=user_id, project_id=project_id, role__pk__in=unselect).delete()
+        return HttpResponseRedirect(reverse('user_update', args=(user_id,))+'#tab_user_project')

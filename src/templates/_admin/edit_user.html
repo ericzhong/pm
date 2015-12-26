@@ -381,19 +381,12 @@
               {% for project in joined_projects %}
               <tr>
                 <td>{{ project.0.name }}</td>
-                <td>
+                <td data-toggle="checkboxlist_form">
                   <span>{% for role in project.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
-                  <form hidden>
-                    <div><input type="checkbox" checked>管理人员</div>
-                    <div><input type="checkbox">开发人员</div>
-                    <div><input type="checkbox">报告人员</div>
-                    <button type="submit">保存</button>
-                    <button name="btn-cancel">取消</button>
-                  </form>
                 </td>
                 <td>
                   <div class="actions btn-set small">
-                    <a name="btn-edit"><i class="fa fa-edit"></i>编辑</a>
+                    <a name="btn-show-checkboxlist" data-href="{% url 'user_roles' user.id project.0.id %}"><i class="fa fa-edit"></i>编辑</a>
                     <a data-href="{% url 'user_quit_project' user.id project.0.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
                   </div>
                 </td>
@@ -461,4 +454,5 @@
   </div>
 
   {% include 'confirm_delete.html' %}
+  {% include "_admin/checkboxlist_form.html" %}
 {% endblock %}
