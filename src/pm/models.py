@@ -229,3 +229,8 @@ class Group_Project_Role(models.Model):
     class Meta:
         unique_together = ("group", "project", "role")
 
+
+class Setting(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    value = models.TextField()
+    updated_on = models.DateTimeField(auto_now=True)

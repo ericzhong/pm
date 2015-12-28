@@ -27,50 +27,50 @@
       <div class="tab-pane active" id="tab_settings_general">
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
-            <form action="javascript:;" class="form-horizontal">
+            <form action="{% url 'settings' %}" class="form-horizontal" method="post">
+              {% csrf_token %}
               <div class="form-body">
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group">
                       <label class="control-label col-md-3">应用程序标题</label>
                       <div class="col-md-4">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" name="app_name" value="{{ data.app_name }}">
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label col-md-3">欢迎文字</label>
                       <div class="col-md-8">
-                        <textarea class="form-control" rows="3"></textarea>
+                        <textarea class="form-control" rows="3" name="welcome_text">{{ data.welcome_text }}</textarea>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label col-md-3">附件大小限制</label>
                       <div class="col-md-2">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" name="file_size_limit" value="{{ data.file_size_limit }}">
                       </div>
                       <span class="help-inline">KB</span>
                     </div>
                     <div class="form-group">
                       <label class="control-label col-md-3">每页显示条目个数</label>
                       <div class="col-md-4">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" name="entries_per_page" value="{{ data.entries_per_page }}">
                         <span class="help-block">多个数值请用","号分隔 </span>
                       </div>
-
                     </div>
                     <div class="form-group">
                       <label class="control-label col-md-3">文本格式</label>
                       <div class="col-md-2">
-                        <select class="form-control">
-                          <option>无</option>
-                          <option>Markdown</option>
+                        <select class="form-control" name="{{ names.4 }}">
+                          <option value="0">None</option>
+                          <option value="1">Markdown</option>
                         </select>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label col-md-3">可直接显示的最大文本文件</label>
                       <div class="col-md-2">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" name="file_display_size_limit" value="{{ data.file_display_size_limit }}">
                       </div>
                       <span class="help-inline">KB</span>
                     </div>
@@ -91,7 +91,8 @@
       <div class="tab-pane" id="tab_settings_display">
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
-            <form action="javascript:;" class="form-horizontal">
+            <form action="{% url 'settings' %}" class="form-horizontal" method="post">
+              {% csrf_token %}
               <div class="form-body">
                 <div class="row">
                   <div class="col-md-12">
@@ -171,7 +172,8 @@
       <div class="tab-pane" id="tab_settings_project">
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
-            <form action="javascript:;" class="form-horizontal">
+            <form action="{% url 'settings' %}" class="form-horizontal" method="post">
+              {% csrf_token %}
               <div class="form-body">
                 <div class="row">
                   <div class="col-md-12">
@@ -200,7 +202,8 @@
       <div class="tab-pane" id="tab_settings_issue">
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
-            <form action="javascript:;" class="form-horizontal">
+            <form action="{% url 'settings' %}" class="form-horizontal" method="post">
+              {% csrf_token %}
               <div class="form-body">
                 <div class="row">
                   <div class="col-md-12">
