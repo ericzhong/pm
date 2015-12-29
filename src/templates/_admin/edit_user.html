@@ -416,7 +416,7 @@
                         {% if not_joined_projects %}
                           <div class="icheck-inline">
                             {% for project in not_joined_projects %}
-                              <label><input type="checkbox" name="project" value="{{ project.id }}" {% if project in joined_projects %}checked{% endif %}>{{ project.name }}</label>
+                              <label><input type="checkbox" name="project" value="{{ project.id }}">{{ project.name }}</label>
                             {% endfor %}
                           </div>
                         {% else %}

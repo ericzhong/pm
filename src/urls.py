@@ -41,9 +41,11 @@ urlpatterns = [
     url(r'^projects/(?P<pk>\d+)/delete/$', project.Delete.as_view(), name='project_delete'),
     url(r'^projects/(?P<pk>\d+)/close/$', project.Close.as_view(), name='project_close'),
     url(r'^projects/(?P<pk>\d+)/reopen/$', project.Reopen.as_view(), name='project_reopen'),
-
-    #url(r'^projects/(?P<pk>\d+)/members/$', project.ListMember.as_view(), name='member_list'),
-    #url(r'^projects/(?P<pk>\d+)/member/(?P<id>\d+)$', project.DeleteMember.as_view(), name='member_delete'),
+    url(r'^projects/(?P<pk>\d+)/members/$', project.ListMember.as_view(), name='member_list'),
+    url(r'^projects/(?P<pk>\d+)/members/delete$', project.DeleteMember.as_view(), name='member_delete'),
+    url(r'^projects/(?P<pk>\d+)/members/update$', project.UpdateMember.as_view(), name='member_update'),
+    url(r'^projects/(?P<pk>\d+)/members/add$', project.CreateMember.as_view(), name='member_add'),
+    url(r'^projects/(?P<pk>\d+)/roles$', project.MemberRoles.as_view(), name='member_roles'),
 
     # issue tag
     url(r'^issue_tags/$', issue_tag.List.as_view(), name='issue_tag_list'),

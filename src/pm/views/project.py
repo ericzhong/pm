@@ -2,16 +2,15 @@ from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import render,redirect
-from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
-from ..models import Project, Member, Issue
+from django.contrib.auth.models import User, Group
+from django.http import HttpResponseRedirect, HttpResponse
+from ..models import Project, Issue, Role
 from ..forms import ProjectForm
+import json
 
 
 _model = Project
 _form = ProjectForm
-_template_dir = 'project'
-
 
 
 class List(ListView):
@@ -22,17 +21,8 @@ class List(ListView):
 
 class Detail(DetailView):
     model = _model
-    template_name = '%s/overview.html' % _template_dir
+    template_name = 'project/overview.html'
     context_object_name = 'project'
-
-    '''
-    def get_object(self):
-        object = super(Detail, self).get_object()
-        object.created_on = object.created_on.strftime('%Y-%m-%d %H:%M:%S')
-        object.updated_on = object.updated_on.strftime('%Y-%m-%d %H:%M:%S')
-        object.members = Member.objects.filter(project=object)
-        return object
-    '''
 
 
 class Create(CreateView):
@@ -49,7 +39,7 @@ class Create(CreateView):
 
 class Update(UpdateView):
     model = _model
-    template_name = '%s/settings/info.html' % _template_dir
+    template_name = 'project/settings/info.html'
     form_class = _form
 
     def get_success_url(self):
@@ -87,24 +77,51 @@ class Reopen(View):
 
 
 class Issues(View):
-    template_name = '%s/issues.html' % _template_dir
+    template_name = 'project/issues.html'
 
     def get(self, request, **kwargs):
         issues = Issue.objects.filter(project__id=kwargs['pk'])
-        print issues
         return render(request, self.template_name, {'issues': issues})
 
 
 class ListMember(View):
-    template_name = '%s/member.html' % _template_dir
+    template_name = 'project/settings/members.html'
 
-    def get(self, request, pk):
-        objects = Member.objects.filter(project__id=pk)
-        users = [ object.user for object in objects ]
-        others = User.objects.exclude(id__in=[ user.id for user in users ])
-        project = Project.objects.get(pk=pk)
-        return render(request, self.template_name, {'users': users, 'project': project, 'others': others})
+    def get(self, request, *args, **kwargs):
+        project_id = kwargs['pk']
+        context = dict()
+        project = Project.objects.get(id=project_id)
+        context['project'] = project
 
+        joined_users = project.users.all()
+        context['joined_users'] = zip(joined_users,
+            [ Project.users.through.objects.get(project_id=project_id, user=n).roles.all() for n in joined_users ])
+
+        users = User.objects.all()
+        context['not_joined_users'] = list(set(users)-set(joined_users))
+
+        joined_groups = project.groups.all()
+        context['joined_groups'] = zip(joined_groups,
+            [ Project.groups.through.objects.get(project_id=project_id, group=n).roles.all() for n in joined_groups ])
+
+        groups = Group.objects.all()
+        context['not_joined_groups'] = list(set(groups)-set(joined_groups))
+
+        context['roles'] = Role.objects.all()
+        return render(request, self.template_name, context)
+
+
+class DeleteMember(View):
+    def post(self, request, *args, **kwargs):
+        project_id = kwargs['pk']
+        if 'user_id' in request.GET:
+            Project.users.through.objects.filter(user_id=request.GET['user_id'], project_id=project_id).delete()
+        elif 'group_id' in request.GET:
+            Project.groups.through.objects.filter(group_id=request.GET['group_id'], project_id=project_id).delete()
+        return redirect('member_list', pk=project_id)
+
+
+class UpdateMember(View):
     def post(self, request, *args, **kwargs):
         user_ids =  dict(request.POST).get('user_id', None)
         if user_ids is not None:
@@ -113,8 +130,52 @@ class ListMember(View):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class DeleteMember(View):
+class CreateMember(View):
+    def post(self, request, *args, **kwargs):
+        project_id = kwargs['pk']
+        users = request.POST.getlist('user')
+        groups = request.POST.getlist('group')
+        roles = request.POST.getlist('role')
+        for id in users:
+            n = Project.users.through(project_id=project_id, user_id=id)
+            n.save()
+            n.roles.add(*roles)
 
-    def get(self, request, pk, id):
-        Member.objects.get(project__id=pk, user__id=id).delete()
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        for id in groups:
+            n = Project.groups.through(project_id=project_id, group_id=id)
+            n.save()
+            n.roles.add(*roles)
+        return redirect('member_list', pk=project_id)
+
+
+class MemberRoles(View):
+    def get(self, request, *args, **kwargs):
+        project_id = kwargs['pk']
+        data = dict()
+        data['all'] = [ {'id':n.id, 'name':n.name} for n in Role.objects.all() ]
+
+        if 'user_id' in request.GET:
+            data['selected'] = [ n.id for n in
+                 Project.users.through.objects.get(user_id=request.GET['user_id'], project_id=project_id).roles.all() ]
+        elif 'group_id' in request.GET:
+            data['selected'] = [ n.id for n in
+                Project.groups.through.objects.get(group_id=request.GET['group_id'], project_id=project_id).roles.all() ]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
+    def post(self, request, *args, **kwargs):
+        project_id = kwargs['pk']
+        new = set(map(int, request.POST.getlist('item')))
+
+        if 'user_id' in request.GET:
+            obj = Project.users.through.objects.get(user_id=request.GET['user_id'], project_id=project_id)
+        elif 'group_id' in request.GET:
+            obj = Project.groups.through.objects.get(group_id=request.GET['group_id'], project_id=project_id)
+        else:
+            return redirect('member_list', pk=project_id)
+
+        old = set([ n.id for n in obj.roles.all() ])
+        select = list(new - old)
+        unselect = list(old - new)
+        obj.roles.add(*select)
+        obj.roles.remove(*unselect)
+        return redirect('member_list', pk=project_id)

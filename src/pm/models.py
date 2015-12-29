@@ -27,8 +27,8 @@ class Project(models.Model):
     identifier = models.CharField(max_length=255, null=True, blank=True, unique=True)
     status = models.IntegerField(default=OPEN_STATUS, choices=STATUS_CHOICES)
     inherit_members = models.BooleanField(default=False)
-    members = models.ManyToManyField(User, through='Member')
-    groups = models.ManyToManyField(Group, through='Project_Groups')
+    users = models.ManyToManyField(User, through='ProjectUsers')
+    groups = models.ManyToManyField(Group, through='ProjectGroups')
 
     def __str__(self):
         return self.name
@@ -165,19 +165,21 @@ class Version(models.Model):
         return self.name
 
 
-class Member(models.Model):
+class ProjectUsers(models.Model):
     project = models.ForeignKey('Project')
     user = models.ForeignKey(User)
     created_on = models.DateTimeField(auto_now_add=True)
+    roles = models.ManyToManyField('Role')
 
     class Meta:
         unique_together = ("project", "user")
 
 
-class Project_Groups(models.Model):
+class ProjectGroups(models.Model):
     project = models.ForeignKey('Project')
     group = models.ForeignKey(Group)
     created_on = models.DateTimeField(auto_now_add=True)
+    roles = models.ManyToManyField('Role')
 
     class Meta:
         unique_together = ("project", "group")
@@ -206,28 +208,9 @@ class Worktime(models.Model):
 class Role(models.Model):
     name = models.CharField(max_length=60, unique=True)
     permissions = models.ManyToManyField(Permission)
-    users = models.ManyToManyField(User)
 
     def __str__(self):
         return self.name
-
-
-class User_Project_Role(models.Model):
-    user = models.ForeignKey(User)
-    project = models.ForeignKey(Project)
-    role = models.ForeignKey(Role)
-
-    class Meta:
-        unique_together = ("user", "project", "role")
-
-
-class Group_Project_Role(models.Model):
-    group = models.ForeignKey(Group)
-    project = models.ForeignKey(Project)
-    role = models.ForeignKey(Role)
-
-    class Meta:
-        unique_together = ("group", "project", "role")
 
 
 class Setting(models.Model):

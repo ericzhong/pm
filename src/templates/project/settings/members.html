@@ -4,7 +4,7 @@
 
 {% block settings_tab_content %}
   <div class="actions btn-set small btn-table">
-    <a data-toggle="modal" href="#large"><i class="fa fa-plus"></i>新建成员</a>
+    <a data-toggle="modal" href="#add_member"><i class="fa fa-plus"></i>新建成员</a>
   </div>
   <div class="dataTables_wrapper">
     <div class="table-scrollable">
@@ -17,99 +17,80 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-          <td>aaa</td>
-          <td>
-            <span>管理人员</span>
-            <form hidden>
-              <div><input type="checkbox" checked>管理人员</div>
-              <div><input type="checkbox">开发人员</div>
-              <div><input type="checkbox">报告人员</div>
-              <button type="submit">保存</button>
-              <button name="btn-cancel">取消</button>
-            </form>
-          </td>
-          <td>
-            <div class="actions btn-set small">
-              <a name="btn-edit"><i class="fa fa-edit"></i>编辑</a>
-              <a><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>aaa</td>
-          <td>管理员</td>
-          <td>
-            <div class="actions btn-set small">
-              <a><i class="fa fa-edit"></i>编辑</a>
-              <a><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>aaa</td>
-          <td>管理员</td>
-          <td>
-            <div class="actions btn-set small">
-              <a><i class="fa fa-edit"></i>编辑</a>
-              <a><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>aaa</td>
-          <td>管理员</td>
-          <td>
-            <div class="actions btn-set small">
-              <a><i class="fa fa-edit"></i>编辑</a>
-              <a><i class="fa fa-trash-o"></i>删除</a>
-            </div>
-          </td>
-        </tr>
+        {% for item in joined_users %}
+          <tr>
+            <td>{{ item.0.username }}</td>
+            <td data-toggle="checkboxlist_form">
+              <span>{% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+            </td>
+            <td>
+              <div class="actions btn-set small">
+                <a name="btn-show-checkboxlist" data-href="{% url 'member_roles' project.id %}?user_id={{ item.0.id }}"><i class="fa fa-edit"></i>编辑</a>
+                <a data-href="{% url 'member_delete' project.id %}?user_id={{ item.0.id }}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        {% for item in joined_groups %}
+          <tr>
+            <td>{{ item.0.name }}</td>
+            <td data-toggle="checkboxlist_form">
+              <span>{% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+            </td>
+            <td>
+              <div class="actions btn-set small">
+                <a name="btn-show-checkboxlist" data-href="{% url 'member_roles' project.id %}?group_id={{ item.0.id }}"><i class="fa fa-edit"></i>编辑</a>
+                <a data-href="{% url 'member_delete' project.id %}?group_id={{ item.0.id }}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
         </tbody>
       </table>
     </div>
     {% include "table_footer.html" %}
   </div>
-  <div class="modal fade bs-modal-lg" id="large" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+
+  <div class="modal fade bs-modal-lg" id="add_member" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
           <h4 class="modal-title">新建成员</h4>
         </div>
         <div class="modal-body">
-           <form>
+          <form name="add_member_form" action="{% url 'member_add' project.id %}" method="post">
+            {% csrf_token %}
             <div class="form-body">
               <div class="form-group">
                 <div class="input-group">
                   <label>用户/组：</label>
-                  <div class="icheck-inline">
+                  {% if not_joined_users or not_joined_groups %}
                     <div class="icheck-inline">
-                      <label><input type="checkbox"> aaa </label>
-                      <label><input type="checkbox"> bbb </label>
-                      <label><input type="checkbox"> ccc </label>
-                      <label><input type="checkbox"> ddd </label>
-                      <label><input type="checkbox"> eee </label>
-                      <label><input type="checkbox"> fff </label>
+                      {% for user in not_joined_users %}
+                        <label><input type="checkbox" name="user" value="{{ user.id }}">{{ user.username }}</label>
+                      {% endfor %}
+                      {% for group in not_joined_groups %}
+                        <label><input type="checkbox" name="group" value="{{ group.id }}">{{ group.name }}</label>
+                      {% endfor %}
                     </div>
-                  </div>
+                  {% else %}
+                    {% include "no_data.html" %}
+                  {% endif %}
                 </div>
               </div>
               <hr>
               <div class="form-group">
                 <div class="input-group">
                   <label>角色：</label>
-                  <div class="icheck-inline">
+                  {% if roles %}
                     <div class="icheck-inline">
-                      <label><input type="checkbox"> aaa </label>
-                      <label><input type="checkbox"> bbb </label>
-                      <label><input type="checkbox"> ccc </label>
-                      <label><input type="checkbox"> ddd </label>
-                      <label><input type="checkbox"> eee </label>
-                      <label><input type="checkbox"> fff </label>
+                      {% for role in roles %}
+                        <label><input name="role" type="checkbox" value="{{ role.id }}">{{ role.name }}</label>
+                      {% endfor %}
                     </div>
-                  </div>
+                  {% else %}
+                    {% include 'no_data.html' %}
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -117,9 +98,11 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn default" data-dismiss="modal">关闭</button>
-          <button type="button" class="btn green">保存</button>
+          <button type="button" class="btn green" onclick="document.add_member_form.submit()">保存</button>
         </div>
       </div>
     </div>
   </div>
+  {% include "confirm_delete.html" %}
+  {% include "_admin/checkboxlist_form.html" %}
 {% endblock %}

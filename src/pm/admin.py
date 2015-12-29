@@ -39,17 +39,9 @@ class VersionAdmin(admin.ModelAdmin):
     ordering = ('project', 'name')
 
 
-class MemberAdmin(admin.ModelAdmin):
-    form = MemberForm
-    list_display = ('project', 'user')
-    ordering = ('project',)
-
-
-
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Issue, IssueAdmin)
 admin.site.register(IssueTag, IssueTagAdmin)
 admin.site.register(IssueCategory, IssueCategoryAdmin)
 admin.site.register(IssueStatus, IssueStatusAdmin)
 admin.site.register(Version, VersionAdmin)
-admin.site.register(Member, MemberAdmin)
