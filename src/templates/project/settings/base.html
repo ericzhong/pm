@@ -9,7 +9,7 @@
       <li id="tab_info"><a href="{% url 'project_update' project.id %}"> 信息 </a></li>
       <li id="tab_member"><a href="{% url 'member_list' project.id %}"> 成员 </a></li>
       <li id="tab_version"><a href="{% url 'version_list' project.id %}"> 版本 </a></li>
-      <li id="tab_issue_type"><a href="/projects/1/settings/categories"> 问题类别 </a></li>
+      <li id="tab_issue_category"><a href="{% url 'issue_category_list' project.id %}"> 问题类别 </a></li>
     </ul>
     <div class="tab-content no-space">
       <div id="settings-tab-content" tab-toggle="{% block settings_tab_toggle %}{% endblock %}">

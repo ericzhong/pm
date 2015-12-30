@@ -1,0 +1,37 @@
+{% extends "project/settings/base.html" %}
+
+{% block settings_tab_toggle %}tab_issue_category{% endblock %}
+
+{% block settings_tab_content %}
+  <div class="actions btn-set small btn-table">
+    <a href="{% url 'issue_category_add' project.id %}"><i class="fa fa-plus"></i>新建问题类别</a>
+  </div>
+  <div class="dataTables_wrapper">
+    <div class="table-scrollable">
+      <table class="table table-light table-advance table-hover table-condensed second">
+        <thead>
+        <tr>
+          <th>问题类别</th>
+          <th width="110px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for category in issue_categories %}
+          <tr>
+            <td>{{ category.name }}</td>
+            <td>
+              <div class="actions btn-set small">
+                <a href="{% url 'issue_category_update' category.id %}"><i class="fa fa-edit"></i></a>
+                <a data-href="{% url 'issue_category_delete' category.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "table_footer.html" %}
+  </div>
+
+  {% include "confirm_delete.html" %}
+{% endblock %}

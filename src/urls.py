@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from pm.forms import PasswordResetByEmailForm
-from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting
+from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting, issue_category
 
 
 urlpatterns = [
@@ -35,17 +35,29 @@ urlpatterns = [
     url(r'^projects/$', project.List.as_view(), name='project_list'),
     url(r'^projects/(?P<pk>\d+)/$', project.Detail.as_view(), name='project_detail'),
     url(r'^projects/add/$', project.Create.as_view(), name='project_add'),
-    url(r'^projects/(?P<pk>\d+)/settings/$', project.Update.as_view(), name='project_settings'),
-    url(r'^projects/(?P<pk>\d+)/settings/info/$', project.Update.as_view(), name='project_update'),
-    url(r'^admin/projects/$', project.Admin.as_view(), name='admin_project'),
     url(r'^projects/(?P<pk>\d+)/delete/$', project.Delete.as_view(), name='project_delete'),
     url(r'^projects/(?P<pk>\d+)/close/$', project.Close.as_view(), name='project_close'),
     url(r'^projects/(?P<pk>\d+)/reopen/$', project.Reopen.as_view(), name='project_reopen'),
-    url(r'^projects/(?P<pk>\d+)/members/$', project.ListMember.as_view(), name='member_list'),
+
+    # project settings
+    url(r'^projects/(?P<pk>\d+)/settings/$', project.Update.as_view(), name='project_settings'),
+    url(r'^projects/(?P<pk>\d+)/settings/info/$', project.Update.as_view(), name='project_update'),
+    url(r'^projects/(?P<pk>\d+)/settings/versions/$', version.List.as_view(), name='version_list'),
+    url(r'^projects/(?P<pk>\d+)/settings/members/$', project.ListMember.as_view(), name='member_list'),
+    url(r'^projects/(?P<pk>\d+)/settings/issue_categories/$', issue_category.List.as_view(), name='issue_category_list'),
+
+    # project member
     url(r'^projects/(?P<pk>\d+)/members/delete$', project.DeleteMember.as_view(), name='member_delete'),
     url(r'^projects/(?P<pk>\d+)/members/update$', project.UpdateMember.as_view(), name='member_update'),
     url(r'^projects/(?P<pk>\d+)/members/add$', project.CreateMember.as_view(), name='member_add'),
-    url(r'^projects/(?P<pk>\d+)/roles$', project.MemberRoles.as_view(), name='member_roles'),
+    url(r'^projects/(?P<pk>\d+)/members/roles$', project.MemberRoles.as_view(), name='member_roles'),
+
+    # project issue category
+    url(r'^projects/(?P<pk>\d+)/issue_categories/add/$', issue_category.Create.as_view(), name='issue_category_add'),
+    url(r'^issue_categories/(?P<pk>\d+)/update/$', issue_category.Update.as_view(), name='issue_category_update'),
+    url(r'^issue_categories/(?P<pk>\d+)/delete/$', issue_category.Delete.as_view(), name='issue_category_delete'),
+
+    url(r'^admin/projects/$', project.Admin.as_view(), name='admin_project'),
 
     # issue tag
     url(r'^issue_tags/$', issue_tag.List.as_view(), name='issue_tag_list'),
@@ -59,7 +71,7 @@ urlpatterns = [
     url(r'^issue_statuses/(?P<pk>\d+)/update/$', issue_status.Update.as_view(), name='issue_status_update'),
     url(r'^issue_statuses/(?P<pk>\d+)/delete/$', issue_status.Delete.as_view(), name='issue_status_delete'),
 
-    # issue
+    # project issue
     url(r'^projects/(?P<pk>\d+)/issues/$', issue.List.as_view(), name='issue_list'),
     url(r'^projects/(?P<pk>\d+)/issues/add/$', issue.Create.as_view(), name='issue_add'),
     url(r'^issues/(?P<pk>\d+)/$', issue.Detail.as_view(), name='issue_detail'),
@@ -70,15 +82,14 @@ urlpatterns = [
     url(r'^issues/$', issue.AllIssues.as_view(), name='issue_all'),
     url(r'^mypage/$', issue.MyPage.as_view(), name='my_page'),
 
-    # worktime
+    # issue worktime
     url(r'^issues/(?P<pk>\d+)/worktimes/$', issue.WorktimeList.as_view(), name='worktime_list'),
     url(r'^issues/(?P<pk>\d+)/worktimes/add$', issue.WorktimeCreate.as_view(), name='worktime_add'),
     url(r'^worktimes/(?P<pk>\d+)/update/$', issue.WorktimeUpdate.as_view(), name='worktime_update'),
     url(r'^worktimes/(?P<pk>\d+)/delete/$', issue.WorktimeDelete.as_view(), name='worktime_delete'),
 
-    # version
+    # project version
     url(r'^projects/(?P<pk>\d+)/roadmap/$', version.Roadmap.as_view(), name='version_roadmap'),
-    url(r'^projects/(?P<pk>\d+)/settings/versions/$', version.List.as_view(), name='version_list'),
     url(r'^projects/(?P<pk>\d+)/versions/add/$', version.Create.as_view(), name='version_add'),
     url(r'^versions/(?P<pk>\d+)/$', version.Detail.as_view(), name='version_detail'),
     url(r'^versions/(?P<pk>\d+)/update/$', version.Update.as_view(), name='version_update'),
@@ -98,7 +109,7 @@ urlpatterns = [
     url(r'^users/(?P<pk>\d+)/quit_group/(?P<id>\d+)$', user.QuitGroup.as_view(), name='user_quit_group'),
     url(r'^users/(?P<pk>\d+)/projects/(?P<id>\d+)/roles$', user.Roles.as_view(), name='user_roles'),
 
-    # group
+    # user group
     url(r'^groups/$', group.List.as_view(), name='group_list'),
     url(r'^groups/add/$', group.Create.as_view(), name='group_add'),
     url(r'^groups/(?P<pk>\d+)/update/$', group.Update.as_view(), name='group_update'),
@@ -109,7 +120,7 @@ urlpatterns = [
     url(r'^groups/(?P<pk>\d+)/quit_project/(?P<id>\d+)$', group.QuitProject.as_view(), name='group_quit_project'),
     url(r'^groups/(?P<pk>\d+)/projects/(?P<id>\d+)/roles$', group.Roles.as_view(), name='group_roles'),
 
-    # Role
+    # role
     url(r'^roles/$', role.List.as_view(), name='role_list'),
     url(r'^roles/add/$', role.Create.as_view(), name='role_add'),
     url(r'^roles/(?P<pk>\d+)/update/$', role.Update.as_view(), name='role_update'),

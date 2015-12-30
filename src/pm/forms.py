@@ -24,7 +24,7 @@ class IssueForm(forms.ModelForm):
 class IssueCategoryForm(forms.ModelForm):
     class Meta:
         model = IssueCategory
-        exclude = ['project']
+        exclude = ['']
 
 
 class IssueTagForm(forms.ModelForm):

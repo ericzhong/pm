@@ -98,9 +98,9 @@ class Detail(DetailView):
 
 class Delete(View):
     def post(self, request, *args, **kwargs):
-        versions = Version.objects.filter(pk=kwargs['pk'])
-        project_id = versions[0].project.id
-        versions.delete()
+        query_set = Version.objects.filter(pk=kwargs['pk'])
+        project_id = query_set[0].project.id
+        query_set.delete()
         return HttpResponseRedirect(_get_back_url(self, project_id=project_id))
 
 

@@ -223,9 +223,9 @@ class WorktimeUpdate(UpdateView):
 
 class WorktimeDelete(View):
     def post(self, request, *args, **kwargs):
-        worktime = Worktime.objects.filter(pk=kwargs['pk'])
-        issue_id = worktime[0].issue.id
-        worktime.delete()
+        query_set = Worktime.objects.filter(pk=kwargs['pk'])
+        issue_id = query_set[0].issue.id
+        query_set.delete()
         return HttpResponseRedirect(reverse('worktime_list', kwargs={'pk': issue_id}))
 
 

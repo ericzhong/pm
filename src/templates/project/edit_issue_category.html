@@ -1,21 +1,27 @@
 {% extends "project/base.html" %}
 
+{% load i18n %}
+{% load widget_tweaks %}
+
 {% block tab_toggle %}tab_settings{% endblock %}
 
 {% block tab_content %}
-  <div class="tab-caption">问题类别 >> aaa</div>
+  <div class="tab-caption">编辑问题类别</div>
   <div class="portlet light grey-cararra bordered">
     <div class="portlet-body form">
-      <form action="javascript:;" class="form-horizontal">
+      {{ form.errors }}
+      <form class="form-horizontal" method="post">
+        {% csrf_token %}
         <div class="form-body">
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
-                <label class="control-label col-md-2">名称<span class="required" aria-required="true">*</span></label>
+                <label class="control-label col-md-2">名称<span class="required">*</span></label>
                 <div class="col-md-3">
-                  <input type="text" class="form-control" value="aaa">
+                  {{ form.name|add_class:"form-control" }}
                 </div>
               </div>
+              <!--
               <div class="form-group">
                 <label class="control-label col-md-2">指派给</label>
                 <div class="col-md-3">
@@ -27,6 +33,7 @@
                   </select>
                 </div>
               </div>
+              -->
             </div>
           </div>
         </div>
@@ -34,6 +41,7 @@
           <div class="row">
             <div class="col-md-offset-2">
               <button type="submit" class="btn green">保存</button>
+              <button type="button" onclick="window.location.href='{% url 'issue_category_list' project.id %}'" class="btn default">返回</button>
             </div>
           </div>
         </div>
