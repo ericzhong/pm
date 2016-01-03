@@ -61,7 +61,8 @@ License: You must have a valid license purchased only from themeforest(the above
 <!-- BEGIN LOGIN -->
 <div class="content">
 	<!-- BEGIN LOGIN FORM -->
-	<form class="login-form" action="" method="post">
+  {{ form.errors }}
+	<form class="login-form" method="post">
     {% csrf_token %}
 		<h3 class="form-title">Login to your account</h3>
 		<div class="alert alert-danger display-hide">
@@ -87,9 +88,7 @@ License: You must have a valid license purchased only from themeforest(the above
 		<div class="form-actions">
 			<label class="checkbox">
 			<input type="checkbox" name="remember" value="1"/> Remember me </label>
-			<button type="submit" class="btn green-haze pull-right">
-			Login <i class="m-icon-swapright m-icon-white"></i>
-			</button>
+			<button type="submit" class="btn green-haze pull-right"> Login <i class="m-icon-swapright m-icon-white"></i></button>
 		</div>
 		<div class="row">
 			<div class="col-md-6">

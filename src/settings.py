@@ -125,6 +125,7 @@ STATICFILES_DIRS = (
 
 
 # Authentication
+LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
 
 ACCOUNT_ACTIVATION_DAYS = 7

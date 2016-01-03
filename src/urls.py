@@ -18,16 +18,16 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from pm.forms import PasswordResetByEmailForm
-from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting, issue_category
+from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting, issue_category, base, auth
 
 
 urlpatterns = [
-
-    url(r'^$', TemplateView.as_view(template_name="index.html"), name='home'),
-    url(r'^admin/$', project.Admin.as_view(), name='admin'),
+    url(r'^$', base.homepage.as_view(), name='homepage'),
 
     # authentication
-    url(r'^logout/$', auth_views.logout, {'next_page': '/'}),
+    url(r'^login/$', auth_views.login, {'template_name': 'login.html'}),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/login'}),
+    url(r'^my/account$', auth.MyAccount.as_view(), name='my_account'),
     url(r'^password_reset/$', auth_views.password_reset, {'password_reset_form': PasswordResetByEmailForm}),
     url('^', include('django.contrib.auth.urls')),
 
@@ -56,8 +56,6 @@ urlpatterns = [
     url(r'^projects/(?P<pk>\d+)/issue_categories/add/$', issue_category.Create.as_view(), name='issue_category_add'),
     url(r'^issue_categories/(?P<pk>\d+)/update/$', issue_category.Update.as_view(), name='issue_category_update'),
     url(r'^issue_categories/(?P<pk>\d+)/delete/$', issue_category.Delete.as_view(), name='issue_category_delete'),
-
-    url(r'^admin/projects/$', project.Admin.as_view(), name='admin_project'),
 
     # issue tag
     url(r'^issue_tags/$', issue_tag.List.as_view(), name='issue_tag_list'),
@@ -128,6 +126,8 @@ urlpatterns = [
 
     # settings
     url(r'^settings/$', setting.Setting.as_view(), name='settings'),
+    url(r'^admin/$', project.Admin.as_view(), name='admin'),
+    url(r'^admin/projects/$', project.Admin.as_view(), name='admin_project'),
 
     url(r'^django-admin/', include(admin.site.urls)),
 ]
