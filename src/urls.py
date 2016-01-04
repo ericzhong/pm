@@ -16,8 +16,6 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.views.generic import TemplateView
-from pm.forms import PasswordResetByEmailForm
 from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting, issue_category, base, auth
 
 
@@ -25,11 +23,11 @@ urlpatterns = [
     url(r'^$', base.homepage.as_view(), name='homepage'),
 
     # authentication
-    url(r'^login/$', auth_views.login, {'template_name': 'login.html'}),
-    url(r'^logout/$', auth_views.logout, {'next_page': '/login'}),
+    url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/login'}, name='logout'),
     url(r'^my/account$', auth.MyAccount.as_view(), name='my_account'),
-    url(r'^password_reset/$', auth_views.password_reset, {'password_reset_form': PasswordResetByEmailForm}),
-    url('^', include('django.contrib.auth.urls')),
+    url(r'^my/password$', auth_views.password_change,
+        {'template_name': 'password.html', 'post_change_redirect': '/my/password'}, name='password_change'),
 
     # project
     url(r'^projects/$', project.List.as_view(), name='project_list'),

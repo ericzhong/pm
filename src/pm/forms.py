@@ -55,27 +55,25 @@ class UserForm(forms.ModelForm):
         exclude = ['password', 'date_joined', 'last_login']
 
     def clean(self):
-        cleaned_data = super(UserForm, self).clean()
-
-        password1 = cleaned_data.get('password1')
-        password2 = cleaned_data.get('password2')
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
 
         if password1 or password2:
             if password1 != password2:
                 raise forms.ValidationError('two different passwords')
             else:
-                cleaned_data['password'] = make_password(cleaned_data.get('password1'))
+                self.cleaned_data['password'] = self.cleaned_data['password1']
 
-        return cleaned_data
+        return super(UserForm, self).clean()
 
     def save(self, commit=True):
-        instance = super(UserForm, self).save(commit=False)
-        instance.password = self.cleaned_data.get('password', '')
-
+        user = super(UserForm, self).save(commit=False)
+        password = self.cleaned_data.get('password', None)
+        if password:
+            user.set_password(password)
         if commit:
-            instance.save()
-
-        return instance
+            user.save()
+        return user
 
 
 class GroupForm(forms.ModelForm):
@@ -109,3 +107,9 @@ class RoleForm(forms.ModelForm):
     class Meta:
         model = Role
         fields = ['name']
+
+
+class UserAccountForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
