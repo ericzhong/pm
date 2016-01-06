@@ -9,6 +9,7 @@
 <div class="tab-caption">新建问题</div>
 <div class="portlet light grey-cararra bordered">
   <div class="portlet-body form">
+    {{ form.errors }}
     <form class="form-horizontal" method="post">
       {% csrf_token %}
       <div class="form-body">

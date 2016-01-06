@@ -15,7 +15,7 @@
             <div class="col-md-6">
               <div class="portlet box">
                 <div class="portlet-body">
-                  <div class="table-caption"><span>指派给我的问题 ({{ assigned_issues|length }})</span><small class="pull-right"><a href="{% url 'issue_all' %}">更多»</a></small></div>
+                  <div class="table-caption"><span>指派给我的问题 ({{ assigned_issues|length }})</span><small class="pull-right"><a href="{% url 'issue_all' %}?assigned_to={{ user.id }}">更多»</a></small></div>
                   <div class="table-scrollable">
                     <table class="table table-light table-advance table-hover table-condensed second">
                       <thead>
@@ -29,7 +29,7 @@
                       <tbody>
                       {% for issue in assigned_issues %}
                         <tr>
-                          <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.id }}</a></td>
+                          <td>{{ issue.id }}</td>
                           <td><a href="{% url 'project_detail' issue.project.id %}">{{ issue.project.name }}</a></td>
                           <td>{{ issue.tag }}</td>
                           <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
@@ -44,63 +44,29 @@
             <div class="col-md-6">
               <div class="portlet box">
                 <div class="portlet-body">
-                  <div class="table-caption"><span>跟踪的问题 (10)</span><small class="pull-right"><a href="">更多»</a></small></div>
+                  <div class="table-caption"><span>关注的问题 ({{ watch_issues|length }})</span><small class="pull-right"><a href="{% url 'issue_all' %}?watcher={{ user.id }}">更多»</a></small></div>
                   <div class="table-scrollable">
                     <table class="table table-light table-advance table-hover table-condensed second">
                       <thead>
                       <tr>
                         <th>#</th>
                         <th>项目</th>
-                        <th>跟踪</th>
+                        <th>标签</th>
                         <th>主题</th>
                       </tr>
                       </thead>
                       <tbody>
-                      <tr>
-                        <td><a href="">1</a></td>
-                        <td><a href="">test</a></td>
-                        <td>错误</td>
-                        <td><a href="">这是一个测试Issue (新建)</a></td>
-                      </tr>
-                      <tr>
-                        <td><a href="">1</a></td>
-                        <td><a href="">test</a></td>
-                        <td>错误</td>
-                        <td><a href="">这是一个测试Issue (新建)</a></td>
-                      </tr>
-                      <tr>
-                        <td><a href="">1</a></td>
-                        <td><a href="">test</a></td>
-                        <td>错误</td>
-                        <td><a href="">这是一个测试Issue (新建)</a></td>
-                      </tr>
-                      <tr>
-                        <td><a href="">1</a></td>
-                        <td><a href="">test</a></td>
-                        <td>错误</td>
-                        <td><a href="">这是一个测试Issue (新建)</a></td>
-                      </tr>
-                      <tr>
-                        <td><a href="">1</a></td>
-                        <td><a href="">test</a></td>
-                        <td>错误</td>
-                        <td><a href="">这是一个测试Issue (新建)</a></td>
-                      </tr>
-                      <tr>
-                        <td><a href="">1</a></td>
-                        <td><a href="">test</a></td>
-                        <td>错误</td>
-                        <td><a href="">这是一个测试Issue (新建)</a></td>
-                      </tr>
+                      {% for issue in watch_issues %}
+                        <tr>
+                          <td>{{ issue.id }}</td>
+                          <td><a href="{% url 'project_detail' issue.project.id %}">{{ issue.project.name }}</a></td>
+                          <td>{{ issue.tag }}</td>
+                          <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
+                        </tr>
+                      {% endfor %}
                       </tbody>
                     </table>
                   </div>
-                </div>
-              </div>
-              <div class="portlet box">
-                <div class="portlet-body">
-                  <div class="table-caption"><span>空数据样例</span></div>
-                  <div class="nodata"><span>暂无数据可显示</span></div>
                 </div>
               </div>
             </div>

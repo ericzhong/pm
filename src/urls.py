@@ -77,7 +77,9 @@ urlpatterns = [
     url(r'^issues/(?P<pk>\d+)/update/$', issue.Update.as_view(), name='issue_update'),
     url(r'^issues/(?P<pk>\d+)/delete/$', issue.Delete.as_view(), name='issue_delete'),
     url(r'^issues/(?P<pk>\d+)/quote/$', issue.Quote.as_view(), name='issue_quote'),
-    url(r'^comment/(?P<pk>\d+)/update/$', issue.CommentUpdate.as_view(), name='comment_update'),
+    url(r'^issues/(?P<pk>\d+)/watch/$', issue.Watch.as_view(), name='issue_watch'),
+    url(r'^issues/(?P<pk>\d+)/unwatch/$', issue.Unwatch.as_view(), name='issue_unwatch'),
+    url(r'^comments/(?P<pk>\d+)/update/$', issue.CommentUpdate.as_view(), name='comment_update'),
     url(r'^issues/$', issue.AllIssues.as_view(), name='issue_all'),
     url(r'^mypage/$', issue.MyPage.as_view(), name='my_page'),
 

@@ -4,7 +4,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Sum
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from ..forms import IssueForm, CommentForm, WorktimeForm
 from ..models import Issue, Comment, Worktime, Project
 from ..utils import Helper
@@ -13,8 +13,8 @@ import time
 
 _model = Issue
 _form = IssueForm
-_worktime_prefix = 'worktime'
-_comment_prefix = 'comment'
+_worktime_form_prefix = 'worktime'
+_comment_form_prefix = 'comment'
 
 
 class Create(CreateView):
@@ -32,7 +32,7 @@ class Create(CreateView):
         if self.request.method in ('POST', 'PUT'):
             data = self.request.POST.copy()
             data['project'] = self.kwargs.get('pk')
-            data['author'] = u'1'                               # TODO: use login user
+            data['author'] = self.request.user.id
             kwargs.update({
                 'data': data,
             })
@@ -67,12 +67,13 @@ class Detail(DetailView):
         context = super(Detail, self).get_context_data(**kwargs)
         context['project'] = self.object.project
         context['comments'] = Comment.objects.filter(issue=self.object)
-        context['comment_form'] = CommentForm(prefix=_comment_prefix)
-        context['worktime_form'] = WorktimeForm(prefix=_worktime_prefix)
+        context['comment_form'] = CommentForm(prefix=_comment_form_prefix)
+        context['worktime_form'] = WorktimeForm(prefix=_worktime_form_prefix)
         context['spent_time'] = Worktime.objects.filter(issue=self.object)\
                                     .aggregate(Sum('hours')).get('hours__sum', 0) or 0
         context['form'] = _form(instance=self.object)
         context['subissues'] = Issue.objects.filter(parent=self.object)
+        context['watch'] = True if self.request.user in self.object.watchers.all() else False
         return context
 
 
@@ -87,27 +88,27 @@ class Update(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(Update, self).get_context_data(**kwargs)
         context['project'] = self.object.project
-        context['worktime_form'] = WorktimeForm(prefix=_worktime_prefix)
-        context['comment_form'] = CommentForm(prefix=_comment_prefix)
+        context['worktime_form'] = WorktimeForm(prefix=_worktime_form_prefix)
+        context['comment_form'] = CommentForm(prefix=_comment_form_prefix)
         return context
 
     def get_form_kwargs(self):
         kwargs = super(Update, self).get_form_kwargs()
         if self.request.method in ('POST', 'PUT'):
             data = self.request.POST.copy()
-            data['author'] = u'1'                               # TODO: use login user
+            data['author'] = self.request.user.id
             kwargs.update({
                 'data': data,
             })
         return kwargs
 
     def form_valid(self, form):
-        worktime_form = WorktimeForm(self.request.POST, prefix=_worktime_prefix)
-        comment_form = CommentForm(self.request.POST, prefix=_comment_prefix)
+        worktime_form = WorktimeForm(self.request.POST, prefix=_worktime_form_prefix)
+        comment_form = CommentForm(self.request.POST, prefix=_comment_form_prefix)
         if worktime_form.is_valid():
             worktime_form.cleaned_data['project'] = self.object.project
             worktime_form.cleaned_data['issue'] = self.object
-            worktime_form.cleaned_data['author_id'] = u'1'              # TODO: use login user
+            worktime_form.cleaned_data['author_id'] = self.request.user.id
             worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
             Worktime(**worktime_form.cleaned_data).save()
         else:
@@ -116,7 +117,7 @@ class Update(UpdateView):
 
         if comment_form.is_valid():
             comment_form.cleaned_data['issue'] = self.object
-            comment_form.cleaned_data['author_id'] = u'1'               # TODO: use login user
+            comment_form.cleaned_data['author_id'] = self.request.user.id
             Comment(**comment_form.cleaned_data).save()
         else:
             return super(Update, self).form_invalid(form)
@@ -135,7 +136,7 @@ class Delete(View):
 class CommentUpdate(View):
     def post(self, request, *args, **kwargs):
         pk = kwargs['pk']
-        comment_form = CommentForm(request.POST, prefix=_comment_prefix)
+        comment_form = CommentForm(request.POST, prefix=_comment_form_prefix)
 
         if comment_form.is_valid():
             Comment.objects.filter(pk=pk).update(**comment_form.cleaned_data)
@@ -197,7 +198,7 @@ class WorktimeCreate(CreateView):
         if self.request.method in ('POST', 'PUT'):
             data = self.request.POST.copy()
             data['project'] = Issue.objects.get(pk=self.kwargs['pk']).project.id
-            data['author'] = u'1'                               # TODO: use login user
+            data['author'] = self.request.user.id
             kwargs.update({
                 'data': data,
             })
@@ -235,7 +236,24 @@ class AllIssues(ListView):
     context_object_name = 'issues'
 
 
+class Watch(View):
+    def get(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        Issue.watchers.through.objects.get_or_create(user=self.request.user, issue_id=pk)
+        return redirect('issue_detail', pk=pk)
+
+
+class Unwatch(View):
+    def get(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        Issue.watchers.through.objects.filter(user=self.request.user, issue_id=pk).delete()
+        return redirect('issue_detail', pk=pk)
+
+
 class MyPage(View):
     def get(self, request, *args, **kwargs):
-        assigned_issues = Issue.objects.filter(assigned_to=1)     # TODO: use login user
-        return render(request, 'my_page.html', {'assigned_issues': assigned_issues})
+        context = dict()
+        context['assigned_issues'] = Issue.objects.filter(assigned_to=self.request.user)
+        context['watch_issues'] = [ n.issue for n in Issue.watchers.through.objects.filter(user=self.request.user) ]
+        print context
+        return render(request, 'my_page.html', context)

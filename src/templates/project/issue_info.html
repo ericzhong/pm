@@ -15,7 +15,11 @@
       <div class="actions btn-set small">
         <a id="btn-edit-issue"><i class="fa fa-edit"></i>编辑</a>
         <a href="{% url 'worktime_add' issue.id %}"><i class="fa fa-clock-o"></i>登记工时 </a>
-        <a><i class="fa fa-star-o"></i>跟踪 </a>
+        {% if watch %}
+          <a href="{% url 'issue_unwatch' issue.id %}"><i class="fa fa-star"></i>Unwatch</a>
+        {% else %}
+          <a href="{% url 'issue_watch' issue.id %}"><i class="fa fa-star-o"></i>Watch</a>
+        {% endif %}
         <a><i class="fa fa-copy"></i>复制 </a>
         <a data-href="{% url 'issue_delete' issue.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
       </div>
@@ -38,7 +42,7 @@
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">指派给:</label></div>
-          <div class="col-md-3"><label class="label-value"><a href="/users/1">{{ issue.author }}</a></label></div>
+          <div class="col-md-3"><label class="label-value"><a href="/users/1">{{ issue.assigned_to|default:'-' }}</a></label></div>
           <div class="col-md-3"><label class="label-name">%完成:</label></div>
           <div class="col-md-3"><label class="label-value">{{ issue.get_done_ratio_display }}</label></div>
         </div>
@@ -50,7 +54,13 @@
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">目标版本:</label></div>
-          <div class="col-md-3"><label class="label-value"><a href="/versions/1">{{ issue.version|default:"-" }}</a></label></div>
+          <div class="col-md-3"><label class="label-value">
+            {% if issue.version %}
+              <a href="{% url 'version_detail' issue.version.id %}">{{ issue.version.name }}</a>
+            {% else %}
+              -
+            {% endif %}
+          </label></div>
         </div>
         <hr>
         <div class="related-info">
