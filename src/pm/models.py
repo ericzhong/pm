@@ -6,7 +6,7 @@ from django.contrib.auth.models import User, Group, Permission
 from django.utils.translation import ugettext as _
 
 
-_TEXT_MAX_LENGTH = 255
+_STRING_MAX_LENGTH = 255
 
 
 @python_2_unicode_compatible
@@ -20,9 +20,9 @@ class Project(models.Model):
         (CLOSED_STATUS, _('closed')),
     )
 
-    name = models.CharField(max_length=_TEXT_MAX_LENGTH, unique=True)
+    name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
     description = models.TextField(null=True, blank=True)
-    homepage = models.CharField(max_length=_TEXT_MAX_LENGTH, default='', blank=True)
+    homepage = models.CharField(max_length=_STRING_MAX_LENGTH, default='', blank=True)
     is_public = models.BooleanField(default=True)
     parent = models.ForeignKey('Project', null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -59,7 +59,7 @@ class Issue(models.Model):
     tag = models.ForeignKey('IssueTag')
     category = models.ForeignKey('IssueCategory', null=True, blank=True)
     project = models.ForeignKey('Project')
-    subject = models.CharField(max_length=_TEXT_MAX_LENGTH)
+    subject = models.CharField(max_length=_STRING_MAX_LENGTH)
     description = models.TextField(null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
     due_date = models.DateField(null=True, blank=True)
@@ -80,7 +80,7 @@ class Issue(models.Model):
 
 @python_2_unicode_compatible
 class IssueCategory(models.Model):
-    name = models.CharField(max_length=_TEXT_MAX_LENGTH)
+    name = models.CharField(max_length=_STRING_MAX_LENGTH)
     project = models.ForeignKey('Project')
 
     class Meta:
@@ -92,7 +92,7 @@ class IssueCategory(models.Model):
 
 @python_2_unicode_compatible
 class IssueTag(models.Model):
-    name = models.CharField(max_length=_TEXT_MAX_LENGTH, unique=True)
+    name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
 
     def __str__(self):
         return self.name
@@ -100,7 +100,7 @@ class IssueTag(models.Model):
 
 @python_2_unicode_compatible
 class IssueStatus(models.Model):
-    name = models.CharField(max_length=_TEXT_MAX_LENGTH, unique=True)
+    name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
     #default_done_ratio = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
@@ -121,11 +121,11 @@ class Version(models.Model):
     )
 
     project = models.ForeignKey('Project')
-    name = models.CharField(max_length=_TEXT_MAX_LENGTH)
-    description = models.CharField(max_length=_TEXT_MAX_LENGTH, default="", blank=True)
+    name = models.CharField(max_length=_STRING_MAX_LENGTH)
+    description = models.CharField(max_length=_STRING_MAX_LENGTH, default="", blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    wiki_page = models.CharField(max_length=_TEXT_MAX_LENGTH, default="", blank=True)
+    wiki_page = models.CharField(max_length=_STRING_MAX_LENGTH, default="", blank=True)
     status = models.IntegerField(default=OPEN_STATUS, choices=STATUS_CHOICES)
     effective_date = models.DateField(null=True, blank=True)
 
@@ -202,14 +202,14 @@ class Worktime(models.Model):
     author = models.ForeignKey(User)
     hours = models.IntegerField()
     date = models.DateField()
-    description = models.CharField(max_length=_TEXT_MAX_LENGTH, null=True, blank=True)
+    description = models.CharField(max_length=_STRING_MAX_LENGTH, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
 
 @python_2_unicode_compatible
 class Role(models.Model):
-    name = models.CharField(max_length=_TEXT_MAX_LENGTH, unique=True)
+    name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
     permissions = models.ManyToManyField(Permission)
 
     def __str__(self):
@@ -217,6 +217,15 @@ class Role(models.Model):
 
 
 class Setting(models.Model):
-    name = models.CharField(max_length=_TEXT_MAX_LENGTH, unique=True)
+    name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
     value = models.TextField()
     updated_on = models.DateTimeField(auto_now=True)
+
+
+@python_2_unicode_compatible
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.CharField(max_length=_STRING_MAX_LENGTH)
+
+    def __str__(self):
+        return "%s's profile" % self.user

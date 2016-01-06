@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting, issue_category, base, auth
+from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting, issue_category, base, account
 
 
 urlpatterns = [
@@ -25,9 +25,12 @@ urlpatterns = [
     # authentication
     url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/login'}, name='logout'),
-    url(r'^my/account$', auth.MyAccount.as_view(), name='my_account'),
     url(r'^my/password$', auth_views.password_change,
         {'template_name': 'password.html', 'post_change_redirect': '/my/password'}, name='password_change'),
+
+    # account
+    url(r'^my/account$', account.MyAccount.as_view(), name='my_account'),
+    url(r'^my/avatar$', account.MyAvatar.as_view(), name='my_avatar'),
 
     # project
     url(r'^projects/$', project.List.as_view(), name='project_list'),

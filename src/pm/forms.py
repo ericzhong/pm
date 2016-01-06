@@ -2,8 +2,8 @@
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User, Group
-from django.contrib.auth.hashers import make_password
 from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Version, Comment, Worktime, Role
+from django.conf import settings
 
 
 class ProjectForm(forms.ModelForm):
@@ -113,3 +113,19 @@ class UserAccountForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
+
+
+class UploadAvatarForm(forms.Form):
+    file = forms.FileField()
+
+    def clean_file(self):
+        size = self.files['file'].size
+        mime = self.files['file'].content_type.split('/')[-1].lower()
+
+        if size > settings.UPLOAD_AVATAR_MAX_SIZE * 1024:      # KB
+            raise forms.ValidationError('Upload size limit %sKB' % settings.UPLOAD_AVATAR_MAX_SIZE)
+
+        if mime not in settings.UPLOAD_AVATAR_MIME_TYPES:
+            raise forms.ValidationError('Upload format limit %s' % ','.join(settings.UPLOAD_AVATAR_MIME_TYPES))
+
+        return self.cleaned_data['file']

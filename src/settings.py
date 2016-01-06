@@ -140,3 +140,10 @@ EMAIL_SUBJECT_PREFIX = '[Test]'
 EMAIL_USE_TLS = False
 SERVER_EMAIL = ''
 # Server for test: python -m smtpd -n -c DebuggingServer localhost:1025
+
+
+
+# Upload file
+UPLOAD_AVATAR_DIR = os.path.join(BASE_DIR, 'static', 'avata')
+UPLOAD_AVATAR_MIME_TYPES = ['png', 'jpg', 'jpeg', 'gif']
+UPLOAD_AVATAR_MAX_SIZE = 50      # KB

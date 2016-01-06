@@ -69,7 +69,12 @@
 					<!-- BEGIN USER LOGIN DROPDOWN -->
 					<li class="dropdown dropdown-user dropdown-dark">
 						<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-						<img alt="" class="img-circle" src="/static/img/avatar9.jpg">
+						<img alt="" class="img-circle"
+              {% if user.profile.avatar %}
+                src="/static/avata/{{ user.profile.avatar }}">
+              {% else %}
+                src="/static/img/avatar2.jpg">
+              {% endif %}
 						<span class="username username-hide-mobile">{{ user.username }}</span>
 						</a>
 						<ul class="dropdown-menu dropdown-menu-default">
