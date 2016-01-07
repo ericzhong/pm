@@ -6,10 +6,18 @@ from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Versio
 from django.conf import settings
 
 
+_EMPTY_LABEL = ''
+
+
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         exclude = ['created_on', 'updated_on', 'status', 'users', 'groups']
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectForm, self).__init__(*args, **kwargs)
+        self.fields['parent'].empty_label = _EMPTY_LABEL
+        return
 
     def clean_identifier(self):
         return self.cleaned_data.get('identifier') or None    # for 'null=True, blank=True, unique=True'
@@ -19,6 +27,15 @@ class IssueForm(forms.ModelForm):
     class Meta:
         model = Issue
         exclude = ['created_on', 'updated_on', 'watchers']
+
+    def __init__(self, *args, **kwargs):
+        super(IssueForm, self).__init__(*args, **kwargs)
+        for n in ['tag', 'status']:
+            self.fields[n].empty_label = None
+
+        for n in ['parent', 'assigned_to', 'version']:
+            self.fields[n].empty_label = _EMPTY_LABEL
+        return
 
 
 class IssueCategoryForm(forms.ModelForm):
