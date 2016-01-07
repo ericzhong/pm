@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
+{{ form.errors }}
 <form action="{% url 'issue_update' issue.id %}" class="form-horizontal" method="post">
   {% csrf_token %}
   <div class="form-body">
@@ -54,7 +55,7 @@
   <div class="form-actions">
     <div class="row">
       <div class="col-md-offset-3">
-        <button type="submit" class="btn green">创建</button>
+        <button type="submit" class="btn green">保存</button>
         <a type="button" class="btn default" href="{% url 'issue_detail' issue.id %}">取消</a>
       </div>
     </div>

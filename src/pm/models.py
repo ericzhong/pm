@@ -73,6 +73,7 @@ class Issue(models.Model):
     done_ratio = models.IntegerField(default=0, choices=DONE_RATIO_CHOICES)
     parent = models.ForeignKey('Issue', null=True, blank=True)
     is_private = models.BooleanField(default=False)
+    watchers = models.ManyToManyField(User, related_name='watchers')
 
     def __str__(self):
         return self.subject
@@ -151,9 +152,11 @@ class Version(models.Model):
         return "45%"
 
     def estimated_time(self):
+        # TODO
         return 100
 
     def spent_time(self):
+        # TODO
         return 100
 
     total_issue = property(total_issue)
@@ -224,7 +227,7 @@ class Setting(models.Model):
 
 @python_2_unicode_compatible
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     avatar = models.CharField(max_length=_STRING_MAX_LENGTH)
 
     def __str__(self):
