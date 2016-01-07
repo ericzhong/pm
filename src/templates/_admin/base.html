@@ -2,7 +2,7 @@
 
 
 {% block page-content %}
-  <div class="modal fade" id="portlet-config" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal fade" id="portlet-config" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -32,12 +32,12 @@
             <div class="col-md-3">
               <ul class="ver-inline-menu tabbable margin-bottom-10">
               <li id="tab_projects"><a href="{% url 'admin_project' %}"><i class="fa fa-cube"></i> 项目 </a></li>
-              <li id="tab_users"><a href="/users"><i class="fa fa-user"></i> 用户 </a></li>
-              <li id="tab_groups"><a href="/groups"><i class="fa fa-group"></i> 组 </a></li>
-              <li id="tab_roles"><a href="/roles"><i class="fa fa-key"></i> 角色与权限 </a></li>
+              <li id="tab_users"><a href="{% url 'user_list' %}"><i class="fa fa-user"></i> 用户 </a></li>
+              <li id="tab_groups"><a href="{% url 'group_list' %}"><i class="fa fa-group"></i> 组 </a></li>
+              <li id="tab_roles"><a href="{% url 'role_list' %}"><i class="fa fa-key"></i> 角色与权限 </a></li>
               <li id="tab_issue_tags"><a href="{% url 'issue_tag_list' %}"><i class="fa fa-tags"></i> 问题标签 </a></li>
               <li id="tab_issue_statuses"><a href="{% url 'issue_status_list' %}"><i class="fa fa-edit"></i> 问题状态 </a></li>
-              <li id="tab_settings"><a href="/settings"><i class="fa fa-gear"></i> 配置 </a></li>
+              <li id="tab_settings"><a href="{% url 'settings' %}"><i class="fa fa-gear"></i> 配置 </a></li>
             </ul>
             </div>
             <div class="col-md-9">

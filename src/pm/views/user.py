@@ -23,6 +23,17 @@ class Detail(DetailView):
     template_name = 'user_info.html'
     context_object_name = 'user'
 
+    def get_context_data(self, **kwargs):
+        context = super(Detail, self).get_context_data(**kwargs)
+        user = self.object
+
+        joined_projects = user.project_set.all()
+        date_joined = [ n.created_on for n in Project.users.through.objects.filter(user=user, project__in=joined_projects) ]
+        context['joined_projects'] = zip(joined_projects,
+                                         [ n.roles.all() for n in Project.users.through.objects.filter(user=user)],
+                                         date_joined)
+        return context
+
 
 class Create(CreateView):
     model = _model

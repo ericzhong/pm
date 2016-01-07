@@ -38,7 +38,7 @@
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">指派给:</label></div>
-          <div class="col-md-3"><label class="label-value"><a href="/users/1">{{ issue.author }}</a></label></div>
+          <div class="col-md-3"><label class="label-value">{% if issue.assigned_to %}<a href="{% url 'user_detail' issue.assigned_to.id %}">{{ issue.assigned_to }}</a>{% else %}-{% endif %}</label></div>
           <div class="col-md-3"><label class="label-name">%完成:</label></div>
           <div class="col-md-3"><label class="label-value">{{ issue.get_done_ratio_display }}</label></div>
         </div>

@@ -30,8 +30,8 @@
             <td>{{ issue.status }}</td>
             <td>{{ issue.get_priority_display }}</td>
             <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
-            <td><a href="/users/1">{{ issue.assigned_to|default:"-" }}</a></td>
-            <td>{{ issue.updated_on|date:'Y-m-d' }}</td>
+            <td>{% if issue.assigned_to %}<a href="{% url 'user_detail' issue.assigned_to.id %}">{{ issue.assigned_to }}</a>{% else %}-{% endif %}</td>
+            <td>{{ issue.updated_on|date:'Y-m-d H:i:s' }}</td>
           </tr>
         {% endfor %}
         </tbody>

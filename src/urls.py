@@ -97,7 +97,7 @@ urlpatterns = [
     # user
     url(r'^users/$', user.List.as_view(), name='user_list'),
     url(r'^users/add/$', user.Create.as_view(), name='user_add'),
-    #url(r'^users/(?P<pk>\d+)/$', user.Detail.as_view(), name='user_detail'),
+    url(r'^users/(?P<pk>\d+)/$', user.Detail.as_view(), name='user_detail'),
     url(r'^users/(?P<pk>\d+)/update/$', user.Update.as_view(), name='user_update'),
     url(r'^users/(?P<pk>\d+)/delete/$', user.Delete.as_view(), name='user_delete'),
     url(r'^users/(?P<pk>\d+)/lock/$', user.Lock.as_view(), name='user_lock'),

@@ -5,24 +5,27 @@
   <div class="portlet light bordered">
     <div class="portlet-title">
       <div class="caption">
-        <span class="caption-subject font-green-sharp bold uppercase">张三</span>
+        <span class="caption-subject font-green-sharp bold uppercase">{{ user.username }}</span>
       </div>
     </div>
     <div class="portlet-body">
       <h4>信息</h4>
       <ul>
-        <li>邮件地址: xxx@xxx.com</li>
-        <li>注册于: 2014-03-12</li>
-        <li>最后登录: 214-03-12</li>
+        <li>邮件地址: {{ user.email }}</li>
+        <li>注册于: {{ user.date_joined|date:'Y-m-d' }}</li>
+        <li>最后登录: {{ user.last_login|date:'Y-m-d H:i:s' }}</li>
       </ul>
       <h4>项目</h4>
       <ul>
-        <li><a href="/projects/1"> PM研发项目 </a> (开发人员, 2015-10-02)</li>
-        <li>bbb (开发人员, 2015-10-02)</li>
-        <li>ccc (开发人员, 2015-10-02)</li>
-        <li>ddd (开发人员, 2015-10-02)</li>
-        <li>eee (开发人员, 2015-10-02)</li>
-        <li>fff (开发人员, 2015-10-02)</li>
+        {% for item in joined_projects %}
+          <li>
+            <a href="{% url 'project_detail' item.0.id %}">{{ item.0.name }}</a>
+            {% if item.1 %}
+              ({% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %})
+            {% endif %}
+            {{ item.2|date:'Y-m-d' }}
+          </li>
+        {% endfor %}
       </ul>
     </div>
   </div>
