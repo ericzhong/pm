@@ -105,10 +105,24 @@ class CommentForm(forms.ModelForm):
         fields = ['content']
 
 
+class CommentBlankForm(CommentForm):
+    def __init__(self, *args, **kwargs):
+        super(CommentBlankForm, self).__init__(*args, **kwargs)
+        for key, field in self.fields.iteritems():
+            self.fields[key].required = False
+
+
 class WorktimeForm(forms.ModelForm):
     class Meta:
         model = Worktime
         exclude = ['created_on', 'updated_on']
+
+
+class WorktimeBlankForm(WorktimeForm):
+    def __init__(self, *args, **kwargs):
+        super(WorktimeBlankForm, self).__init__(*args, **kwargs)
+        for key, field in self.fields.iteritems():
+            self.fields[key].required = False
 
 
 class PasswordResetByEmailForm(PasswordResetForm):

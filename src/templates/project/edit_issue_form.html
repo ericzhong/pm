@@ -2,6 +2,10 @@
 {% load widget_tweaks %}
 
 {{ form.errors }}
+--------------
+{{ worktime_form.errors }}
+--------------
+{{ comment_form.errors }}
 <form action="{% url 'issue_update' issue.id %}" class="form-horizontal" method="post">
   {% csrf_token %}
   <div class="form-body">

@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Sum
 from django.shortcuts import render, redirect
-from ..forms import IssueForm, CommentForm, WorktimeForm
+from ..forms import IssueForm, CommentForm, WorktimeForm, WorktimeBlankForm, CommentBlankForm
 from ..models import Issue, Comment, Worktime, Project
 from ..utils import Helper
 import time
@@ -88,8 +88,8 @@ class Update(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(Update, self).get_context_data(**kwargs)
         context['project'] = self.object.project
-        context['worktime_form'] = WorktimeForm(prefix=_worktime_form_prefix)
-        context['comment_form'] = CommentForm(prefix=_comment_form_prefix)
+        context['worktime_form'] = self.worktime_form
+        context['comment_form'] = self.comment_form
         return context
 
     def get_form_kwargs(self):
@@ -103,26 +103,32 @@ class Update(UpdateView):
         return kwargs
 
     def form_valid(self, form):
-        worktime_form = WorktimeForm(self.request.POST, prefix=_worktime_form_prefix)
-        comment_form = CommentForm(self.request.POST, prefix=_comment_form_prefix)
-        if worktime_form.is_valid():
-            worktime_form.cleaned_data['project'] = self.object.project
-            worktime_form.cleaned_data['issue'] = self.object
-            worktime_form.cleaned_data['author_id'] = self.request.user.id
-            worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
-            Worktime(**worktime_form.cleaned_data).save()
-        else:
-            if 'hours' in worktime_form.cleaned_data:
-                return super(Update, self).form_invalid(form)
+        self.worktime_form = WorktimeBlankForm(self.request.POST, prefix=_worktime_form_prefix)
+        self.comment_form = CommentBlankForm(self.request.POST, prefix=_comment_form_prefix)
 
-        if comment_form.is_valid():
-            comment_form.cleaned_data['issue'] = self.object
-            comment_form.cleaned_data['author_id'] = self.request.user.id
-            Comment(**comment_form.cleaned_data).save()
+        if self.worktime_form.is_valid():
+            if self.worktime_form.cleaned_data['hours']:
+                self.worktime_form.cleaned_data['issue'] = self.object
+                self.worktime_form.cleaned_data['author'] = self.request.user
+                self.worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
+                Worktime(**self.worktime_form.cleaned_data).save()
+        else:
+            return super(Update, self).form_invalid(form)
+
+        if self.comment_form.is_valid():
+            if self.comment_form.cleaned_data['content']:
+                self.comment_form.cleaned_data['issue'] = self.object
+                self.comment_form.cleaned_data['author'] = self.request.user
+                Comment(**self.comment_form.cleaned_data).save()
         else:
             return super(Update, self).form_invalid(form)
 
         return super(Update, self).form_valid(form)
+
+    def form_invalid(self, form):
+        self.worktime_form = WorktimeBlankForm(self.request.POST, prefix=_worktime_form_prefix)
+        self.comment_form = CommentBlankForm(self.request.POST, prefix=_comment_form_prefix)
+        return super(Update, self).form_invalid(form)
 
 
 class Delete(View):
@@ -136,12 +142,13 @@ class Delete(View):
 class CommentUpdate(View):
     def post(self, request, *args, **kwargs):
         pk = kwargs['pk']
+        issue_id = Comment.objects.get(pk=pk).issue.id
         comment_form = CommentForm(request.POST, prefix=_comment_form_prefix)
 
         if comment_form.is_valid():
             Comment.objects.filter(pk=pk).update(**comment_form.cleaned_data)
 
-        return HttpResponseRedirect(reverse('issue_detail', kwargs={'pk':pk}))
+        return HttpResponseRedirect(reverse('issue_detail', kwargs={'pk':issue_id}))
 
 
 class Quote(View):
@@ -185,7 +192,6 @@ class WorktimeCreate(CreateView):
         else:
             return reverse_lazy('worktime_list', kwargs={'pk': self.kwargs['pk']})
 
-
     def get_context_data(self, **kwargs):
         context = super(WorktimeCreate, self).get_context_data(**kwargs)
         issue = Issue.objects.get(pk=self.kwargs.get('pk'))
@@ -197,7 +203,6 @@ class WorktimeCreate(CreateView):
         kwargs = super(WorktimeCreate, self).get_form_kwargs()
         if self.request.method in ('POST', 'PUT'):
             data = self.request.POST.copy()
-            data['project'] = Issue.objects.get(pk=self.kwargs['pk']).project.id
             data['author'] = self.request.user.id
             kwargs.update({
                 'data': data,
@@ -255,5 +260,4 @@ class MyPage(View):
         context = dict()
         context['assigned_issues'] = Issue.objects.filter(assigned_to=self.request.user)
         context['watch_issues'] = [ n.issue for n in Issue.watchers.through.objects.filter(user=self.request.user) ]
-        print context
         return render(request, 'my_page.html', context)

@@ -200,7 +200,6 @@ class Comment(models.Model):
 
 
 class Worktime(models.Model):
-    project = models.ForeignKey('Project')
     issue = models.ForeignKey('Issue')
     author = models.ForeignKey(User)
     hours = models.IntegerField()
