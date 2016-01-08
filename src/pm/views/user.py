@@ -21,7 +21,7 @@ class List(ListView):
 class Detail(DetailView):
     model = _model
     template_name = 'user_info.html'
-    context_object_name = 'user'
+    context_object_name = 'account'     # conflict with login 'user'
 
     def get_context_data(self, **kwargs):
         context = super(Detail, self).get_context_data(**kwargs)
@@ -47,6 +47,7 @@ class Update(UpdateView):
     template_name = '_admin/edit_user.html'
     form_class = _form
     success_url = reverse_lazy('user_list')
+    context_object_name = 'account'     # conflict with login 'user'
 
     def get_form_kwargs(self):
         kwargs = super(Update, self).get_form_kwargs()

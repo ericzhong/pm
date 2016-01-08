@@ -5,15 +5,15 @@
   <div class="portlet light bordered">
     <div class="portlet-title">
       <div class="caption">
-        <span class="caption-subject font-green-sharp bold uppercase">{{ user.username }}</span>
+        <span class="caption-subject font-green-sharp bold uppercase">{{ account.username }}</span>
       </div>
     </div>
     <div class="portlet-body">
       <h4>信息</h4>
       <ul>
-        <li>邮件地址: {{ user.email }}</li>
-        <li>注册于: {{ user.date_joined|date:'Y-m-d' }}</li>
-        <li>最后登录: {{ user.last_login|date:'Y-m-d H:i:s' }}</li>
+        <li>邮件地址: {{ account.email }}</li>
+        <li>注册于: {{ account.date_joined|date:'Y-m-d' }}</li>
+        <li>最后登录: {{ account.last_login|date:'Y-m-d H:i:s' }}</li>
       </ul>
       <h4>项目</h4>
       <ul>

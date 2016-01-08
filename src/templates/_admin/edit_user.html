@@ -7,7 +7,7 @@
 
 {% block tab_content %}
   <div class="page-title">
-    <span>编辑用户 >> {{ user.username }}</span>
+    <span>编辑用户 >> {{ account.username }}</span>
   </div>
   <div class="tabbable">
     <ul class="nav nav-tabs">
@@ -314,7 +314,7 @@
                 <td>{{ group.name }}</td>
                 <td>
                   <div class="actions btn-set small">
-                    <a data-href="{% url 'user_quit_group' user.id group.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                    <a data-href="{% url 'user_quit_group' account.id group.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
                   </div>
                 </td>
               </tr>
@@ -334,7 +334,7 @@
                 <h4 class="modal-title">加入组</h4>
               </div>
               <div class="modal-body">
-                <form name="user_join_groups_form" action="{% url 'user_join_groups' user.id %}" method="post">
+                <form name="user_join_groups_form" action="{% url 'user_join_groups' account.id %}" method="post">
                   {% csrf_token %}
                   <div class="form-body">
                     <div class="form-group">
@@ -386,8 +386,8 @@
                 </td>
                 <td>
                   <div class="actions btn-set small">
-                    <a name="btn-show-checkboxlist" data-href="{% url 'user_roles' user.id project.0.id %}"><i class="fa fa-edit"></i>编辑</a>
-                    <a data-href="{% url 'user_quit_project' user.id project.0.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                    <a name="btn-show-checkboxlist" data-href="{% url 'user_roles' account.id project.0.id %}"><i class="fa fa-edit"></i>编辑</a>
+                    <a data-href="{% url 'user_quit_project' account.id project.0.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
                   </div>
                 </td>
               </tr>
@@ -407,7 +407,7 @@
                 <h4 class="modal-title">加入项目</h4>
               </div>
               <div class="modal-body">
-                <form name="user_join_projects_form" action="{% url 'user_join_projects' user.id %}" method="post">
+                <form name="user_join_projects_form" action="{% url 'user_join_projects' account.id %}" method="post">
                   {% csrf_token %}
                   <div class="form-body">
                     <div class="form-group">
