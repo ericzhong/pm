@@ -95,7 +95,7 @@
             {% for comment in comments %}
               <li class="media">
                 <a class="pull-left" href="javascript:;">
-                  <img class="todo-userpic" src="/static/img/avatar2.jpg" width="27px" height="27px">
+                  <img class="todo-userpic" src="{% if comment.author.profile.avatar %}/static/avata/{{ comment.author.profile.avatar }}{% else %}/static/img/avatar2.jpg{% endif %}" width="27px" height="27px">
                 </a>
                 <div class="media-body todo-comment">
                   <div class="actions btn-set todo-comment-btn small">
