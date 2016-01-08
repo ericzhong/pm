@@ -57,6 +57,9 @@ class List(ListView):
         context['project'] = Project.objects.get(pk=self.kwargs.get('pk'))
         return context
 
+    def get_queryset(self):
+        return Issue.objects.filter(project__id=self.kwargs.get('pk')).order_by('-updated_on')
+
 
 class Detail(DetailView):
     model = _model

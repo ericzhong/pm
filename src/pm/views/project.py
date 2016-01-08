@@ -76,14 +76,6 @@ class Reopen(View):
         return redirect('project_detail', pk=project.id)
 
 
-class Issues(View):
-    template_name = 'project/issues.html'
-
-    def get(self, request, **kwargs):
-        issues = Issue.objects.filter(project__id=kwargs['pk'])
-        return render(request, self.template_name, {'issues': issues})
-
-
 class ListMember(View):
     template_name = 'project/settings/members.html'
 
