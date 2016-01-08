@@ -26,7 +26,7 @@
           </tr>
         </table>
         <div class="version-detail">
-          <span><a href="/issues">{{ version.total_issue }} 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;({{ version.total_closed_issue }} 关闭 — <a href="/issues">{{ version.total_open_issue }} 打开</a>)</span>
+          <span><a href="{% url 'issue_all' %}">{{ version.total_issue }} 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;({{ version.total_closed_issue }} 关闭 — <a href="{% url 'issue_all' %}">{{ version.total_open_issue }} 打开</a>)</span>
         </div>
       </div>
     {% endfor %}

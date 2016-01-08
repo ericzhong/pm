@@ -26,7 +26,7 @@
           </tr>
         </table>
         <div class="version-detail">
-          <span><a href="/issues">{{ version.total_issue }} 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;({{ version.total_closed_issue }} 关闭 — <a href="/issues">{{ version.total_open_issue }} 打开</a>)</span>
+          <span><a href="{% url 'issue_all' %}">{{ version.total_issue }} 问题</a>&nbsp;&nbsp;&nbsp;&nbsp;({{ version.total_closed_issue }} 关闭 — <a href="{% url 'issue_all' %}">{{ version.total_open_issue }} 打开</a>)</span>
         </div>
       </div>
       <h5>相关问题</h5>
@@ -35,7 +35,7 @@
         <table class="table table-light table-advance table-hover table-condensed second">
           <tbody>
           {% for issue in version.issues %}
-            <tr><td><a href="/issues/1">{{ issue.tag }} #{{ issue.id }}</a>: {{ issue.subject }}</td></tr>
+            <tr><td><a href="{% url 'issue_detail' issue.id %}">{{ issue.tag }} #{{ issue.id }}</a>: {{ issue.subject }}</td></tr>
           {% endfor %}
           </tbody>
         </table>

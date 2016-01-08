@@ -37,7 +37,7 @@
           <div class="tabbable-line">
             <ul class="nav nav-tabs">
               <li id="tab_overview"><a href="{% url 'project_detail' project.id %}"> 概述 </a></li>
-              <li id="tab_roadmap"><a href="/projects/1/roadmap"> 路线图 </a></li>
+              <li id="tab_roadmap"><a href="{% url 'version_roadmap' project.id %}"> 路线图 </a></li>
               <li id="tab_issues"><a href="{% url 'issue_list' project.id %}"> 问题 </a></li>
               <li id="tab_create_issue"><a href="{% url 'issue_add' project.id %}"> 新建问题 </a></li>
               <li id="tab_gantt"><a href="/projects/1/gantt"> 甘特图 </a></li>

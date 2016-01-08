@@ -103,10 +103,10 @@
 			<!-- DOC: Remove data-hover="dropdown" and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
 			<div class="hor-menu ">
 				<ul class="nav navbar-nav">
-					<li><a href="/">主页</a></li>
-					<li><a href="/mypage">我的工作台</a></li>
-					<li><a href="/projects">项目</a></li>
-					<li><a href="/admin">管理</a></li>
+					<li><a href="{% url 'homepage' %}">主页</a></li>
+					<li><a href="{% url 'my_page' %}">我的工作台</a></li>
+					<li><a href="{% url 'project_list' %}">项目</a></li>
+					<li><a href="{% url 'admin' %}">管理</a></li>
 				</ul>
 			</div>
 			<!-- END MEGA MENU -->
