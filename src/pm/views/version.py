@@ -57,6 +57,9 @@ class List(ListView):
         context['project'] = Project.objects.get(pk=self.kwargs['pk'])
         return context
 
+    def get_queryset(self):
+        return Version.objects.filter(project__id=self.kwargs.get('pk')).order_by('id')
+
 
 class Update(UpdateView):
     model = _model
