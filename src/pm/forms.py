@@ -17,6 +17,9 @@ class ProjectForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
         self.fields['parent'].empty_label = _EMPTY_LABEL
+        if self.instance:       # update
+            child = Project.objects.filter(parent=self.instance).values_list('id', flat=True)
+            self.fields['parent'].queryset = Project.objects.exclude(id=self.instance.id).exclude(id__in=child)
         return
 
     def clean_identifier(self):

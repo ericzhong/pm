@@ -33,7 +33,7 @@ class Create(CreateView):
 
     def get_initial(self):
         initial = super(Create, self).get_initial().copy()
-        initial['parent'] = self.request.GET.get('parent', None)
+        initial['parent'] = self.request.GET.get('parent', None)        # create subproject, URL?parent=id
         return initial
 
 
