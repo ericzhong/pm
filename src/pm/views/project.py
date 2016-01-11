@@ -38,6 +38,12 @@ class Detail(DetailView):
     template_name = 'project/overview.html'
     context_object_name = 'project'
 
+    def get_context_data(self, **kwargs):
+        context = super(Detail, self).get_context_data(**kwargs)
+        context['subprojects'] = Project.objects.filter(parent=self.object)
+        context['member'] = Project.objects.filter(parent=self.object)
+        return context
+
 
 class Create(CreateView):
     model = _model

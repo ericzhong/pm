@@ -8,9 +8,11 @@
     <div class="warning"><i class="fa fa-lock"></i>当前项目已关闭，内容只读。</div>
   {% endif %}
   <p>{{ project.description }}</p>
-  <ul>
-    <li>子项目: 子项目1，子项目2，子项目3，子项目4，子项目5，子项目6，子项目7，子项目8，子项目9</li>
-  </ul>
+  {% if subprojects %}
+    <ul>
+      <li>Subprojects: {% for project in subprojects %}<a href="{% url 'project_detail' project.id %}">{{ project.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</li>
+    </ul>
+  {% endif %}
   <div class="row">
     <div class="col-md-6">
       <div class="portlet solid warning-box">
