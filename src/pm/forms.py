@@ -26,6 +26,12 @@ class ProjectForm(forms.ModelForm):
         return self.cleaned_data.get('identifier') or None    # for 'null=True, blank=True, unique=True'
 
 
+class UpdateProjectForm(ProjectForm):
+    class Meta:
+        model = Project
+        exclude = ['created_on', 'updated_on', 'status', 'users', 'groups', 'created_by']
+
+
 class IssueForm(forms.ModelForm):
     class Meta:
         model = Issue

@@ -5,7 +5,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponseRedirect, HttpResponse
 from ..models import Project, Issue, Role
-from ..forms import ProjectForm
+from ..forms import ProjectForm, UpdateProjectForm
 import json
 
 
@@ -17,6 +17,20 @@ class List(ListView):
     model = _model
     template_name = 'project_list.html'
     context_object_name = 'projects'
+
+    def get_queryset(self):
+        self.projects = Project.objects.all()
+        import json
+        return json.dumps(self.get_children()[1])
+
+    def get_children(self, project=None):
+        child = list()
+        for p in self.projects:
+            if project == p.parent:
+                child.append(self.get_children(p))
+        return [{ 'name':project.name,
+                  'url': reverse('project_detail', kwargs={'pk': project.pk}),
+                  'my_project': True if self.request.user == project.created_by else False } if project else None, child]
 
 
 class Detail(DetailView):
@@ -36,11 +50,21 @@ class Create(CreateView):
         initial['parent'] = self.request.GET.get('parent', None)        # create subproject, URL?parent=id
         return initial
 
+    def get_form_kwargs(self):
+        kwargs = super(Create, self).get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            data = self.request.POST.copy()
+            data['created_by'] = self.request.user.id
+            kwargs.update({
+                'data': data,
+            })
+        return kwargs
+
 
 class Update(UpdateView):
     model = _model
     template_name = 'project/settings/info.html'
-    form_class = _form
+    form_class = UpdateProjectForm
 
     def get_success_url(self):
         return reverse('project_detail', kwargs={'pk': self.object.pk})

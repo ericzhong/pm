@@ -30,6 +30,7 @@ class Project(models.Model):
     identifier = models.CharField(max_length=255, null=True, blank=True, unique=True)
     status = models.IntegerField(default=OPEN_STATUS, choices=STATUS_CHOICES)
     inherit_members = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, related_name='creator')
     users = models.ManyToManyField(User, through='ProjectUsers')
     groups = models.ManyToManyField(Group, through='ProjectGroups')
 
