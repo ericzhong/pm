@@ -33,29 +33,22 @@
       </div>
     </div>
     <div class="col-md-6">
-      <div class="portlet solid warning-box">
-        <div class="portlet-title">
-          <div class="caption">
-            <i class="fa fa-user"></i>
-            成员
+      {% if role_members %}
+        <div class="portlet solid warning-box">
+          <div class="portlet-title">
+            <div class="caption">
+              <i class="fa fa-user"></i>
+              成员
+            </div>
+          </div>
+          <div class="portlet-body">
+            {% for item in role_members %}
+              {{ item.0 }}: {% for user in item.1 %}{{ user }}{% if not forloop.last %}, {% endif %}{% endfor %}
+              {% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
           </div>
         </div>
-        <div class="portlet-body">
-          管理人员：aaa<br/>
-          开发人员：aaa,bbb,ccc,ddd,eee,fff,ggg
-        </div>
-      </div>
-      <div class="portlet solid warning-box">
-        <div class="portlet-title">
-          <div class="caption">
-            <i class="fa fa-user"></i>
-            无数据样例
-          </div>
-        </div>
-        <div class="portlet-body">
-          <div class="nodata"><span>暂无数据可显示</span></div>
-        </div>
-      </div>
+      {% endif %}
     </div>
   </div>
 {% endblock %}

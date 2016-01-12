@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponseRedirect, HttpResponse
-from ..models import Project, Issue, Role
+from ..models import Project, Role
 from ..forms import ProjectForm, UpdateProjectForm
 import json
 
@@ -41,8 +41,23 @@ class Detail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(Detail, self).get_context_data(**kwargs)
         context['subprojects'] = Project.objects.filter(parent=self.object)
-        context['member'] = Project.objects.filter(parent=self.object)
+        context['role_members'] = self.get_role_member()
         return context
+
+    def get_role_member(self):
+        project = self.object
+        users = project.users.all()
+        groups = project.groups.all()
+        user_roles = [ [r.name, u.username] for u in users for r in Project.users.through.objects.get(user=u, project=project).roles.all() ]
+        group_roles = [ [r.name, g.name] for g in groups for r in Project.groups.through.objects.get(group=g, project=project).roles.all() ]
+        member_roles = user_roles + group_roles
+
+        import collections
+        d = collections.defaultdict(list)
+        for item in member_roles:
+            d[item[0]].append(item[1])
+        role_members = [ [key, [ n for n in value ]] for key, value in d.iteritems() ]
+        return role_members
 
 
 class Create(CreateView):
