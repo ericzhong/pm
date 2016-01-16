@@ -4,8 +4,10 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponseRedirect, HttpResponse
-from ..models import Project, Role
+from ..models import Project, Role, Project_Group_Role, Project_User_Role
 from ..forms import ProjectForm, UpdateProjectForm
+from .role import get_user_roles_id, get_role_users, get_role_user, get_user_groups_roles_id, \
+    get_role_user_of_groups, check_user_in_groups, get_role_group, get_group_roles_id
 import json
 
 
@@ -30,7 +32,8 @@ class List(ListView):
                 child.append(self.get_children(p))
         return [{ 'name':project.name,
                   'url': reverse('project_detail', kwargs={'pk': project.pk}),
-                  'my_project': True if self.request.user == project.created_by else False } if project else None, child]
+                  'my_project': True if self.request.user == project.created_by else False }
+                if project else None, child]
 
 
 class Detail(DetailView):
@@ -41,23 +44,8 @@ class Detail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(Detail, self).get_context_data(**kwargs)
         context['subprojects'] = Project.objects.filter(parent=self.object)
-        context['role_members'] = self.get_role_member()
+        context['role_users'] = get_role_users(self.kwargs['pk'])
         return context
-
-    def get_role_member(self):
-        project = self.object
-        users = project.users.all()
-        groups = project.groups.all()
-        user_roles = [ [r.name, u.username] for u in users for r in Project.users.through.objects.get(user=u, project=project).roles.all() ]
-        group_roles = [ [r.name, g.name] for g in groups for r in Project.groups.through.objects.get(group=g, project=project).roles.all() ]
-        member_roles = user_roles + group_roles
-
-        import collections
-        d = collections.defaultdict(list)
-        for item in member_roles:
-            d[item[0]].append(item[1])
-        role_members = [ [key, [ n for n in value ]] for key, value in d.iteritems() ]
-        return role_members
 
 
 class Create(CreateView):
@@ -126,23 +114,36 @@ class ListMember(View):
 
     def get(self, request, *args, **kwargs):
         project_id = kwargs['pk']
-        context = dict()
         project = Project.objects.get(id=project_id)
+
+        context = dict()
         context['project'] = project
 
-        joined_users = project.users.all()
-        context['joined_users'] = zip(joined_users,
-            [ Project.users.through.objects.get(project_id=project_id, user=n).roles.all() for n in joined_users ])
+        role_user = get_role_user(project_id)
+        users_id = [ i[1].id for i in role_user ]
 
-        users = User.objects.all()
-        context['not_joined_users'] = list(set(users)-set(joined_users))
+        role_user_of_groups = get_role_user_of_groups(project_id)
+        users_id_of_groups = list(set([ i[1].id for i in role_user_of_groups ]))
 
-        joined_groups = project.groups.all()
-        context['joined_groups'] = zip(joined_groups,
-            [ Project.groups.through.objects.get(project_id=project_id, group=n).roles.all() for n in joined_groups ])
+        all_role_user = list(set(role_user + role_user_of_groups))
+        import collections
+        tmp = collections.defaultdict(list)
+        for item in all_role_user:
+            tmp[item[1]].append(item[0])
+        context['user_roles_deletable'] = [ (key,
+                                             [ u for u in value ],
+                                             False if key.id in users_id_of_groups else True )
+                                            for key, value in tmp.iteritems() ]
 
-        groups = Group.objects.all()
-        context['not_joined_groups'] = list(set(groups)-set(joined_groups))
+        role_group = get_role_group(project_id)
+        groups_id = list(set([ i[1].id for i in role_group ]))
+        tmp = collections.defaultdict(list)
+        for item in role_group:
+            tmp[item[1]].append(item[0])
+        context['group_roles'] = [ (key, [ u for u in value ]) for key, value in tmp.iteritems() ]
+
+        context['not_joined_users'] = User.objects.all().exclude(id__in=list(set(users_id + users_id_of_groups)))
+        context['not_joined_groups'] = Group.objects.all().exclude(id__in=groups_id)
 
         context['roles'] = Role.objects.all()
         return render(request, self.template_name, context)
@@ -151,20 +152,17 @@ class ListMember(View):
 class DeleteMember(View):
     def post(self, request, *args, **kwargs):
         project_id = kwargs['pk']
+
         if 'user_id' in request.GET:
-            Project.users.through.objects.filter(user_id=request.GET['user_id'], project_id=project_id).delete()
+            user_id = request.GET['user_id']
+            if check_user_in_groups(project_id, user_id) is False:
+                Project_User_Role.objects.filter(project_id=project_id, user_id=user_id).delete()
+
         elif 'group_id' in request.GET:
-            Project.groups.through.objects.filter(group_id=request.GET['group_id'], project_id=project_id).delete()
+            group_id = request.GET['group_id']
+            Project_Group_Role.objects.filter(project_id=project_id, group_id=group_id).delete()
+
         return redirect('member_list', pk=project_id)
-
-
-class UpdateMember(View):
-    def post(self, request, *args, **kwargs):
-        user_ids =  dict(request.POST).get('user_id', None)
-        if user_ids is not None:
-            pk = kwargs['pk']
-            Member.objects.bulk_create([ Member(project_id=pk, user_id=id) for id in user_ids ])
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 class CreateMember(View):
@@ -174,45 +172,63 @@ class CreateMember(View):
         groups = request.POST.getlist('group')
         roles = request.POST.getlist('role')
         for id in users:
-            n = Project.users.through(project_id=project_id, user_id=id)
-            n.save()
-            n.roles.add(*roles)
+            for r in roles:
+                Project_User_Role(project_id=project_id, user_id=id, role_id=r).save()
 
         for id in groups:
-            n = Project.groups.through(project_id=project_id, group_id=id)
-            n.save()
-            n.roles.add(*roles)
+            for r in roles:
+                Project_Group_Role(project_id=project_id, group_id=id, role_id=r).save()
+
         return redirect('member_list', pk=project_id)
 
 
 class MemberRoles(View):
     def get(self, request, *args, **kwargs):
         project_id = kwargs['pk']
+
         data = dict()
         data['all'] = [ {'id':n.id, 'name':n.name} for n in Role.objects.all() ]
 
         if 'user_id' in request.GET:
-            data['selected'] = [ n.id for n in
-                 Project.users.through.objects.get(user_id=request.GET['user_id'], project_id=project_id).roles.all() ]
+            user_id = request.GET['user_id']
+            data['selected'] = list(set(get_user_roles_id(project_id, user_id) +
+                                        get_user_groups_roles_id(project_id, user_id)))
+            data['disabled'] = get_user_groups_roles_id(project_id, user_id)
+
         elif 'group_id' in request.GET:
-            data['selected'] = [ n.id for n in
-                Project.groups.through.objects.get(group_id=request.GET['group_id'], project_id=project_id).roles.all() ]
+            group_id = request.GET['group_id']
+            data['selected'] = get_group_roles_id(project_id, group_id)
+
         return HttpResponse(json.dumps(data), content_type="application/json")
 
     def post(self, request, *args, **kwargs):
         project_id = kwargs['pk']
-        new = set(map(int, request.POST.getlist('item')))
+        data = set(map(int, request.POST.getlist('item')))
 
         if 'user_id' in request.GET:
-            obj = Project.users.through.objects.get(user_id=request.GET['user_id'], project_id=project_id)
-        elif 'group_id' in request.GET:
-            obj = Project.groups.through.objects.get(group_id=request.GET['group_id'], project_id=project_id)
-        else:
-            return redirect('member_list', pk=project_id)
+            user_id = request.GET['user_id']
+            old_of_user = set(get_user_roles_id(project_id, user_id))
+            old_of_groups = set(get_user_groups_roles_id(project_id, user_id))
+            old = old_of_user - old_of_groups
+            new = data - old_of_groups
 
-        old = set([ n.id for n in obj.roles.all() ])
-        select = list(new - old)
-        unselect = list(old - new)
-        obj.roles.add(*select)
-        obj.roles.remove(*unselect)
+            select = list(new - old)
+            unselect = list(old - new)
+
+            for n in select:
+                Project_User_Role(project_id=project_id, user_id=user_id, role_id=n).save()
+            Project_User_Role.objects.filter(project_id=project_id, user_id=user_id, role_id__in=unselect).delete()
+
+        elif 'group_id' in request.GET:
+            group_id = request.GET['group_id']
+            old = set(get_group_roles_id(project_id, group_id))
+            new = data
+
+            select = list(new - old)
+            unselect = list(old - new)
+
+            for n in select:
+                Project_Group_Role(project_id=project_id, group_id=group_id, role_id=n).save()
+            Project_Group_Role.objects.filter(project_id=project_id, group_id=group_id, role_id__in=unselect).delete()
+
         return redirect('member_list', pk=project_id)

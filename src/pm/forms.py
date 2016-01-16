@@ -73,12 +73,30 @@ class VersionForm(forms.ModelForm):
 
 class UserForm(forms.ModelForm):
 
-    password1 = forms.CharField(widget=forms.PasswordInput(), required=False)
-    password2 = forms.CharField(widget=forms.PasswordInput(), required=False)
+    password1 = forms.CharField(widget=forms.PasswordInput(), required=True)
+    password2 = forms.CharField(widget=forms.PasswordInput(), required=True)
 
     class Meta:
         model = User
         fields = ['username', 'last_name', 'first_name', 'email', 'is_superuser']
+
+    def clean_first_name(self):
+        data = self.cleaned_data.get('first_name')
+        if not data:
+            raise forms.ValidationError('This field is required.')
+        return data
+
+    def clean_last_name(self):
+        data = self.cleaned_data.get('last_name')
+        if not data:
+            raise forms.ValidationError('This field is required.')
+        return data
+
+    def clean_email(self):
+        data = self.cleaned_data.get('email')
+        if not data:
+            raise forms.ValidationError('This field is required.')
+        return data
 
     def clean(self):
         password1 = self.cleaned_data.get('password1')

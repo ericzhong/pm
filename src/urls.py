@@ -49,7 +49,6 @@ urlpatterns = [
 
     # project member
     url(r'^projects/(?P<pk>\d+)/members/delete$', project.DeleteMember.as_view(), name='member_delete'),
-    url(r'^projects/(?P<pk>\d+)/members/update$', project.UpdateMember.as_view(), name='member_update'),
     url(r'^projects/(?P<pk>\d+)/members/add$', project.CreateMember.as_view(), name='member_add'),
     url(r'^projects/(?P<pk>\d+)/members/roles$', project.MemberRoles.as_view(), name='member_roles'),
 

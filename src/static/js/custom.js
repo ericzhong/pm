@@ -7,11 +7,17 @@ $("a[name='btn-show-checkboxlist']").click( function() {
     f = $('#checkboxlist_form').clone().show().removeAttr('id').attr('action', url);
     c = f.find("div[name='content']");
     $.each( data.all, function( key, item ) {
-      if( 0 > $.inArray( item.id, data.selected ) ) {
-        c.append("<div><input name='item' type='checkbox' value='"+ item.id +"'> "+ item.name +"</div>");
+      if( 0 > $.inArray( item.id, data.selected) && 0 > $.inArray( item.id, data.disabled ) ) {
+        var checked = "";
       }else{
-        c.append("<div><input name='item' type='checkbox' value='"+ item.id +"' checked> "+ item.name +"</div>");
+        var checked = "checked";
       }
+      if( 0 > $.inArray( item.id, data.disabled ) ) {
+        var disabled = "";
+      }else {
+        var disabled = "disabled";
+      }
+      c.append("<div><input name='item' type='checkbox' value='"+ item.id +"'" + checked + ' ' + disabled +"> "+ item.name +"</div>");
     });
     td.children().hide();
     td.append(f);

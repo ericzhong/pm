@@ -27,28 +27,20 @@
                 <div class="row">
                   <div class="col-md-12">
                     <h5>信息</h5>
-                    <!--
                     <div class="form-group">
-                      <label class="control-label col-md-3">登录名<span class="required">*</span></label>
-                      <div class="col-md-4">
-                        {{ form.username|add_class:"form-control"|attr:'readonly' }}
-                      </div>
-                    </div>
-                    -->
-                    <div class="form-group">
-                      <label class="control-label col-md-3">名字</label>
+                      <label class="control-label col-md-3">名字<span class="required">*</span></label>
                       <div class="col-md-4">
                         {{ form.first_name|add_class:"form-control" }}
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="control-label col-md-3">姓氏</label>
+                      <label class="control-label col-md-3">姓氏<span class="required">*</span></label>
                       <div class="col-md-4">
                         {{ form.last_name|add_class:"form-control" }}
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="control-label col-md-3">邮件地址</label>
+                      <label class="control-label col-md-3">邮件地址<span class="required">*</span></label>
                       <div class="col-md-4">
                         {{ form.email|add_class:"form-control" }}
                       </div>
@@ -75,13 +67,13 @@
                     <hr>
                     <h5>认证</h5>
                     <div class="form-group">
-                      <label class="control-label col-md-3">密码</label>
+                      <label class="control-label col-md-3">密码<span class="required">*</span></label>
                       <div class="col-md-4">
                         {{ form.password1|add_class:"form-control" }}
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="control-label col-md-3">确认密码</label>
+                      <label class="control-label col-md-3">确认密码<span class="required">*</span></label>
                       <div class="col-md-4">
                         {{ form.password2|add_class:"form-control" }}
                       </div>
@@ -367,7 +359,7 @@
         <div class="actions btn-set small btn-table">
           <a data-toggle="modal" href="#user_join_projects"><i class="fa fa-plus">加入项目</i></a>
         </div>
-        {% if joined_projects %}
+        {% if project_roles_deletable %}
           <div class="table-scrollable">
             <table class="table table-light table-advance table-hover table-condensed second">
               <thead>
@@ -378,16 +370,18 @@
               </tr>
               </thead>
               <tbody>
-              {% for project in joined_projects %}
+              {% for item in project_roles_deletable %}
               <tr>
-                <td>{{ project.0.name }}</td>
+                <td>{{ item.0.name }}</td>
                 <td data-toggle="checkboxlist_form">
-                  <span>{% for role in project.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                  <span>{% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
                 </td>
                 <td>
                   <div class="actions btn-set small">
-                    <a name="btn-show-checkboxlist" data-href="{% url 'user_roles' account.id project.0.id %}"><i class="fa fa-edit"></i>编辑</a>
-                    <a data-href="{% url 'user_quit_project' account.id project.0.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                    <a name="btn-show-checkboxlist" data-href="{% url 'user_roles' account.id item.0.id %}"><i class="fa fa-edit"></i>编辑</a>
+                    {% if item.2 %}
+                      <a data-href="{% url 'user_quit_project' account.id item.0.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                    {% endif %}
                   </div>
                 </td>
               </tr>

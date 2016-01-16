@@ -4,7 +4,8 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.models import User, Group
 from django.shortcuts import redirect, HttpResponseRedirect, HttpResponse
 from ..forms import GroupForm
-from ..models import Project, Role
+from ..models import Project, Role, Project_Group_Role
+from .role import get_group_roles_id, get_project_role_of_group
 import json
 
 
@@ -46,16 +47,18 @@ class Update(UpdateView):
         context = super(Update, self).get_context_data(**kwargs)
         group = self.object
 
-        context['joined_users'] = group.user_set.all()
-        users = User.objects.all()
-        context['not_joined_users'] = list(set(users)-set(context['joined_users']))
+        joined_users = group.user_set.all()
+        context['joined_users'] = joined_users
+        context['not_joined_users'] = User.objects.all().exclude(id__in=[ n.id for n in joined_users ])
 
-        joined_projects = group.project_set.all()
-        context['joined_projects'] = zip(joined_projects,
-                                         [ n.roles.all() for n in Project.groups.through.objects.filter(group=group)])
-
-        projects = Project.objects.all()
-        context['not_joined_projects'] = list(set(projects)-set(joined_projects))
+        project_role_of_group = get_project_role_of_group(group.id)
+        import collections
+        tmp = collections.defaultdict(list)
+        for item in project_role_of_group:
+            tmp[item[0]].append(item[1])
+        context['project_roles'] = [ ( key, ( r for r in value ) ) for key, value in tmp.iteritems() ]
+        joined_projects = list(set([ i[0].id for i in project_role_of_group ]))
+        context['not_joined_projects'] = Project.objects.all().exclude(id__in=joined_projects)
 
         context['roles'] = Role.objects.all()
         return context
@@ -87,13 +90,14 @@ class DeleteUser(View):
 class JoinProjects(View):
     def post(self, request, *args, **kwargs):
         group_id = kwargs['pk']
-        join_projects = request.POST.getlist('project')
+        projects = request.POST.getlist('project')
         roles = request.POST.getlist('role')
-        if len(join_projects):
-            for p in join_projects:
-                n = Project.groups.through(project_id=p, group_id=group_id)
-                n.save()
-                n.roles.add(*roles)
+
+        if len(projects) and len(roles):
+            for p in projects:
+                for r in roles:
+                    Project_Group_Role(project_id=p, group_id=group_id, role_id=r).save()
+
         return HttpResponseRedirect(reverse('group_update', args=(group_id,))+'#tab_group_project')
 
 
@@ -101,7 +105,7 @@ class QuitProject(View):
     def post(self, request, *args, **kwargs):
         group_id = kwargs['pk']
         project_id = kwargs['id']
-        Project.groups.through.objects.filter(group_id=group_id, project_id=project_id).delete()
+        Project_Group_Role.objects.filter(project_id=project_id, group_id=group_id).delete()
         return HttpResponseRedirect(reverse('group_update', args=(group_id,))+'#tab_group_project')
 
 
@@ -111,19 +115,20 @@ class Roles(View):
         project_id = kwargs['id']
         data = dict()
         data['all'] = [ {'id':n.id, 'name':n.name} for n in Role.objects.all() ]
-        data['selected'] = [ n.id for n in
-                             Project.groups.through.objects.get(group_id=group_id, project_id=project_id).roles.all() ]
+        data['selected'] = list(get_group_roles_id(project_id, group_id))
         return HttpResponse(json.dumps(data), content_type="application/json")
 
     def post(self, request, *args, **kwargs):
         group_id = kwargs['pk']
         project_id = kwargs['id']
+
         new = set(map(int, request.POST.getlist('item')))
-        old = set([ n.id for n in
-                    Project.groups.through.objects.filter(group_id=group_id, project_id=project_id)[0].roles.all() ])
+        old = set(get_group_roles_id(project_id, group_id))
         select = list(new - old)
         unselect = list(old - new)
-        n = Project.groups.through.objects.get(group_id=group_id, project_id=project_id)
-        n.roles.add(*select)
-        n.roles.remove(*unselect)
+
+        for n in select:
+            Project_Group_Role(project_id=project_id, group_id=group_id, role_id=n).save()
+        Project_Group_Role.objects.filter(project_id=project_id, group_id=group_id, role_id__in=unselect).delete()
+
         return HttpResponseRedirect(reverse('group_update', args=(group_id,))+'#tab_group_project')

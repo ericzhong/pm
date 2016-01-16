@@ -5,7 +5,7 @@
   <div class="portlet light bordered">
     <div class="portlet-title">
       <div class="caption">
-        <span class="caption-subject font-green-sharp bold uppercase">{{ account.username }}</span>
+        <span class="caption-subject font-green-sharp bold uppercase">{{ account.name }}</span>
       </div>
     </div>
     <div class="portlet-body">
@@ -17,13 +17,12 @@
       </ul>
       <h4>项目</h4>
       <ul>
-        {% for item in joined_projects %}
+        {% for item in project_roles %}
           <li>
             <a href="{% url 'project_detail' item.0.id %}">{{ item.0.name }}</a>
             {% if item.1 %}
               ({% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %})
             {% endif %}
-            {{ item.2|date:'Y-m-d' }}
           </li>
         {% endfor %}
       </ul>

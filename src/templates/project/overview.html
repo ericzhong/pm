@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="col-md-6">
-      {% if role_members %}
+      {% if role_users %}
         <div class="portlet solid warning-box">
           <div class="portlet-title">
             <div class="caption">
@@ -42,9 +42,11 @@
             </div>
           </div>
           <div class="portlet-body">
-            {% for item in role_members %}
-              {{ item.0 }}: {% for user in item.1 %}{{ user }}{% if not forloop.last %}, {% endif %}{% endfor %}
-              {% if not forloop.last %}<br>{% endif %}
+            {% for item in role_users %}
+              {{ item.0.name }}:
+              {% for user in item.1 %}
+                <a href="{% url 'user_detail' user.id %}">{{ user.name }}</a>{% if not forloop.last %}, {% endif %}
+              {% endfor %}{% if not forloop.last %}<br>{% endif %}
             {% endfor %}
           </div>
         </div>

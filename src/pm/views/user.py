@@ -4,7 +4,8 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.models import User, Group
 from django.shortcuts import redirect, HttpResponseRedirect, HttpResponse
 from ..forms import UserForm
-from ..models import Project, Role
+from ..models import Project, Role, Project_User_Role
+from .role import get_project_role_of_user, get_project_role_of_groups, get_user_roles_id, get_user_groups_roles_id
 import json
 
 
@@ -26,12 +27,14 @@ class Detail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(Detail, self).get_context_data(**kwargs)
         user = self.object
+        project_role = list(set(get_project_role_of_user(user.id) + get_project_role_of_groups(user)))
 
-        joined_projects = user.project_set.all()
-        date_joined = [ n.created_on for n in Project.users.through.objects.filter(user=user, project__in=joined_projects) ]
-        context['joined_projects'] = zip(joined_projects,
-                                         [ n.roles.all() for n in Project.users.through.objects.filter(user=user)],
-                                         date_joined)
+        import collections
+        tmp = collections.defaultdict(list)
+        for item in project_role:
+            tmp[item[0]].append(item[1])
+
+        context['project_roles'] = [ ( key, ( r for r in value ) ) for key, value in tmp.iteritems() ]
         return context
 
 
@@ -63,12 +66,23 @@ class Update(UpdateView):
         context = super(Update, self).get_context_data(**kwargs)
         user = self.object
 
-        joined_projects = user.project_set.all()
-        context['joined_projects'] = zip(joined_projects,
-                                         [ n.roles.all() for n in Project.users.through.objects.filter(user=user)])
+        project_role_of_user = get_project_role_of_user(user.id)
+        project_role_of_group = get_project_role_of_groups(user)
+        project_role_of_all = list(set(project_role_of_user + project_role_of_group))
 
-        projects = Project.objects.all()
-        context['not_joined_projects'] = list(set(projects)-set(joined_projects))
+        import collections
+        tmp = collections.defaultdict(list)
+        for item in project_role_of_all:
+            tmp[item[0]].append(item[1])
+
+        projects_of_group = list(set([ i[0] for i in project_role_of_group ]))
+        context['project_roles_deletable'] = [ ( key,
+                                                 ( r for r in value ),
+                                                 False if key in projects_of_group else True )
+                                               for key, value in tmp.iteritems() ]
+
+        context['not_joined_projects'] = Project.objects.all()\
+            .exclude(id__in=list(set([ i[0].id for i in project_role_of_all ])))
 
         context['joined_groups'] = user.groups.all()
         groups = Group.objects.all()
@@ -107,13 +121,14 @@ class Unlock(View):
 class JoinProjects(View):
     def post(self, request, *args, **kwargs):
         user_id = kwargs['pk']
-        join_projects = request.POST.getlist('project')
+        projects = request.POST.getlist('project')
         roles = request.POST.getlist('role')
-        if len(join_projects):
-            for p in join_projects:
-                n = Project.users.through(project_id=p, user_id=user_id)
-                n.save()
-                n.roles.add(*roles)
+
+        if len(projects) and len(roles):
+            for p in projects:
+                for r in roles:
+                    Project_User_Role(project_id=p, user_id=user_id, role_id=r).save()
+
         return HttpResponseRedirect(reverse('user_update', args=(user_id,))+'#tab_user_project')
 
 
@@ -121,7 +136,7 @@ class QuitProject(View):
     def post(self, request, *args, **kwargs):
         user_id = kwargs['pk']
         project_id = kwargs['id']
-        Project.users.through.objects.filter(user_id=user_id, project_id=project_id).delete()
+        Project_User_Role.objects.filter(project_id=project_id, user_id=user_id).delete()
         return HttpResponseRedirect(reverse('user_update', args=(user_id,))+'#tab_user_project')
 
 
@@ -144,21 +159,29 @@ class Roles(View):
     def get(self, request, *args, **kwargs):
         user_id = kwargs['pk']
         project_id = kwargs['id']
+
         data = dict()
         data['all'] = [ {'id':n.id, 'name':n.name} for n in Role.objects.all() ]
-        data['selected'] = [ n.id for n in Project.users.through.objects.get(user_id=user_id,
-                                                                             project_id=project_id).roles.all() ]
+        data['selected'] = list(set(get_user_roles_id(project_id, user_id) +
+                                    get_user_groups_roles_id(project_id, user_id)))
+        data['disabled'] = list(get_user_groups_roles_id(project_id, user_id))
+
         return HttpResponse(json.dumps(data), content_type="application/json")
 
     def post(self, request, *args, **kwargs):
         user_id = kwargs['pk']
         project_id = kwargs['id']
-        new = set(map(int, request.POST.getlist('item')))
-        old = set([ n.id for n in Project.users.through.objects.filter(user_id=user_id,
-                                                                       project_id=project_id)[0].roles.all() ])
+
+        old_of_user = set(get_user_roles_id(project_id, user_id))
+        old_of_group = set(get_user_groups_roles_id(project_id, user_id))
+        old = old_of_user - old_of_group
+        new = set(map(int, request.POST.getlist('item'))) - old_of_group
+
         select = list(new - old)
         unselect = list(old - new)
-        n = Project.users.through.objects.get(user_id=user_id, project_id=project_id)
-        n.roles.add(*select)
-        n.roles.remove(*unselect)
+
+        for n in select:
+            Project_User_Role(project_id=project_id, user_id=user_id, role_id=n).save()
+        Project_User_Role.objects.filter(project_id=project_id, user_id=user_id, role_id__in=unselect).delete()
+
         return HttpResponseRedirect(reverse('user_update', args=(user_id,))+'#tab_user_project')

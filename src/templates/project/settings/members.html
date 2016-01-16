@@ -17,23 +17,25 @@
         </tr>
         </thead>
         <tbody>
-        {% for item in joined_users %}
+        {% for item in user_roles_deletable %}
           <tr>
-            <td>{{ item.0.username }}</td>
+            <td><a href="{% url 'user_detail' item.0.id %}">{{ item.0.name }}</a></td>
             <td data-toggle="checkboxlist_form">
               <span>{% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
             </td>
             <td>
               <div class="actions btn-set small">
                 <a name="btn-show-checkboxlist" data-href="{% url 'member_roles' project.id %}?user_id={{ item.0.id }}"><i class="fa fa-edit"></i>编辑</a>
-                <a data-href="{% url 'member_delete' project.id %}?user_id={{ item.0.id }}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                {% if item.2 == True %}
+                  <a data-href="{% url 'member_delete' project.id %}?user_id={{ item.0.id }}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                {% endif %}
               </div>
             </td>
           </tr>
         {% endfor %}
-        {% for item in joined_groups %}
+        {% for item in group_roles %}
           <tr>
-            <td>{{ item.0.name }}</td>
+            <td><i class="fa fa-group"></i> {{ item.0.name }}</td>
             <td data-toggle="checkboxlist_form">
               <span>{% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
             </td>
@@ -67,7 +69,7 @@
                   {% if not_joined_users or not_joined_groups %}
                     <div class="icheck-inline">
                       {% for user in not_joined_users %}
-                        <label><input type="checkbox" name="user" value="{{ user.id }}">{{ user.username }}</label>
+                        <label><input type="checkbox" name="user" value="{{ user.id }}">{{ user.name }}</label>
                       {% endfor %}
                       {% for group in not_joined_groups %}
                         <label><input type="checkbox" name="group" value="{{ group.id }}">{{ group.name }}</label>

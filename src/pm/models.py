@@ -9,6 +9,12 @@ from django.utils.translation import ugettext as _
 _STRING_MAX_LENGTH = 255
 
 
+def get_formatted_name(self):
+    return "%s %s" % (self.first_name, self.last_name)
+
+User.add_to_class('name', get_formatted_name)
+
+
 @python_2_unicode_compatible
 class Project(models.Model):
 
@@ -31,8 +37,6 @@ class Project(models.Model):
     status = models.IntegerField(default=OPEN_STATUS, choices=STATUS_CHOICES)
     inherit_members = models.BooleanField(default=False)
     created_by = models.ForeignKey(User, related_name='creator')
-    users = models.ManyToManyField(User, through='ProjectUsers')
-    groups = models.ManyToManyField(Group, through='ProjectGroups')
 
     def __str__(self):
         return self.name
@@ -172,24 +176,24 @@ class Version(models.Model):
         return self.name
 
 
-class ProjectUsers(models.Model):
+class Project_User_Role(models.Model):
     project = models.ForeignKey('Project')
     user = models.ForeignKey(User)
+    role = models.ForeignKey('Role')
     created_on = models.DateTimeField(auto_now_add=True)
-    roles = models.ManyToManyField('Role')
 
     class Meta:
-        unique_together = ("project", "user")
+        unique_together = ('project', 'user', 'role')
 
 
-class ProjectGroups(models.Model):
+class Project_Group_Role(models.Model):
     project = models.ForeignKey('Project')
     group = models.ForeignKey(Group)
+    role = models.ForeignKey('Role')
     created_on = models.DateTimeField(auto_now_add=True)
-    roles = models.ManyToManyField('Role')
 
     class Meta:
-        unique_together = ("project", "group")
+        unique_together = ('project', 'group', 'role')
 
 
 class Comment(models.Model):
