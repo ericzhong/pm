@@ -24,10 +24,9 @@
         </div>
         <div class="portlet-body">
           <ul>
-            <li>功能：<a href="{% url 'issue_all' %}">89</a> 打开 / 229</li>
-            <li>支持：<a href="{% url 'issue_all' %}">12</a> 打开 / 29</li>
-            <li>文档：<a href="{% url 'issue_all' %}">9</a> 打开/ 10</li>
-            <li>测试：<a href="{% url 'issue_all' %}">0</a> 打开 / 23</li>
+            {% for key,value in project.issue_report.items %}
+              <li>{{ key }}：<a href="{% url 'issue_all' %}">{{ value.open }}</a> 打开 / {{ value.total }}</li>
+            {% endfor %}
           </ul>
         </div>
       </div>

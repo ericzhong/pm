@@ -41,6 +41,24 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+    def issue_report(self):
+        issues = Issue.objects.filter(project=self)
+
+        import collections
+        data = collections.defaultdict(dict)
+        for issue in issues:
+            if 'closed' == issue.status.name.lower():
+                data[issue.tag.name]['closed'] = data[issue.tag.name].get('closed', 0) + 1
+            else:
+                data[issue.tag.name]['open'] = data[issue.tag.name].get('open', 0) + 1
+
+        for key, value in data.iteritems():
+            data[key]['total'] = data[key].get('open', 0) + data[key].get('closed', 0)
+
+        return dict(data)
+
+    issue_report = property(issue_report)
+
 
 @python_2_unicode_compatible
 class Issue(models.Model):
