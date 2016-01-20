@@ -15,6 +15,14 @@ def get_formatted_name(self):
 User.add_to_class('name', get_formatted_name)
 
 
+def get_estimated_time(issues):
+    n = 0
+    for issue in issues:
+        if issue.start_date and issue.due_date and issue.start_date <= issue.due_date:
+            n += (issue.due_date - issue.start_date).days + 1
+    return n * 8
+
+
 @python_2_unicode_compatible
 class Project(models.Model):
 
@@ -47,7 +55,7 @@ class Project(models.Model):
         import collections
         data = collections.defaultdict(dict)
         for issue in issues:
-            if 'closed' == issue.status.name.lower():
+            if 'closed' == issue.status.name:
                 data[issue.tag.name]['closed'] = data[issue.tag.name].get('closed', 0) + 1
             else:
                 data[issue.tag.name]['open'] = data[issue.tag.name].get('open', 0) + 1
@@ -57,7 +65,15 @@ class Project(models.Model):
 
         return dict(data)
 
+    def estimated_time(self):
+        return get_estimated_time(Issue.objects.filter(project=self))
+
+    def spent_time(self):
+        return Issue.objects.filter(project=self).aggregate(hours=models.Sum('worktime__hours'))['hours'] or 0
+
     issue_report = property(issue_report)
+    estimated_time = property(estimated_time)
+    spent_time = property(spent_time)
 
 
 @python_2_unicode_compatible
@@ -160,33 +176,30 @@ class Version(models.Model):
         return Issue.objects.filter(version=self).count()
 
     def total_open_issue(self):
-        # TODO
-        return 0
+        return Issue.objects.filter(version=self).exclude(status__name='closed').count()
 
     def total_closed_issue(self):
-        # TODO
-        return 0
+        return Issue.objects.filter(version=self).filter(status__name='closed').count()
 
     def issues(self):
         return Issue.objects.filter(version=self)
 
-    def progress(self):
-        # TODO
-        return "45%"
+    def done_ratio(self):
+        return int(Issue.objects.filter(version=self)
+                   .exclude(status__name='closed')
+                   .aggregate(data=models.Avg('done_ratio'))['data'])
 
     def estimated_time(self):
-        # TODO
-        return 100
+        return get_estimated_time(Issue.objects.filter(version=self))
 
     def spent_time(self):
-        # TODO
-        return 100
+        return Issue.objects.filter(version=self).aggregate(hours=models.Sum('worktime__hours'))['hours'] or 0
 
     total_issue = property(total_issue)
     total_open_issue = property(total_open_issue)
     total_closed_issue = property(total_closed_issue)
     issues = property(issues)
-    progress = property(progress)
+    done_ratio = property(done_ratio)
     estimated_time = property(estimated_time)
     spent_time = property(spent_time)
 

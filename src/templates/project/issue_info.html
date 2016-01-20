@@ -32,13 +32,13 @@
           <div class="col-md-3"><label class="label-name">状态:</label></div>
           <div class="col-md-3"><label  class="label-value">{{ issue.status }}</label></div>
           <div class="col-md-3"><label class="label-name">开始日期:</label></div>
-          <div class="col-md-3"><label class="label-value">{{ issue.start_date|default:"-" }}</label></div>
+          <div class="col-md-3"><label class="label-value">{{ issue.start_date|date:'Y-m-d'|default:"-" }}</label></div>
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">优先级:</label></div>
           <div class="col-md-3"><label class="label-value">{{ issue.get_priority_display }}</label></div>
           <div class="col-md-3"><label class="label-name">完成日期:</label></div>
-          <div class="col-md-3"><label class="label-value">{{ issue.due_date|default:"-" }}</label></div>
+          <div class="col-md-3"><label class="label-value">{{ issue.due_date|date:'Y-m-d'|default:"-" }}</label></div>
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">指派给:</label></div>
