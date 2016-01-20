@@ -55,10 +55,10 @@ class Project(models.Model):
         import collections
         data = collections.defaultdict(dict)
         for issue in issues:
-            if 'closed' == issue.status.name:
-                data[issue.tag.name]['closed'] = data[issue.tag.name].get('closed', 0) + 1
+            if Version.STATUS_CHOICES[Version.CLOSED_STATUS-1][1] == issue.status.name:
+                data[issue.tag]['closed'] = data[issue.tag].get('closed', 0) + 1
             else:
-                data[issue.tag.name]['open'] = data[issue.tag.name].get('open', 0) + 1
+                data[issue.tag]['open'] = data[issue.tag].get('open', 0) + 1
 
         for key, value in data.iteritems():
             data[key]['total'] = data[key].get('open', 0) + data[key].get('closed', 0)
@@ -176,17 +176,17 @@ class Version(models.Model):
         return Issue.objects.filter(version=self).count()
 
     def total_open_issue(self):
-        return Issue.objects.filter(version=self).exclude(status__name='closed').count()
+        return Issue.objects.filter(version=self).exclude(status__id=self.CLOSED_STATUS).count()
 
     def total_closed_issue(self):
-        return Issue.objects.filter(version=self).filter(status__name='closed').count()
+        return Issue.objects.filter(version=self).filter(status__id=self.CLOSED_STATUS).count()
 
     def issues(self):
         return Issue.objects.filter(version=self)
 
     def done_ratio(self):
         return int(Issue.objects.filter(version=self)
-                   .exclude(status__name='closed')
+                   .exclude(status__id=self.CLOSED_STATUS)
                    .aggregate(data=models.Avg('done_ratio'))['data'])
 
     def estimated_time(self):

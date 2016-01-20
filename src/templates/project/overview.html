@@ -27,7 +27,7 @@
         <div class="portlet-body">
           <ul>
             {% for key,value in project.issue_report.items %}
-              <li>{{ key }}：<a href="{% url 'issue_all' %}">{{ value.open }}</a> 打开 / {{ value.total }}</li>
+              <li>{{ key.name }}：<a href="{% url 'issue_all' %}?open&issue_tag_id={{ key.id }}">{{ value.open }}</a> 打开 / {{ value.total }}</li>
             {% endfor %}
           </ul>
         </div>

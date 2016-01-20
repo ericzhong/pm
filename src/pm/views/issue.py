@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Sum
 from django.shortcuts import render, redirect
 from ..forms import IssueForm, CommentForm, WorktimeForm, WorktimeBlankForm, CommentBlankForm
-from ..models import Issue, Comment, Worktime, Project
+from ..models import Issue, Comment, Worktime, Project, Version
 from ..utils import Helper
 import time
 
@@ -242,6 +242,38 @@ class AllIssues(ListView):
     model = _model
     template_name = 'all_issues.html'
     context_object_name = 'issues'
+
+    def get_context_data(self, **kwargs):
+        context = super(AllIssues, self).get_context_data(**kwargs)
+        version_id = self.request.GET.get('version_id', None)
+        open = True if 'open' in self.request.GET else False
+        status_id = self.request.GET.get('status_id', None)
+        issue_tag_id = self.request.GET.get('issue_tag_id', None)
+        assigned_to_id = self.request.GET.get('assigned_to_id', None)
+        watcher_id = self.request.GET.get('watcher_id', None)
+
+        issues = Issue.objects.all()
+        if version_id:
+            issues = issues.filter(version_id=version_id)
+
+        if open:
+            issues = issues.exclude(status_id=Version.CLOSED_STATUS)
+        else:
+            if status_id:
+                issues = issues.filter(status_id=status_id)
+
+        if issue_tag_id:
+            issues = issues.filter(tag_id=issue_tag_id)
+
+        if assigned_to_id:
+            issues = issues.filter(assigned_to_id=assigned_to_id)
+
+        if watcher_id:
+            issues = issues.filter(watchers__id=watcher_id)
+
+        context['issues'] = issues
+        return context
+
 
 
 class Watch(View):
