@@ -9,10 +9,23 @@ from ..forms import ProjectForm, UpdateProjectForm
 from .role import get_user_roles_id, get_role_users, get_role_user, get_user_groups_roles_id, \
     get_role_user_of_groups, check_user_in_groups, get_role_group, get_group_roles_id
 import json
-
+from ..utils import Helper
 
 _model = Project
 _form = ProjectForm
+
+
+def get_hierarchical_projects(project_list):
+    projects = list(project_list)
+
+    def get_children(project=None):
+        child = list()
+        for p in projects:
+            if project == p.parent:
+                child.append(get_children(p))
+        return [ project or None, child or None ]
+
+    return get_children()[1]
 
 
 class List(ListView):
@@ -21,19 +34,28 @@ class List(ListView):
     context_object_name = 'projects'
 
     def get_queryset(self):
-        self.projects = Project.objects.all()
-        import json
-        return json.dumps(self.get_children()[1])
+        return self.get_all_projects_html()
 
-    def get_children(self, project=None):
-        child = list()
-        for p in self.projects:
-            if project == p.parent:
-                child.append(self.get_children(p))
-        return [{ 'name':project.name,
-                  'url': reverse('project_detail', kwargs={'pk': project.pk}),
-                  'my_project': True if self.request.user == project.created_by else False }
-                if project else None, child]
+    def get_all_projects_html(self):
+        items = get_hierarchical_projects(Project.objects.all())
+
+        def get_html(data):
+            get_html.text += '''<ol style="list-style-type: none">\n'''
+            for item in data:
+                icon = '''<i class="fa %s"></i>''' % \
+                       ('fa-star font-yellow-casablanca' if item[0].created_by == self.request.user else 'fa-none')
+                get_html.text += '''<li><a href="%s">%s<span>%s</span></a></li>\n''' % \
+                                 (reverse('project_detail', kwargs={'pk': item[0].id}),
+                                  icon,
+                                  Helper.limit_length(item[0].name, 40))
+                if item[1] is not None:
+                    get_html(item[1])
+            get_html.text += '</ol>\n'
+
+        get_html.text = ''
+        get_html(items)
+
+        return get_html.text
 
 
 class Detail(DetailView):
@@ -45,7 +67,29 @@ class Detail(DetailView):
         context = super(Detail, self).get_context_data(**kwargs)
         context['subprojects'] = Project.objects.filter(parent=self.object)
         context['role_users'] = get_role_users(self.kwargs['pk'])
+        context['other_projects'] = self.get_other_projects_html()
         return context
+
+    def get_other_projects_html(self):
+        items = get_hierarchical_projects(Project.objects.exclude(id=self.object.id))
+
+        def get_html(data):
+            for item in data:
+                get_html.text += '''<li><a href="%s">%s%s</a></li>\n''' % \
+                                 (reverse('project_detail', kwargs={'pk': item[0].id}),
+                                  '&nbsp;' * get_html.depth * 4 +
+                                  "<i class='fa fa-angle-double-right'></i>" if get_html.depth else '',
+                                  Helper.limit_length(item[0].name, 30))
+                if item[1] is not None:
+                    get_html.depth += 1
+                    get_html(item[1])
+                    get_html.depth -= 1
+
+        get_html.text = ''
+        get_html.depth = 0
+        get_html(items)
+
+        return get_html.text
 
 
 class Create(CreateView):

@@ -15,7 +15,6 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 from django.utils.translation import ugettext_lazy as _
 
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -44,10 +43,9 @@ INSTALLED_APPS = (
     'widget_tweaks',
 )
 
-
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
-    #'django.middleware.locale.LocaleMiddleware',
+    # 'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -113,7 +111,6 @@ LOCALE_PATHS = (
 )
 
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
@@ -142,8 +139,8 @@ SERVER_EMAIL = ''
 # Server for test: python -m smtpd -n -c DebuggingServer localhost:1025
 
 
-
 # Upload file
 UPLOAD_AVATAR_DIR = os.path.join(BASE_DIR, 'static', 'avata')
 UPLOAD_AVATAR_MIME_TYPES = ['png', 'jpg', 'jpeg', 'gif']
-UPLOAD_AVATAR_MAX_SIZE = 50      # KB
+UPLOAD_AVATAR_MAX_SIZE = 50  # KB
+

@@ -16,35 +16,11 @@
           </div>
         </div>
         <div class="portlet-body">
-          <div class="project-list"></div>
+          <div class="project-list">
+            {{ projects|safe }}
+          </div>
         </div>
       </div>
     </div>
   </div>
-{% endblock %}
-
-
-{% block page-level-scripts %}
-<script>
-  projects={% autoescape off %}{{ projects }}{% endautoescape %}
-
-  function get_elements(data) {
-    var p = $('<ol style="list-style-type: none">');
-    for(n in data) {
-      if(data[n][0].my_project){
-        var icon = '<i class="fa fa-star font-yellow-casablanca"></i>'
-      }else{
-        var icon = '<i class="fa fa-none"></i>'
-      }
-      p.append('<li><a href="' + data[n][0].url + '">' + icon + data[n][0].name + '</a></li>');
-      if(0!=data[n][1].length){
-        p.append(get_elements(data[n][1]));
-      }
-    }
-    return p;
-  }
-
-  $('.project-list').append(get_elements(projects));
-
-</script>
 {% endblock %}

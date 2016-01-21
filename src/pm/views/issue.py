@@ -275,7 +275,6 @@ class AllIssues(ListView):
         return context
 
 
-
 class Watch(View):
     def get(self, request, *args, **kwargs):
         pk = kwargs['pk']

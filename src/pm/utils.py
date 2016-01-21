@@ -1,18 +1,30 @@
+# coding:utf-8
 
 
-class Helper():
+class Helper:
+
+    def __init__(self):
+        pass
 
     @classmethod
-    def add_prefix(self, text, prefix=""):
+    def add_prefix(cls, text, prefix=""):
         str = ""
         for s in text.splitlines():
-            str += "%s%s\n" % (prefix, s) 
+            str += "%s%s\n" % (prefix, s)
         return str
 
+    @classmethod
+    def quote(cls, text):
+        return cls.add_prefix(text, "> ")
 
     @classmethod
-    def quote(self, text):
-        return self.add_prefix(text, "> ")
+    def limit_length(cls, string, length):
+        suffix = '...'
+        suffix_size = len(suffix)
+        if len(string) > length - suffix_size:
+            return string[:length - suffix_size] + suffix
+        else:
+            return string
 
 
 if __name__ == '__main__':
