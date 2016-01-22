@@ -1,10 +1,10 @@
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, View
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
-from ..models import Version, Project, Issue
+from ..models import Version, Project
 from ..forms import VersionForm
-
+from .project import get_other_projects_html
 
 _model = Version
 _form = VersionForm
@@ -54,7 +54,9 @@ class List(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(List, self).get_context_data(**kwargs)
-        context['project'] = Project.objects.get(pk=self.kwargs['pk'])
+        project_id = self.kwargs['pk']
+        context['project'] = Project.objects.get(pk=project_id)
+        context['other_projects'] = get_other_projects_html(project_id)
         return context
 
     def get_queryset(self):
@@ -114,5 +116,7 @@ class Roadmap(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(Roadmap, self).get_context_data(**kwargs)
-        context['project'] = Project.objects.get(pk=self.kwargs['pk'])
+        project_id = self.kwargs['pk']
+        context['project'] = Project.objects.get(pk=project_id)
+        context['other_projects'] = get_other_projects_html(project_id)
         return context

@@ -28,6 +28,28 @@ def get_hierarchical_projects(project_list):
     return get_children()[1]
 
 
+def get_other_projects_html(project_id):
+    items = get_hierarchical_projects(Project.objects.exclude(id=project_id))
+
+    def get_html(data):
+        for item in data:
+            get_html.text += '''<li><a href="%s">%s%s</a></li>\n''' % \
+                             (reverse('project_detail', kwargs={'pk': item[0].id}),
+                              '&nbsp;' * get_html.depth * 4 +
+                              "<i class='fa fa-angle-double-right'></i>" if get_html.depth else '',
+                              Helper.limit_length(item[0].name, 30))
+            if item[1] is not None:
+                get_html.depth += 1
+                get_html(item[1])
+                get_html.depth -= 1
+
+    get_html.text = ''
+    get_html.depth = 0
+    get_html(items)
+
+    return get_html.text
+
+
 class List(ListView):
     model = _model
     template_name = 'project_list.html'
@@ -67,29 +89,8 @@ class Detail(DetailView):
         context = super(Detail, self).get_context_data(**kwargs)
         context['subprojects'] = Project.objects.filter(parent=self.object)
         context['role_users'] = get_role_users(self.kwargs['pk'])
-        context['other_projects'] = self.get_other_projects_html()
+        context['other_projects'] = get_other_projects_html(self.object.id)
         return context
-
-    def get_other_projects_html(self):
-        items = get_hierarchical_projects(Project.objects.exclude(id=self.object.id))
-
-        def get_html(data):
-            for item in data:
-                get_html.text += '''<li><a href="%s">%s%s</a></li>\n''' % \
-                                 (reverse('project_detail', kwargs={'pk': item[0].id}),
-                                  '&nbsp;' * get_html.depth * 4 +
-                                  "<i class='fa fa-angle-double-right'></i>" if get_html.depth else '',
-                                  Helper.limit_length(item[0].name, 30))
-                if item[1] is not None:
-                    get_html.depth += 1
-                    get_html(item[1])
-                    get_html.depth -= 1
-
-        get_html.text = ''
-        get_html.depth = 0
-        get_html(items)
-
-        return get_html.text
 
 
 class Create(CreateView):
@@ -121,6 +122,12 @@ class Update(UpdateView):
 
     def get_success_url(self):
         return reverse('project_detail', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(Update, self).get_context_data(**kwargs)
+        project_id = self.kwargs['pk']
+        context['other_projects'] = get_other_projects_html(project_id)
+        return context
 
 
 class Admin(ListView):
@@ -162,6 +169,7 @@ class ListMember(View):
 
         context = dict()
         context['project'] = project
+        context['other_projects'] = get_other_projects_html(project.id)
 
         role_user = get_role_user(project_id)
         users_id = [ i[1].id for i in role_user ]

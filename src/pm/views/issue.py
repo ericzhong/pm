@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from ..forms import IssueForm, CommentForm, WorktimeForm, WorktimeBlankForm, CommentBlankForm
 from ..models import Issue, Comment, Worktime, Project, Version
 from ..utils import Helper
+from .project import get_other_projects_html
 import time
 
 
@@ -40,7 +41,9 @@ class Create(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(Create, self).get_context_data(**kwargs)
-        context['project'] = Project.objects.get(pk=self.kwargs.get('pk'))
+        project_id = self.kwargs['pk']
+        context['project'] = Project.objects.get(pk=project_id)
+        context['other_projects'] = get_other_projects_html(project_id)
         return context
 
     def get_success_url(self):
@@ -54,7 +57,9 @@ class List(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(List, self).get_context_data(**kwargs)
-        context['project'] = Project.objects.get(pk=self.kwargs.get('pk'))
+        project_id = self.kwargs['pk']
+        context['project'] = Project.objects.get(pk=project_id)
+        context['other_projects'] = get_other_projects_html(project_id)
         return context
 
     def get_queryset(self):

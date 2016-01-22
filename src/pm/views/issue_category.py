@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from ..models import Project, IssueCategory
 from ..forms import IssueCategoryForm
-
+from .project import get_other_projects_html
 
 _model = IssueCategory
 _form = IssueCategoryForm
@@ -45,7 +45,9 @@ class List(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(List, self).get_context_data(**kwargs)
-        context['project'] = Project.objects.get(pk=self.kwargs['pk'])
+        project_id = self.kwargs['pk']
+        context['project'] = Project.objects.get(pk=project_id)
+        context['other_projects'] = get_other_projects_html(project_id)
         return context
 
 
