@@ -3,8 +3,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User, Group
-from django.http import HttpResponseRedirect, HttpResponse
-from ..models import Project, Role, Project_Group_Role, Project_User_Role
+from django.http import HttpResponse
+from ..models import Project, Role, Project_Group_Role, Project_User_Role, Issue
 from ..forms import ProjectForm, UpdateProjectForm
 from .role import get_user_roles_id, get_role_users, get_role_user, get_user_groups_roles_id, \
     get_role_user_of_groups, check_user_in_groups, get_role_group, get_group_roles_id
@@ -15,21 +15,21 @@ _model = Project
 _form = ProjectForm
 
 
-def get_hierarchical_projects(project_list):
-    projects = list(project_list)
+def get_hierarchical_list(objects):
+    items = list(objects)
 
-    def get_children(project=None):
+    def get_children(obj=None):
         child = list()
-        for p in projects:
-            if project == p.parent:
-                child.append(get_children(p))
-        return [ project or None, child or None ]
+        for i in items:
+            if obj == i.parent:
+                child.append(get_children(i))
+        return [obj or None, child or None]
 
     return get_children()[1]
 
 
 def get_other_projects_html(project_id):
-    items = get_hierarchical_projects(Project.objects.exclude(id=project_id))
+    items = get_hierarchical_list(Project.objects.exclude(id=project_id))
 
     def get_html(data):
         for item in data:
@@ -59,7 +59,7 @@ class List(ListView):
         return self.get_all_projects_html()
 
     def get_all_projects_html(self):
-        items = get_hierarchical_projects(Project.objects.all())
+        items = get_hierarchical_list(Project.objects.all())
 
         def get_html(data):
             get_html.text += '''<ol style="list-style-type: none">\n'''
@@ -284,3 +284,71 @@ class MemberRoles(View):
             Project_Group_Role.objects.filter(project_id=project_id, group_id=group_id, role_id__in=unselect).delete()
 
         return redirect('member_list', pk=project_id)
+
+
+class Gantt(View):
+    def get(self, request, *args, **kwargs):
+        project_id = kwargs['pk']
+        project = Project.objects.get(id=project_id)
+
+        context = dict()
+        context['project'] = project
+        context['other_projects'] = get_other_projects_html(project.id)
+
+        parent_str = "{{name: '{name}', 'children': {children}, content: '<a href=\"{url}\">{name}</a>', " \
+                     "tasks: [{{color: '#F1C232', from: new Date({from_year},{from_month},{from_day},0,0,0), " \
+                     "to: new Date({to_year},{to_month},{to_day},24,0,0), " \
+                     "_from: '{from_month}.{from_day}', _to: '{to_month}.{to_day}', " \
+                     "_status: '{status}', _assignee: '{assigned_to}', progress: {done_ratio}}}]}},\n"
+
+        leaf_node_str = "{{name: '{name}', content: '<a href=\"{url}\">{name}</a>', " \
+                        "tasks: [{{color: '#F1C232', from: new Date({from_year},{from_month},{from_day},0,0,0), " \
+                        "to: new Date({to_year},{to_month},{to_day},24,0,0), " \
+                        "_from: '{from_month}.{from_day}', _to: '{to_month}.{to_day}', " \
+                        "_status: '{status}', _assignee: '{assigned_to}', progress: {done_ratio}}}]}},\n"
+
+        import json
+
+        def get_data(items):
+            for item in items:
+                issue = item[0]
+                if item[1] is not None:
+                    get_data.text += parent_str.format(
+                        name=issue.id,
+                        children=json.dumps([str(i[0].id) for i in item[1]]),
+                        url=reverse('issue_detail', kwargs={'pk': issue.id}),
+                        from_year=issue.start_date.year if issue.start_date else 0,
+                        from_month=issue.start_date.month-1 if issue.start_date else 0,
+                        from_day=issue.start_date.day if issue.start_date else 0,
+                        to_year=issue.due_date.year if issue.due_date else 0,
+                        to_month=issue.due_date.month-1 if issue.due_date else 0,
+                        to_day=issue.due_date.day if issue.due_date else 0,
+                        status=issue.status.name,
+                        assigned_to=issue.assigned_to.username if issue.assigned_to else None,
+                        done_ratio=issue.done_ratio)
+                    get_data(item[1])
+                else:
+                    get_data.text += leaf_node_str.format(
+                        name=issue.id,
+                        url=reverse('issue_detail', kwargs={'pk': issue.id}),
+                        from_year=issue.start_date.year if issue.start_date else 0,
+                        from_month=issue.start_date.month-1 if issue.start_date else 0,
+                        from_day=issue.start_date.day if issue.start_date else 0,
+                        to_year=issue.due_date.year if issue.due_date else 0,
+                        to_month=issue.due_date.month-1 if issue.due_date else 0,
+                        to_day=issue.due_date.day if issue.due_date else 0,
+                        status=issue.status.name,
+                        assigned_to=issue.assigned_to.username if issue.assigned_to else None,
+                        done_ratio=issue.done_ratio)
+
+        get_data.text = ''
+        get_data(get_hierarchical_list(Issue.objects.filter(project=project)))
+        context['gantt_data'] = get_data.text
+
+        from datetime import date
+        now = date.today()
+        context['now_year'] = now.year
+        context['now_month'] = now.month-1
+        context['now_day'] = now.day
+
+        return render(request, 'project/gantt.html', context)

@@ -298,5 +298,7 @@ class MyPage(View):
     def get(self, request, *args, **kwargs):
         context = dict()
         context['assigned_issues'] = Issue.objects.filter(assigned_to=self.request.user)
-        context['watch_issues'] = [ n.issue for n in Issue.watchers.through.objects.filter(user=self.request.user) ]
+        # context['watch_issues'] = [n.issue for n in Issue.watchers.through.objects.filter(user=self.request.user)]
+        context['watch_issues'] = Issue.objects.filter(watchers=self.request.user)
         return render(request, 'my_page.html', context)
+
