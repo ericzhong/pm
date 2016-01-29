@@ -21,6 +21,7 @@ from django.contrib.auth.decorators import login_required
 from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting, \
     issue_category, base, account
 
+from pm.views.base import admin_required
 
 urlpatterns = [
     url(r'^$', base.homepage.as_view(), name='homepage'),
@@ -62,13 +63,13 @@ urlpatterns = [
     url(r'^issue_categories/(?P<pk>\d+)/delete/$', login_required(issue_category.Delete.as_view()), name='issue_category_delete'),
 
     # issue tag
-    url(r'^issue_tags/$', login_required(issue_tag.List.as_view()), name='issue_tag_list'),
+    url(r'^issue_tags/$', login_required(admin_required(issue_tag.List.as_view())), name='issue_tag_list'),
     url(r'^issue_tags/add/$', login_required(issue_tag.Create.as_view()), name='issue_tag_add'),
     url(r'^issue_tags/(?P<pk>\d+)/update/$', login_required(issue_tag.Update.as_view()), name='issue_tag_update'),
     url(r'^issue_tags/(?P<pk>\d+)/delete/$', login_required(issue_tag.Delete.as_view()), name='issue_tag_delete'),
 
     # issue status
-    url(r'^issue_statuses/$', login_required(issue_status.List.as_view()), name='issue_status_list'),
+    url(r'^issue_statuses/$', login_required(admin_required(issue_status.List.as_view())), name='issue_status_list'),
     url(r'^issue_statuses/add/$', login_required(issue_status.Create.as_view()), name='issue_status_add'),
     url(r'^issue_statuses/(?P<pk>\d+)/update/$', login_required(issue_status.Update.as_view()), name='issue_status_update'),
     url(r'^issue_statuses/(?P<pk>\d+)/delete/$', login_required(issue_status.Delete.as_view()), name='issue_status_delete'),
@@ -100,13 +101,13 @@ urlpatterns = [
     url(r'^versions/(?P<pk>\d+)/delete/$', login_required(version.Delete.as_view()), name='version_delete'),
 
     # user
-    url(r'^users/$', login_required(user.List.as_view()), name='user_list'),
-    url(r'^users/add/$', login_required(user.Create.as_view()), name='user_add'),
+    url(r'^users/$', login_required(admin_required(user.List.as_view())), name='user_list'),
+    url(r'^users/add/$', login_required(admin_required(user.Create.as_view())), name='user_add'),
     url(r'^users/(?P<pk>\d+)/$', user.Detail.as_view(), name='user_detail'),
-    url(r'^users/(?P<pk>\d+)/update/$', login_required(user.Update.as_view()), name='user_update'),
-    url(r'^users/(?P<pk>\d+)/delete/$', login_required(user.Delete.as_view()), name='user_delete'),
-    url(r'^users/(?P<pk>\d+)/lock/$', login_required(user.Lock.as_view()), name='user_lock'),
-    url(r'^users/(?P<pk>\d+)/unlock/$', login_required(user.Unlock.as_view()), name='user_unlock'),
+    url(r'^users/(?P<pk>\d+)/update/$', login_required(admin_required(user.Update.as_view())), name='user_update'),
+    url(r'^users/(?P<pk>\d+)/delete/$', login_required(admin_required(user.Delete.as_view())), name='user_delete'),
+    url(r'^users/(?P<pk>\d+)/lock/$', login_required(admin_required(user.Lock.as_view())), name='user_lock'),
+    url(r'^users/(?P<pk>\d+)/unlock/$', login_required(admin_required(user.Unlock.as_view())), name='user_unlock'),
     url(r'^users/(?P<pk>\d+)/join_projects/$', login_required(user.JoinProjects.as_view()), name='user_join_projects'),
     url(r'^users/(?P<pk>\d+)/quit_project/(?P<id>\d+)$', login_required(user.QuitProject.as_view()), name='user_quit_project'),
     url(r'^users/(?P<pk>\d+)/join_groups/$', login_required(user.JoinGroups.as_view()), name='user_join_groups'),
@@ -114,26 +115,26 @@ urlpatterns = [
     url(r'^users/(?P<pk>\d+)/projects/(?P<id>\d+)/roles$', user.Roles.as_view(), name='user_roles'),
 
     # group
-    url(r'^groups/$', login_required(group.List.as_view()), name='group_list'),
-    url(r'^groups/add/$', login_required(group.Create.as_view()), name='group_add'),
-    url(r'^groups/(?P<pk>\d+)/update/$', login_required(group.Update.as_view()), name='group_update'),
-    url(r'^groups/(?P<pk>\d+)/delete/$', login_required(group.Delete.as_view()), name='group_delete'),
-    url(r'^groups/(?P<pk>\d+)/add_users/$', login_required(group.AddUsers.as_view()), name='group_add_users'),
-    url(r'^groups/(?P<pk>\d+)/delete_user/(?P<id>\d+)$', login_required(group.DeleteUser.as_view()), name='group_delete_user'),
+    url(r'^groups/$', login_required(admin_required(group.List.as_view())), name='group_list'),
+    url(r'^groups/add/$', login_required(admin_required(group.Create.as_view())), name='group_add'),
+    url(r'^groups/(?P<pk>\d+)/update/$', login_required(admin_required(group.Update.as_view())), name='group_update'),
+    url(r'^groups/(?P<pk>\d+)/delete/$', login_required(admin_required(group.Delete.as_view())), name='group_delete'),
+    url(r'^groups/(?P<pk>\d+)/add_users/$', login_required(admin_required(group.AddUsers.as_view())), name='group_add_users'),
+    url(r'^groups/(?P<pk>\d+)/delete_user/(?P<id>\d+)$', login_required(admin_required(group.DeleteUser.as_view())), name='group_delete_user'),
     url(r'^groups/(?P<pk>\d+)/join_projects/$', login_required(group.JoinProjects.as_view()), name='group_join_projects'),
     url(r'^groups/(?P<pk>\d+)/quit_project/(?P<id>\d+)$', login_required(group.QuitProject.as_view()), name='group_quit_project'),
     url(r'^groups/(?P<pk>\d+)/projects/(?P<id>\d+)/roles$', login_required(group.Roles.as_view()), name='group_roles'),
 
     # role
-    url(r'^roles/$', login_required(role.List.as_view()), name='role_list'),
-    url(r'^roles/add/$', login_required(role.Create.as_view()), name='role_add'),
-    url(r'^roles/(?P<pk>\d+)/update/$', login_required(role.Update.as_view()), name='role_update'),
-    url(r'^roles/(?P<pk>\d+)/delete/$', login_required(role.Delete.as_view()), name='role_delete'),
+    url(r'^roles/$', login_required(admin_required(role.List.as_view())), name='role_list'),
+    url(r'^roles/add/$', login_required(admin_required(role.Create.as_view())), name='role_add'),
+    url(r'^roles/(?P<pk>\d+)/update/$', login_required(admin_required(role.Update.as_view())), name='role_update'),
+    url(r'^roles/(?P<pk>\d+)/delete/$', login_required(admin_required(role.Delete.as_view())), name='role_delete'),
 
     # settings
-    url(r'^settings/$', login_required(setting.Setting.as_view()), name='settings'),
-    url(r'^admin/$', login_required(project.Admin.as_view()), name='admin'),
-    url(r'^admin/projects/$', login_required(project.Admin.as_view()), name='admin_project'),
+    url(r'^settings/$', login_required(admin_required(setting.Setting.as_view())), name='settings'),
+    url(r'^admin/$', login_required(admin_required(project.Admin.as_view())), name='admin'),
+    url(r'^admin/projects/$', login_required(admin_required(project.Admin.as_view())), name='admin_project'),
 
     url(r'^django-admin/', include(admin.site.urls)),
 ]
