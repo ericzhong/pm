@@ -6,7 +6,9 @@
   <div class="tab-caption">
     <span>路线图</span>
     <div class="actions btn-set small">
-      <a href="{% url 'version_add' project.id %}"><i class="fa fa-plus"></i>新建版本</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'version_add' project.id %}"><i class="fa fa-plus"></i>新建版本</a>
+      {% endif %}
     </div>
   </div>
   {% if versions %}

@@ -13,15 +13,17 @@
         <span class="caption-subject">{{ issue.tag }} #{{ issue.id }}</span>
       </div>
       <div class="actions btn-set small">
-        <a id="btn-edit-issue"><i class="fa fa-edit"></i>编辑</a>
-        <a href="{% url 'worktime_add' issue.id %}"><i class="fa fa-clock-o"></i>登记工时 </a>
-        {% if watch %}
-          <a href="{% url 'issue_unwatch' issue.id %}"><i class="fa fa-star"></i>Unwatch</a>
-        {% else %}
-          <a href="{% url 'issue_watch' issue.id %}"><i class="fa fa-star-o"></i>Watch</a>
+        {% if user.is_authenticated %}
+          <a id="btn-edit-issue"><i class="fa fa-edit"></i>编辑</a>
+          <a href="{% url 'worktime_add' issue.id %}"><i class="fa fa-clock-o"></i>登记工时 </a>
+          {% if watch %}
+            <a href="{% url 'issue_unwatch' issue.id %}"><i class="fa fa-star"></i>Unwatch</a>
+          {% else %}
+            <a href="{% url 'issue_watch' issue.id %}"><i class="fa fa-star-o"></i>Watch</a>
+          {% endif %}
+          <a><i class="fa fa-copy"></i>复制 </a>
+          <a data-href="{% url 'issue_delete' issue.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
         {% endif %}
-        <a><i class="fa fa-copy"></i>复制 </a>
-        <a data-href="{% url 'issue_delete' issue.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
       </div>
     </div>
     <div class="portlet-body">
@@ -69,7 +71,9 @@
               <span>子任务</span>
             </div>
             <div class="actions btn-set extra-small">
-              <a href="{% url 'issue_add' project.id %}?parent={{ issue.id }}&redirect={% url 'issue_detail' issue.id %}">新增</a>
+              {% if user.is_authenticated %}
+                <a href="{% url 'issue_add' project.id %}?parent={{ issue.id }}&redirect={% url 'issue_detail' issue.id %}">新增</a>
+              {% endif %}
             </div>
           </div>
           <div class="content">

@@ -68,15 +68,21 @@
 				<ul class="nav navbar-nav pull-right">
 					<!-- BEGIN USER LOGIN DROPDOWN -->
 					<li class="dropdown dropdown-user dropdown-dark">
-						<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-						<img alt="" class="img-circle" src="{% if user.profile.avatar %}/static/avata/{{ user.profile.avatar }}{% else %}/static/img/avatar2.jpg{% endif %}">
-						<span class="username username-hide-mobile">{{ user.name }}</span>
-						</a>
-						<ul class="dropdown-menu dropdown-menu-default">
-							<li><a href="{% url 'my_account' %}"><i class="icon-user"></i> 我的账户 </a></li>
-							<li class="divider">
-							</li><li><a href="{% url 'logout' %}"><i class="icon-key"></i> 退出 </a></li>
-						</ul>
+            {% if user.is_authenticated %}
+              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                <img alt="" class="img-circle" src="{% if user.profile.avatar %}/static/avata/{{ user.profile.avatar }}{% else %}/static/img/avatar2.jpg{% endif %}">
+                <span class="username username-hide-mobile">{{ user.name }}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-default">
+                <li><a href="{% url 'my_account' %}"><i class="icon-user"></i> 我的账户 </a></li>
+                <li class="divider">
+                </li><li><a href="{% url 'logout' %}"><i class="icon-key"></i> 退出 </a></li>
+              </ul>
+            {% else %}
+              <a href="{% url 'login' %}" class="dropdown-toggle">
+                <span class="username username-hide-mobile">Login</span>
+              </a>
+            {% endif %}
 					</li>
 					<!-- END USER LOGIN DROPDOWN -->
 				</ul>
@@ -104,9 +110,13 @@
 			<div class="hor-menu ">
 				<ul class="nav navbar-nav">
 					<li><a href="{% url 'homepage' %}">主页</a></li>
-					<li><a href="{% url 'my_page' %}">我的工作台</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'my_page' %}">我的工作台</a></li>
+          {% endif %}
 					<li><a href="{% url 'project_list' %}">项目</a></li>
-					<li><a href="{% url 'admin' %}">管理</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'admin' %}">管理</a></li>
+          {% endif %}
 				</ul>
 			</div>
 			<!-- END MEGA MENU -->

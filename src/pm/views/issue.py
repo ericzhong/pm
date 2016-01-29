@@ -74,6 +74,8 @@ class Detail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(Detail, self).get_context_data(**kwargs)
         context['project'] = self.object.project
+        context['other_projects'] = get_other_projects_html(self.object.project.id)
+
         context['comments'] = Comment.objects.filter(issue=self.object)
         context['comment_form'] = CommentForm(prefix=_comment_form_prefix)
         context['worktime_form'] = WorktimeForm(prefix=_worktime_form_prefix)
@@ -181,6 +183,7 @@ class WorktimeList(ListView):
         issue = Issue.objects.get(pk=self.kwargs.get('pk'))
         context['issue'] = issue
         context['project'] = issue.project
+        context['other_projects'] = get_other_projects_html(issue.project.id)
         return context
 
 

@@ -6,7 +6,9 @@
     <div class="tab-caption">
     <span>问题</span>
     <div class="actions btn-set small">
-      <a href="{% url 'issue_add' project.id %}"><i class="fa fa-plus"></i>新建问题</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'issue_add' project.id %}"><i class="fa fa-plus"></i>新建问题</a>
+      {% endif %}
     </div>
   </div>
   {% if issues %}

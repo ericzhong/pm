@@ -6,7 +6,9 @@
 <div class="tab-caption">
   <span><a href="{% url 'issue_detail' issue.id %}">{{ issue.tag }} #{{ issue.id }}</a> >> 工时</span>
   <div class="actions btn-set small btn-table">
-    <a href="{% url 'worktime_add' issue.id %}"><i class="fa fa-plus"></i>登记工时</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'worktime_add' issue.id %}"><i class="fa fa-plus"></i>登记工时</a>
+    {% endif %}
   </div>
 </div>
 <div class="table-scrollable">
@@ -29,8 +31,10 @@
         <td>{{ worktime.description }}</td>
         <td>
           <div class="actions btn-set small">
-            <a href="{% url 'worktime_update' worktime.id %}"><i class="fa fa-pencil"></i></a>
-            <a data-href="{% url 'worktime_delete' worktime.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
+            {% if user.is_authenticated %}
+              <a href="{% url 'worktime_update' worktime.id %}"><i class="fa fa-pencil"></i></a>
+              <a data-href="{% url 'worktime_delete' worktime.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
+            {% endif %}
           </div>
         </td>
       </tr>
