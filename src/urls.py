@@ -28,7 +28,7 @@ urlpatterns = [
 
     # authentication
     url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
-    url(r'^logout/$', auth_views.logout, {'next_page': '/login'}, name='logout'),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
     url(r'^my/password$', auth_views.password_change,
         {'template_name': 'password.html', 'post_change_redirect': '/my/password'}, name='password_change'),
 
