@@ -21,7 +21,7 @@ from django.contrib.auth.decorators import login_required
 from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting, \
     issue_category, base, account
 
-from pm.views.base import admin_required
+from pm.views.base import admin_required, anonymous_perm
 
 urlpatterns = [
     url(r'^$', base.homepage.as_view(), name='homepage'),
@@ -37,13 +37,13 @@ urlpatterns = [
     url(r'^my/avatar$', login_required(account.MyAvatar.as_view()), name='my_avatar'),
 
     # project
-    url(r'^projects/$', project.List.as_view(), name='project_list'),
-    url(r'^projects/(?P<pk>\d+)/$', project.Detail.as_view(), name='project_detail'),
+    url(r'^projects/$', anonymous_perm(project.List.as_view()), name='project_list'),
+    url(r'^projects/(?P<pk>\d+)/$', anonymous_perm(project.Detail.as_view()), name='project_detail'),
     url(r'^projects/add/$', login_required(project.Create.as_view()), name='project_add'),
     url(r'^projects/(?P<pk>\d+)/delete/$', login_required(project.Delete.as_view()), name='project_delete'),
     url(r'^projects/(?P<pk>\d+)/close/$', login_required(project.Close.as_view()), name='project_close'),
     url(r'^projects/(?P<pk>\d+)/reopen/$', login_required(project.Reopen.as_view()), name='project_reopen'),
-    url(r'^projects/(?P<pk>\d+)/gantt/$', project.Gantt.as_view(), name='project_gantt'),
+    url(r'^projects/(?P<pk>\d+)/gantt/$', anonymous_perm(project.Gantt.as_view()), name='project_gantt'),
 
     # project settings
     url(r'^projects/(?P<pk>\d+)/settings/$', login_required(project.Update.as_view()), name='project_settings'),
@@ -55,7 +55,7 @@ urlpatterns = [
     # member
     url(r'^projects/(?P<pk>\d+)/members/delete$', login_required(project.DeleteMember.as_view()), name='member_delete'),
     url(r'^projects/(?P<pk>\d+)/members/add$', login_required(project.CreateMember.as_view()), name='member_add'),
-    url(r'^projects/(?P<pk>\d+)/members/roles$', project.MemberRoles.as_view(), name='member_roles'),
+    url(r'^projects/(?P<pk>\d+)/members/roles$', anonymous_perm(project.MemberRoles.as_view()), name='member_roles'),
 
     # issue category
     url(r'^projects/(?P<pk>\d+)/issue_categories/add/$', login_required(issue_category.Create.as_view()), name='issue_category_add'),
@@ -75,35 +75,35 @@ urlpatterns = [
     url(r'^issue_statuses/(?P<pk>\d+)/delete/$', login_required(issue_status.Delete.as_view()), name='issue_status_delete'),
 
     # issue
-    url(r'^projects/(?P<pk>\d+)/issues/$', issue.List.as_view(), name='issue_list'),
+    url(r'^projects/(?P<pk>\d+)/issues/$', anonymous_perm(issue.List.as_view()), name='issue_list'),
     url(r'^projects/(?P<pk>\d+)/issues/add/$', login_required(issue.Create.as_view()), name='issue_add'),
-    url(r'^issues/(?P<pk>\d+)/$', issue.Detail.as_view(), name='issue_detail'),
+    url(r'^issues/(?P<pk>\d+)/$', anonymous_perm(issue.Detail.as_view()), name='issue_detail'),
     url(r'^issues/(?P<pk>\d+)/update/$', login_required(issue.Update.as_view()), name='issue_update'),
     url(r'^issues/(?P<pk>\d+)/delete/$', login_required(issue.Delete.as_view()), name='issue_delete'),
     url(r'^issues/(?P<pk>\d+)/quote/$', login_required(issue.Quote.as_view()), name='issue_quote'),
     url(r'^issues/(?P<pk>\d+)/watch/$', login_required(issue.Watch.as_view()), name='issue_watch'),
     url(r'^issues/(?P<pk>\d+)/unwatch/$', login_required(issue.Unwatch.as_view()), name='issue_unwatch'),
     url(r'^comments/(?P<pk>\d+)/update/$', login_required(issue.CommentUpdate.as_view()), name='comment_update'),
-    url(r'^issues/$', issue.AllIssues.as_view(), name='issue_all'),
+    url(r'^issues/$', anonymous_perm(issue.AllIssues.as_view()), name='issue_all'),
     url(r'^mypage/$', login_required(issue.MyPage.as_view()), name='my_page'),
 
     # worktime
-    url(r'^issues/(?P<pk>\d+)/worktimes/$', issue.WorktimeList.as_view(), name='worktime_list'),
+    url(r'^issues/(?P<pk>\d+)/worktimes/$', anonymous_perm(issue.WorktimeList.as_view()), name='worktime_list'),
     url(r'^issues/(?P<pk>\d+)/worktimes/add$', login_required(issue.WorktimeCreate.as_view()), name='worktime_add'),
     url(r'^worktimes/(?P<pk>\d+)/update/$', login_required(issue.WorktimeUpdate.as_view()), name='worktime_update'),
     url(r'^worktimes/(?P<pk>\d+)/delete/$', login_required(issue.WorktimeDelete.as_view()), name='worktime_delete'),
 
     # version
-    url(r'^projects/(?P<pk>\d+)/roadmap/$', version.Roadmap.as_view(), name='version_roadmap'),
+    url(r'^projects/(?P<pk>\d+)/roadmap/$', anonymous_perm(version.Roadmap.as_view()), name='version_roadmap'),
     url(r'^projects/(?P<pk>\d+)/versions/add/$', login_required(version.Create.as_view()), name='version_add'),
-    url(r'^versions/(?P<pk>\d+)/$', version.Detail.as_view(), name='version_detail'),
+    url(r'^versions/(?P<pk>\d+)/$', anonymous_perm(version.Detail.as_view()), name='version_detail'),
     url(r'^versions/(?P<pk>\d+)/update/$', login_required(version.Update.as_view()), name='version_update'),
     url(r'^versions/(?P<pk>\d+)/delete/$', login_required(version.Delete.as_view()), name='version_delete'),
 
     # user
     url(r'^users/$', login_required(admin_required(user.List.as_view())), name='user_list'),
     url(r'^users/add/$', login_required(admin_required(user.Create.as_view())), name='user_add'),
-    url(r'^users/(?P<pk>\d+)/$', user.Detail.as_view(), name='user_detail'),
+    url(r'^users/(?P<pk>\d+)/$', anonymous_perm(user.Detail.as_view()), name='user_detail'),
     url(r'^users/(?P<pk>\d+)/update/$', login_required(admin_required(user.Update.as_view())), name='user_update'),
     url(r'^users/(?P<pk>\d+)/delete/$', login_required(admin_required(user.Delete.as_view())), name='user_delete'),
     url(r'^users/(?P<pk>\d+)/lock/$', login_required(admin_required(user.Lock.as_view())), name='user_lock'),
@@ -112,7 +112,7 @@ urlpatterns = [
     url(r'^users/(?P<pk>\d+)/quit_project/(?P<id>\d+)$', login_required(user.QuitProject.as_view()), name='user_quit_project'),
     url(r'^users/(?P<pk>\d+)/join_groups/$', login_required(user.JoinGroups.as_view()), name='user_join_groups'),
     url(r'^users/(?P<pk>\d+)/quit_group/(?P<id>\d+)$', login_required(user.QuitGroup.as_view()), name='user_quit_group'),
-    url(r'^users/(?P<pk>\d+)/projects/(?P<id>\d+)/roles$', user.Roles.as_view(), name='user_roles'),
+    url(r'^users/(?P<pk>\d+)/projects/(?P<id>\d+)/roles$', anonymous_perm(user.Roles.as_view()), name='user_roles'),
 
     # group
     url(r'^groups/$', login_required(admin_required(group.List.as_view())), name='group_list'),

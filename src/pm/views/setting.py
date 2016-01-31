@@ -28,3 +28,7 @@ class Setting(View):
         context = dict()
         context['data'] = { n.name: n.value for n in SettingModel.objects.all() }
         return render(request, '_admin/settings.html', context=context)
+
+
+def anonymous_access():
+    return False     # TODO: data from settings
