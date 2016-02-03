@@ -19,7 +19,9 @@
         </div>
         <div class="portlet-body">
           <div class="project-list">
-            {{ projects|safe }}
+            {% if projects %}
+              {{ projects|safe }}
+            {% endif %}
           </div>
         </div>
       </div>

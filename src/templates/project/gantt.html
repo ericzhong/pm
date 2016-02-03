@@ -530,7 +530,7 @@ angular.module('angularGanttDemoApp')
   .service('Sample', function Sample() {
       return {
           getSampleData: function() {
-              return [{{ gantt_data|safe }}];
+              return [{{ gantt_data|safe|default:'' }}];
           }
       };
   });

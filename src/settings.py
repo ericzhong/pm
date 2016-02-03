@@ -127,6 +127,8 @@ LOGIN_REDIRECT_URL = '/'
 
 ACCOUNT_ACTIVATION_DAYS = 7
 
+AUTH_USER_MODEL = 'pm.User'
+
 
 # Email
 EMAIL_HOST = 'localhost'

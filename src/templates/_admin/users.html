@@ -26,7 +26,7 @@
           {% for user in users %}
             <tr>
               <td><a href="{% url 'user_update' user.id %}">{{ user.username }}</a></td>
-              <td>{{ user.name }}</td>
+              <td>{{ user.get_full_name }}</td>
               <td>{{ user.email|default:'-' }}</td>
               <td>{% if user.is_superuser %}<i class="fa fa-check"></i>{% else %}-{% endif %}</td>
               <td>{{ user.date_joined|date:"Y-m-d"|default:"-" }}</td>

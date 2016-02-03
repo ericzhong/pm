@@ -2,7 +2,7 @@ from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import render,redirect
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from django.http import HttpResponse
 from ..models import Project, Role, Project_Group_Role, Project_User_Role, Issue
 from ..forms import ProjectForm, UpdateProjectForm
@@ -10,6 +10,7 @@ from .role import get_user_roles_id, get_role_users, get_role_user, get_user_gro
     get_role_user_of_groups, check_user_in_groups, get_role_group, get_group_roles_id
 import json
 from ..utils import Helper
+from ..models import User
 
 _model = Project
 _form = ProjectForm
@@ -29,7 +30,13 @@ def get_hierarchical_list(objects):
 
 
 def get_other_projects_html(project_id):
-    items = get_hierarchical_list(Project.objects.exclude(id=project_id))
+    projects = Project.objects.exclude(id=project_id)
+    if not projects:
+        return None
+
+    items = get_hierarchical_list(projects)
+    if not items:
+        return None
 
     def get_html(data):
         for item in data:
@@ -59,7 +66,13 @@ class List(ListView):
         return self.get_all_projects_html()
 
     def get_all_projects_html(self):
-        items = get_hierarchical_list(Project.objects.all())
+        projects = Project.objects.all()
+        if not projects:
+            return None
+
+        items = get_hierarchical_list(projects)
+        if not items:
+            return None
 
         def get_html(data):
             get_html.text += '''<ol style="list-style-type: none">\n'''
@@ -342,8 +355,13 @@ class Gantt(View):
                         done_ratio=issue.done_ratio)
 
         get_data.text = ''
-        get_data(get_hierarchical_list(Issue.objects.filter(project=project)))
-        context['gantt_data'] = get_data.text
+
+        projects = Issue.objects.filter(project=project)
+        if not projects:
+            context['gantt_data'] = None
+        else:
+            get_data(get_hierarchical_list(projects))
+            context['gantt_data'] = get_data.text
 
         from datetime import date
         now = date.today()

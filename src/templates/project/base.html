@@ -21,14 +21,16 @@
               {% endif %}
             {% endif %}
 
-            <div class="btn-group">
-              <a class="btn btn-default btn-circle" href="javascript:;" data-toggle="dropdown">
-                <i class="fa fa-share"></i> 其它项目 <i class="fa fa-angle-down"></i>
-              </a>
-              <ul class="dropdown-menu pull-right" id="other-projects">
-                {{ other_projects|safe }}
-              </ul>
-            </div>
+            {% if other_projects %}
+              <div class="btn-group">
+                <a class="btn btn-default btn-circle" href="javascript:;" data-toggle="dropdown">
+                  <i class="fa fa-share"></i> 其它项目 <i class="fa fa-angle-down"></i>
+                </a>
+                <ul class="dropdown-menu pull-right" id="other-projects">
+                    {{ other_projects|safe }}
+                </ul>
+              </div>
+            {% endif %}
           </div>
         </div>
         <div class="portlet-body">

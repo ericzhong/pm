@@ -71,7 +71,7 @@
             {% if user.is_authenticated %}
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                 <img alt="" class="img-circle" src="{% if user.profile.avatar %}/static/avata/{{ user.profile.avatar }}{% else %}/static/img/avatar2.jpg{% endif %}">
-                <span class="username username-hide-mobile">{{ user.name }}</span>
+                <span class="username username-hide-mobile">{{ user.get_full_name }}</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-default">
                 <li><a href="{% url 'my_account' %}"><i class="icon-user"></i> 我的账户 </a></li>

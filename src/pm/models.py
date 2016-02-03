@@ -2,17 +2,11 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils.translation import ugettext as _
 
 
 _STRING_MAX_LENGTH = 255
-
-
-def get_formatted_name(self):
-    return "%s %s" % (self.first_name, self.last_name)
-
-User.add_to_class('name', get_formatted_name)
 
 
 def get_estimated_time(issues):
@@ -21,6 +15,14 @@ def get_estimated_time(issues):
         if issue.start_date and issue.due_date and issue.start_date <= issue.due_date:
             n += (issue.due_date - issue.start_date).days + 1
     return n * 8
+
+
+class User(AbstractUser):
+    @property
+    def get_full_name(self):
+        # TODO: formatted by settings
+        full_name = '%s %s' % (self.first_name, self.last_name)
+        return full_name.strip()
 
 
 @python_2_unicode_compatible
@@ -44,7 +46,7 @@ class Project(models.Model):
     identifier = models.CharField(max_length=255, null=True, blank=True, unique=True)
     status = models.IntegerField(default=OPEN_STATUS, choices=STATUS_CHOICES)
     inherit_members = models.BooleanField(default=False)
-    created_by = models.ForeignKey(User, related_name='creator')
+    created_by = models.ForeignKey('User', related_name='creator')
 
     def __str__(self):
         return self.name
@@ -103,16 +105,16 @@ class Issue(models.Model):
     start_date = models.DateField(null=True, blank=True)
     due_date = models.DateField(null=True, blank=True)
     status = models.ForeignKey('IssueStatus')
-    assigned_to = models.ForeignKey(User, null=True, blank=True)
+    assigned_to = models.ForeignKey('User', null=True, blank=True)
     priority = models.IntegerField(default=NORMAL_PRIORITY, choices=PRIORITY_CHOICES)
     version = models.ForeignKey('Version', null=True, blank=True)
-    author = models.ForeignKey(User, related_name='created_by')
+    author = models.ForeignKey('User', related_name='created_by')
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     done_ratio = models.IntegerField(default=0, choices=DONE_RATIO_CHOICES)
     parent = models.ForeignKey('Issue', null=True, blank=True)
     is_private = models.BooleanField(default=False)
-    watchers = models.ManyToManyField(User, related_name='watchers')
+    watchers = models.ManyToManyField('User', related_name='watchers')
 
     def __str__(self):
         return self.subject
@@ -209,7 +211,7 @@ class Version(models.Model):
 
 class Project_User_Role(models.Model):
     project = models.ForeignKey('Project')
-    user = models.ForeignKey(User)
+    user = models.ForeignKey('User')
     role = models.ForeignKey('Role')
     created_on = models.DateTimeField(auto_now_add=True)
 
@@ -229,7 +231,7 @@ class Project_Group_Role(models.Model):
 
 class Comment(models.Model):
     issue = models.ForeignKey('Issue')
-    author = models.ForeignKey(User, related_name='author')
+    author = models.ForeignKey('User', related_name='author')
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -237,7 +239,7 @@ class Comment(models.Model):
 
 class Worktime(models.Model):
     issue = models.ForeignKey('Issue')
-    author = models.ForeignKey(User)
+    author = models.ForeignKey('User')
     hours = models.IntegerField()
     date = models.DateField()
     description = models.CharField(max_length=_STRING_MAX_LENGTH, null=True, blank=True)
@@ -262,7 +264,7 @@ class Setting(models.Model):
 
 @python_2_unicode_compatible
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField('User', on_delete=models.CASCADE, primary_key=True)
     avatar = models.CharField(max_length=_STRING_MAX_LENGTH)
 
     def __str__(self):
