@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 _STRING_MAX_LENGTH = 255
 
 
-def get_estimated_time(issues):
+def _get_estimated_time(issues):
     n = 0
     for issue in issues:
         if issue.start_date and issue.due_date and issue.start_date <= issue.due_date:
@@ -27,6 +27,33 @@ class User(AbstractUser):
 
 @python_2_unicode_compatible
 class Project(models.Model):
+
+    class Meta:
+        default_permissions = ()
+        # put all permissions here.
+        permissions = (
+            ("add_project", "Add project"),
+            ("change_project", "Change project"),
+            ("close_project", "Close project"),
+            ("add_subproject", "Add subproject"),
+            ("manage_member", "Manage member"),
+            ("manage_version", "Manage version"),
+            ("manage_issue_category", "Manage issue category"),
+            ("read_gantt", "Read Gantt"),
+            ("add_issue", "Add issue"),
+            ("Change_issue", "Change issue"),
+            ("read_issue", "Read issue"),
+            ("delete_issue", "Delete issue"),
+            ("manage_subissue", "Manage subissue"),
+            ("set_issue_private", "Set issue private"),
+            ("set_own_issue_private", "Set own issue private"),
+            ("add_comment", "Add comment"),
+            ("change_comment", "Change comment"),
+            ("add_worktime", "Add worktime"),
+            ("read_worktime", "Read worktime"),
+            ("change_worktime", "Change worktime"),
+            ("change_own_worktime", "Change own worktime"),
+        )
 
     OPEN_STATUS = 1
     CLOSED_STATUS = 2
@@ -68,7 +95,7 @@ class Project(models.Model):
         return dict(data)
 
     def estimated_time(self):
-        return get_estimated_time(Issue.objects.filter(project=self))
+        return _get_estimated_time(Issue.objects.filter(project=self))
 
     def spent_time(self):
         return Issue.objects.filter(project=self).aggregate(hours=models.Sum('worktime__hours'))['hours'] or 0
@@ -80,6 +107,9 @@ class Project(models.Model):
 
 @python_2_unicode_compatible
 class Issue(models.Model):
+
+    class Meta:
+        default_permissions = ()
 
     LOW_PRIORITY = 1
     NORMAL_PRIORITY = 2
@@ -126,6 +156,7 @@ class IssueCategory(models.Model):
     project = models.ForeignKey('Project')
 
     class Meta:
+        default_permissions = ()
         unique_together = ("project", "name")
 
     def __str__(self):
@@ -136,6 +167,9 @@ class IssueCategory(models.Model):
 class IssueTag(models.Model):
     name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
 
+    class Meta:
+        default_permissions = ()
+
     def __str__(self):
         return self.name
 
@@ -144,6 +178,9 @@ class IssueTag(models.Model):
 class IssueStatus(models.Model):
     name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
     #default_done_ratio = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        default_permissions = ()
 
     def __str__(self):
         return self.name
@@ -172,6 +209,7 @@ class Version(models.Model):
     effective_date = models.DateField(null=True, blank=True)
 
     class Meta:
+        default_permissions = ()
         unique_together = ("project", "name")
 
     def total_issue(self):
@@ -192,7 +230,7 @@ class Version(models.Model):
                    .aggregate(data=models.Avg('done_ratio'))['data'])
 
     def estimated_time(self):
-        return get_estimated_time(Issue.objects.filter(version=self))
+        return _get_estimated_time(Issue.objects.filter(version=self))
 
     def spent_time(self):
         return Issue.objects.filter(version=self).aggregate(hours=models.Sum('worktime__hours'))['hours'] or 0
@@ -216,6 +254,7 @@ class Project_User_Role(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        default_permissions = ()
         unique_together = ('project', 'user', 'role')
 
 
@@ -226,6 +265,7 @@ class Project_Group_Role(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        default_permissions = ()
         unique_together = ('project', 'group', 'role')
 
 
@@ -235,6 +275,9 @@ class Comment(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     content = models.TextField()
+
+    class Meta:
+        default_permissions = ()
 
 
 class Worktime(models.Model):
@@ -246,11 +289,17 @@ class Worktime(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        default_permissions = ()
+
 
 @python_2_unicode_compatible
 class Role(models.Model):
     name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
     permissions = models.ManyToManyField(Permission)
+
+    class Meta:
+        default_permissions = ()
 
     def __str__(self):
         return self.name
@@ -261,11 +310,17 @@ class Setting(models.Model):
     value = models.TextField()
     updated_on = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        default_permissions = ()
+
 
 @python_2_unicode_compatible
 class Profile(models.Model):
     user = models.OneToOneField('User', on_delete=models.CASCADE, primary_key=True)
     avatar = models.CharField(max_length=_STRING_MAX_LENGTH)
+
+    class Meta:
+        default_permissions = ()
 
     def __str__(self):
         return "%s's profile" % self.user

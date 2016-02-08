@@ -92,6 +92,10 @@ class List(ListView):
 
         return get_html.text
 
+    def get(self, request, *args, **kwargs):
+        print request.user.has_perm("pm.delete_user")
+        return super(List, self).get(request, *args, **kwargs)
+
 
 class Detail(DetailView):
     model = _model

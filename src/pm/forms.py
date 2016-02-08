@@ -1,10 +1,10 @@
 # coding:utf-8
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Version, Comment, Worktime, Role, User
 from django.conf import settings
-
+from django.forms import ModelMultipleChoiceField
 
 _EMPTY_LABEL = ''
 
@@ -162,9 +162,26 @@ class PasswordResetByEmailForm(PasswordResetForm):
 
 
 class RoleForm(forms.ModelForm):
+
+    class PermissionModelMultipleChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, obj):
+            return obj.name
+
+    permissions = PermissionModelMultipleChoiceField(
+        queryset=Permission.objects.filter(content_type__app_label='pm', content_type__model='project').order_by('id'),
+        widget=forms.CheckboxSelectMultiple(),
+        required=False
+    )
+
     class Meta:
         model = Role
-        fields = ['name']
+        fields = ['name', 'permissions']
+
+    def save(self, commit=True):
+        role = super(RoleForm, self).save(commit=False)
+        role.save()
+        self.save_m2m()
+        return role
 
 
 class UserAccountForm(forms.ModelForm):

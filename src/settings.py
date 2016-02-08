@@ -128,7 +128,7 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_ACTIVATION_DAYS = 7
 
 AUTH_USER_MODEL = 'pm.User'
-
+AUTHENTICATION_BACKENDS = ['pm.views.auth.AuthBackend']
 
 # Email
 EMAIL_HOST = 'localhost'
