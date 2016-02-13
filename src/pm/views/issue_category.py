@@ -1,16 +1,15 @@
-from django.views.generic import ListView
-from django.views.generic.edit import CreateView, UpdateView, View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from ..models import Project, IssueCategory
 from ..forms import IssueCategoryForm
 from .project import get_other_projects_html
+from .auth import PermCheckListView, PermCheckUpdateView, PermCheckView, PermCheckCreateView
 
 _model = IssueCategory
 _form = IssueCategoryForm
 
 
-class Create(CreateView):
+class Create(PermCheckCreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_issue_category.html'
@@ -37,8 +36,11 @@ class Create(CreateView):
         else:
             return reverse_lazy('issue_category_list', kwargs={'pk': self.kwargs['pk']})
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
 
-class List(ListView):
+
+class List(PermCheckListView):
     model = _model
     template_name = 'project/settings/issue_categories.html'
     context_object_name = 'issue_categories'
@@ -50,8 +52,11 @@ class List(ListView):
         context['other_projects'] = get_other_projects_html(project_id)
         return context
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
 
-class Update(UpdateView):
+
+class Update(PermCheckUpdateView):
     model = _model
     form_class = _form
     template_name = 'project/edit_issue_category.html'
@@ -75,10 +80,16 @@ class Update(UpdateView):
         project_id = IssueCategory.objects.get(pk=self.kwargs['pk']).project.id
         return reverse_lazy('issue_category_list', kwargs={'pk': project_id})
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
 
-class Delete(View):
+
+class Delete(PermCheckView):
     def post(self, request, *args, **kwargs):
         query_set = IssueCategory.objects.filter(pk=kwargs['pk'])
         project_id = query_set[0].project.id
         query_set.delete()
         return HttpResponseRedirect(reverse('issue_category_list', kwargs={'pk': project_id}))
+
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))

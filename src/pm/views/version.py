@@ -1,10 +1,10 @@
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, View
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from ..models import Version, Project
 from ..forms import VersionForm
 from .project import get_other_projects_html
+from .auth import PermCheckCreateView, PermCheckUpdateView, PermCheckListView, PermCheckView
 
 _model = Version
 _form = VersionForm
@@ -21,7 +21,7 @@ def _get_back_url(view, version_id=None, project_id=None):
             return reverse_lazy('version_roadmap', kwargs={'pk': project_id})
 
 
-class Create(CreateView):
+class Create(PermCheckCreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_version.html'
@@ -46,8 +46,11 @@ class Create(CreateView):
     def get_success_url(self):
         return _get_back_url(self, project_id=self.kwargs['pk'])
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.manage_version', Project.objects.get(pk=self.kwargs.get('pk')))
 
-class List(ListView):
+
+class List(PermCheckListView):
     model = _model
     template_name = 'project/settings/versions.html'
     context_object_name = 'versions'
@@ -62,8 +65,11 @@ class List(ListView):
     def get_queryset(self):
         return Version.objects.filter(project__id=self.kwargs.get('pk')).order_by('id')
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.manage_version', Project.objects.get(pk=self.kwargs.get('pk')))
 
-class Update(UpdateView):
+
+class Update(PermCheckUpdateView):
     model = _model
     form_class = _form
     template_name = 'project/edit_version.html'
@@ -89,6 +95,9 @@ class Update(UpdateView):
         project_id = Version.objects.get(pk=self.kwargs['pk']).project.id
         return _get_back_url(self, project_id=project_id)
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.manage_version', Version.objects.get(pk=self.kwargs['pk']).project)
+
 
 class Detail(DetailView):
     model = _model
@@ -102,12 +111,15 @@ class Detail(DetailView):
         return context
 
 
-class Delete(View):
+class Delete(PermCheckView):
     def post(self, request, *args, **kwargs):
         query_set = Version.objects.filter(pk=kwargs['pk'])
         project_id = query_set[0].project.id
         query_set.delete()
         return HttpResponseRedirect(_get_back_url(self, project_id=project_id))
+
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.manage_version', Version.objects.get(pk=self.kwargs['pk']).project)
 
 
 class Roadmap(ListView):

@@ -2,7 +2,7 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
-from ..models import Role, Project_Group_Role, Project_User_Role, User, Permission
+from ..models import Role, Project_Group_Role, Project_User_Role, User
 from ..forms import RoleForm
 
 

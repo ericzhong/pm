@@ -1,6 +1,5 @@
 # coding:utf-8
-from django.views.generic import ListView, DetailView, View
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic import ListView, View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Sum
@@ -9,6 +8,8 @@ from ..forms import IssueForm, CommentForm, WorktimeForm, WorktimeBlankForm, Com
 from ..models import Issue, Comment, Worktime, Project, Version
 from ..utils import Helper
 from .project import get_other_projects_html
+from .auth import PermCheckView, PermCheckUpdateView, PermCheckListView, \
+    PermCheckCreateView, PermCheckDetailView, no_perm
 import time
 
 
@@ -18,7 +19,7 @@ _worktime_form_prefix = 'worktime'
 _comment_form_prefix = 'comment'
 
 
-class Create(CreateView):
+class Create(PermCheckCreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_issue.html'
@@ -49,8 +50,11 @@ class Create(CreateView):
     def get_success_url(self):
         return self.request.GET.get('redirect', None) or reverse_lazy('issue_list', kwargs={'pk': self.kwargs.get('pk')})
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.add_issue', Project.objects.get(pk=self.kwargs['pk']))
 
-class List(ListView):
+
+class List(PermCheckListView):
     model = _model
     template_name = 'project/issues.html'
     context_object_name = 'issues'
@@ -65,8 +69,11 @@ class List(ListView):
     def get_queryset(self):
         return Issue.objects.filter(project__id=self.kwargs.get('pk')).order_by('-updated_on')
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.read_issue', Project.objects.get(pk=self.kwargs['pk']))
 
-class Detail(DetailView):
+
+class Detail(PermCheckDetailView):
     model = _model
     template_name = 'project/issue_info.html'
     context_object_name = 'issue'
@@ -86,8 +93,11 @@ class Detail(DetailView):
         context['watch'] = True if self.request.user in self.object.watchers.all() else False
         return context
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.read_issue', Issue.objects.get(pk=self.kwargs['pk']).project)
 
-class Update(UpdateView):
+
+class Update(PermCheckUpdateView):
     model = _model
     form_class = _form
     template_name = 'project/edit_issue.html'
@@ -118,6 +128,8 @@ class Update(UpdateView):
 
         if self.worktime_form.is_valid():
             if self.worktime_form.cleaned_data['hours']:
+                if not self.request.user.has_perm('pm.add_worktime', self.object.project):
+                    return no_perm()
                 self.worktime_form.cleaned_data['issue'] = self.object
                 self.worktime_form.cleaned_data['author'] = self.request.user
                 self.worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
@@ -127,6 +139,8 @@ class Update(UpdateView):
 
         if self.comment_form.is_valid():
             if self.comment_form.cleaned_data['content']:
+                if not self.request.user.has_perm('pm.add_comment', self.object.project):
+                    return no_perm()
                 self.comment_form.cleaned_data['issue'] = self.object
                 self.comment_form.cleaned_data['author'] = self.request.user
                 Comment(**self.comment_form.cleaned_data).save()
@@ -140,16 +154,22 @@ class Update(UpdateView):
         self.comment_form = CommentBlankForm(self.request.POST, prefix=_comment_form_prefix)
         return super(Update, self).form_invalid(form)
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.change_issue', Issue.objects.get(pk=self.kwargs['pk']).project)
 
-class Delete(View):
+
+class Delete(PermCheckView):
     def post(self, request, *args, **kwargs):
         issues = Issue.objects.filter(pk=kwargs['pk'])
         project_id = issues[0].project.id
         issues.delete()
         return HttpResponseRedirect(reverse('issue_list', kwargs={'pk': project_id}))
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.delete_issue', Issue.objects.get(pk=self.kwargs['pk']).project)
 
-class CommentUpdate(View):
+
+class CommentUpdate(PermCheckView):
     def post(self, request, *args, **kwargs):
         pk = kwargs['pk']
         issue_id = Comment.objects.get(pk=pk).issue.id
@@ -159,6 +179,10 @@ class CommentUpdate(View):
             Comment.objects.filter(pk=pk).update(**comment_form.cleaned_data)
 
         return HttpResponseRedirect(reverse('issue_detail', kwargs={'pk':issue_id}))
+
+    def has_perm(self, request, *args, **kwargs):
+        comment = Comment.objects.get(pk=self.kwargs['pk'])
+        return request.user.has_perm('pm.change_comment', comment.issue.project) or comment.author == request.user
 
 
 class Quote(View):
@@ -173,7 +197,7 @@ class Quote(View):
         return JsonResponse(data)
 
 
-class WorktimeList(ListView):
+class WorktimeList(PermCheckListView):
     model = Worktime
     template_name = 'project/worktimes.html'
     context_object_name = 'worktimes'
@@ -186,8 +210,11 @@ class WorktimeList(ListView):
         context['other_projects'] = get_other_projects_html(issue.project.id)
         return context
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.read_worktime', Issue.objects.get(pk=self.kwargs['pk']).project)
 
-class WorktimeCreate(CreateView):
+
+class WorktimeCreate(PermCheckCreateView):
     model = Worktime
     form_class = WorktimeForm
     template_name = 'project/create_worktime.html'
@@ -220,8 +247,11 @@ class WorktimeCreate(CreateView):
             })
         return kwargs
 
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.add_worktime', Issue.objects.get(pk=self.kwargs['pk']).project)
 
-class WorktimeUpdate(UpdateView):
+
+class WorktimeUpdate(PermCheckUpdateView):
     model = Worktime
     form_class = WorktimeForm
     template_name = 'project/edit_worktime.html'
@@ -237,13 +267,32 @@ class WorktimeUpdate(UpdateView):
         context['project'] = issue.project
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super(WorktimeUpdate, self).get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            data = self.request.POST.copy()
+            data['author'] = self.request.user.id
+            kwargs.update({
+                'data': data,
+            })
+        return kwargs
 
-class WorktimeDelete(View):
+    def has_perm(self, request, *args, **kwargs):
+        worktime = Worktime.objects.get(pk=self.kwargs['pk'])
+        return request.user.has_perm('pm.change_worktime', worktime.issue.project) or \
+            (request.user.has_perm('pm.change_own_worktime', worktime.issue.project) and
+             worktime.author == request.user)
+
+
+class WorktimeDelete(PermCheckView):
     def post(self, request, *args, **kwargs):
         query_set = Worktime.objects.filter(pk=kwargs['pk'])
         issue_id = query_set[0].issue.id
         query_set.delete()
         return HttpResponseRedirect(reverse('worktime_list', kwargs={'pk': issue_id}))
+
+    def has_perm(self, request, *args, **kwargs):
+        return request.user.has_perm('pm.change_worktime', Worktime.objects.get(pk=self.kwargs['pk']).issue.project)
 
 
 class AllIssues(ListView):

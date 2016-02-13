@@ -16,12 +16,11 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.decorators import login_required, permission_required
-
+from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
 from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting, \
     issue_category, base, account
-
-from pm.views.base import admin_required, anonymous_perm
+from pm.views.auth import admin_required, anonymous_perm
 
 urlpatterns = [
     url(r'^$', base.homepage.as_view(), name='homepage'),
@@ -135,6 +134,9 @@ urlpatterns = [
     url(r'^settings/$', login_required(admin_required(setting.Setting.as_view())), name='settings'),
     url(r'^admin/$', login_required(admin_required(project.Admin.as_view())), name='admin'),
     url(r'^admin/projects/$', login_required(admin_required(project.Admin.as_view())), name='admin_project'),
+
+    # status page
+    url(r'^403/$', TemplateView.as_view(template_name="status/403.html"), name='status_403'),
 
     url(r'^django-admin/', include(admin.site.urls)),
 ]
