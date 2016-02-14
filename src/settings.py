@@ -40,7 +40,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pm',
-    'widget_tweaks',
+    'pm.templatetags.widget_tweaks',
+    'pm.templatetags.permission_tags',
 )
 
 MIDDLEWARE_CLASSES = (

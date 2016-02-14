@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load permission_tags %}
 
 {% block page-content %}
   <div class="row">
@@ -12,7 +13,9 @@
           <div class="actions btn-set">
             {% if user.is_authenticated %}
               {% if project.CLOSED_STATUS != project.status %}
-                <a href="{% url 'project_add'  %}?parent={{ project.id }}" class="btn btn-default btn-circle"><i class="fa fa-plus"></i>新建子项目</a>
+                {% hasperm user 'pm.add_subproject' project %}
+                  <a href="{% url 'project_add'  %}?parent={{ project.id }}" class="btn btn-default btn-circle"><i class="fa fa-plus"></i>新建子项目</a>
+                {% endhasperm %}
               {% endif %}
               {% if project.status == project.CLOSED_STATUS %}
                 <a href="{% url 'project_reopen' project.id %}" class="btn btn-default btn-circle"><i class="fa fa-unlock"></i>Reopen</a>
