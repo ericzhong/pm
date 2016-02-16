@@ -45,7 +45,7 @@ urlpatterns = [
     url(r'^projects/(?P<pk>\d+)/gantt/$', anonymous_perm(project.Gantt.as_view()), name='project_gantt'),
 
     # project settings
-    url(r'^projects/(?P<pk>\d+)/settings/$', login_required(project.Update.as_view()), name='project_settings'),
+    url(r'^projects/(?P<pk>\d+)/settings/$', login_required(project.Settings.as_view()), name='project_settings'),
     url(r'^projects/(?P<pk>\d+)/settings/info/$', login_required(project.Update.as_view()), name='project_update'),
     url(r'^projects/(?P<pk>\d+)/settings/versions/$', login_required(version.List.as_view()), name='version_list'),
     url(r'^projects/(?P<pk>\d+)/settings/members/$', login_required(project.ListMember.as_view()), name='member_list'),

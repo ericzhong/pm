@@ -1,12 +1,16 @@
 {% extends "project/base.html" %}
 
+{% load permission_tags %}
+
 {% block tab_toggle %}tab_roadmap{% endblock %}
 
 {% block tab_content %}
+  {% get_user_perm user project as permissions %}
+
   <div class="tab-caption">
     <span>版本 >> {{ version.name }}</span>
     <div class="actions btn-set small">
-      {% if user.is_authenticated %}
+      {% if 'pm.manage_version' in permissions %}
         <a href="{% url 'version_update' version.id %}"><i class="fa fa-plus"></i>编辑</a>
         <a data-href="{% url 'version_delete' version.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
       {% endif %}

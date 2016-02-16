@@ -81,7 +81,8 @@ class Update(PermCheckUpdateView):
         return reverse_lazy('issue_category_list', kwargs={'pk': project_id})
 
     def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
+        return request.user.has_perm('pm.manage_issue_category',
+                                     IssueCategory.objects.get(pk=self.kwargs.get('pk')).project)
 
 
 class Delete(PermCheckView):
@@ -92,4 +93,5 @@ class Delete(PermCheckView):
         return HttpResponseRedirect(reverse('issue_category_list', kwargs={'pk': project_id}))
 
     def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
+        return request.user.has_perm('pm.manage_issue_category',
+                                     IssueCategory.objects.get(pk=self.kwargs.get('pk')).project)

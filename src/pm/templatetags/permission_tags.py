@@ -3,6 +3,18 @@ from django import template
 register = template.Library()
 
 
+@register.assignment_tag(takes_context=True)
+def get_user_perm(context, user, project):
+    try:
+        if hasattr(user, 'get_all_permissions'):
+            func = getattr(user, 'get_all_permissions')
+            return func(project)
+        return None
+    except Exception as e:
+        return None
+
+
+@register.tag(name='hasperm')
 def permission(parser, token):
     try:
         tag_name, username, perm, object = token.split_contents()
@@ -36,4 +48,3 @@ class PermissionNode(template.Node):
                 return content 
         return ""
 
-register.tag('hasperm', permission)

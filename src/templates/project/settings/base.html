@@ -1,15 +1,29 @@
 {% extends "project/base.html" %}
 
+{% load permission_tags %}
+
 {% block tab_toggle %}tab_settings{% endblock %}
 
 {% block tab_content %}
   <div class="tab-caption">配置</div>
   <div class="tabbable">
     <ul class="nav nav-tabs second">
-      <li id="tab_info"><a href="{% url 'project_update' project.id %}"> 信息 </a></li>
-      <li id="tab_member"><a href="{% url 'member_list' project.id %}"> 成员 </a></li>
-      <li id="tab_version"><a href="{% url 'version_list' project.id %}"> 版本 </a></li>
-      <li id="tab_issue_category"><a href="{% url 'issue_category_list' project.id %}"> 问题类别 </a></li>
+      {% get_user_perm user project as permissions %}
+      {% if perms.pm.change_project %}
+        <li id="tab_info"><a href="{% url 'project_update' project.id %}"> 信息 </a></li>
+      {% endif %}
+
+      {% if 'pm.manage_member' in permissions %}
+        <li id="tab_member"><a href="{% url 'member_list' project.id %}"> 成员 </a></li>
+      {% endif %}
+
+      {% if 'pm.manage_version' in permissions %}
+        <li id="tab_version"><a href="{% url 'version_list' project.id %}"> 版本 </a></li>
+      {% endif %}
+
+      {% if 'pm.manage_issue_category' in permissions %}
+        <li id="tab_issue_category"><a href="{% url 'issue_category_list' project.id %}"> 问题类别 </a></li>
+      {% endif %}
     </ul>
     <div class="tab-content no-space">
       <div id="settings-tab-content" tab-toggle="{% block settings_tab_toggle %}{% endblock %}">

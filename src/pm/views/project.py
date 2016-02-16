@@ -11,7 +11,7 @@ from .role import get_user_roles_id, get_role_users, get_role_user, get_user_gro
 import json
 from ..utils import Helper
 from ..models import User
-from .auth import PermCheckCreateView, PermCheckUpdateView, PermCheckView
+from .auth import PermCheckCreateView, PermCheckUpdateView, PermCheckView, no_perm
 
 
 _model = Project
@@ -164,6 +164,26 @@ class Delete(DeleteView):
     model = _model
     template_name = '_admin/delete_project.html'
     success_url = reverse_lazy('admin_project')
+
+
+class Settings(View):
+    def get(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+
+        if request.user.has_perm('pm.change_project'):
+            return redirect('project_update', pk=kwargs['pk'])
+
+        elif request.user.has_perm('pm.manage_member', Project.objects.get(pk=pk)):
+            return redirect('member_list', pk=kwargs['pk'])
+
+        elif request.user.has_perm('pm.manage_version', Project.objects.get(pk=pk)):
+            return redirect('version_list', pk=kwargs['pk'])
+
+        elif request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=pk)):
+            return redirect('issue_category_list', pk=kwargs['pk'])
+
+        else:
+            return no_perm()
 
 
 class Close(PermCheckView):

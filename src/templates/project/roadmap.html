@@ -1,12 +1,16 @@
 {% extends "project/base.html" %}
 
+{% load permission_tags %}
+
 {% block tab_toggle %}tab_roadmap{% endblock %}
 
 {% block tab_content %}
+  {% get_user_perm user project as permissions %}
+
   <div class="tab-caption">
     <span>路线图</span>
     <div class="actions btn-set small">
-      {% if user.is_authenticated %}
+      {% if 'pm.manage_version' in permissions %}
         <a href="{% url 'version_add' project.id %}"><i class="fa fa-plus"></i>新建版本</a>
       {% endif %}
     </div>

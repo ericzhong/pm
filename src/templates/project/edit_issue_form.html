@@ -1,5 +1,8 @@
 {% load i18n %}
 {% load widget_tweaks %}
+{% load permission_tags %}
+
+{% get_user_perm user project as permissions %}
 
 {{ form.errors }}
 --------------
@@ -24,37 +27,41 @@
       </div>
     </div>
     {% include 'project/create_issue_form.html' %}
-    <hr>
-    <h5>工时</h5>
-    <div class="form-group">
-      <label class="control-label col-md-2">耗时</label>
-      <div class="col-md-10">
-        {{ worktime_form.hours|add_class:"form-control input-inline input-xsmall" }}
-        {% if worktime_form.hours.errors %}
-          <span class="help-block">{{ worktime_form.hours.errors.0 }}</span>
-        {% endif %}
-        <span class="help-inline">小时</span>
+    {% if 'pm.add_worktime' in permissions %}
+      <hr>
+      <h5>工时</h5>
+      <div class="form-group">
+        <label class="control-label col-md-2">耗时</label>
+        <div class="col-md-10">
+          {{ worktime_form.hours|add_class:"form-control input-inline input-xsmall" }}
+          {% if worktime_form.hours.errors %}
+            <span class="help-block">{{ worktime_form.hours.errors.0 }}</span>
+          {% endif %}
+          <span class="help-inline">小时</span>
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-md-2">注释</label>
-      <div class="col-md-6">
-        {{ worktime_form.description|add_class:"form-control" }}
-        {% if worktime_form.description.errors %}
-          <span class="help-block">{{ worktime_form.description.errors.0 }}</span>
-        {% endif %}
+      <div class="form-group">
+        <label class="control-label col-md-2">注释</label>
+        <div class="col-md-6">
+          {{ worktime_form.description|add_class:"form-control" }}
+          {% if worktime_form.description.errors %}
+            <span class="help-block">{{ worktime_form.description.errors.0 }}</span>
+          {% endif %}
+        </div>
       </div>
-    </div>
-    <hr>
-    <h5>说明</h5>
-    <div class="form-group">
-      <div class="col-md-12">
-        {{ comment_form.content|add_class:"form-control"|attr:"rows:3" }}
-        {% if comment_form.hours.errors %}
-          <span class="help-block">{{ comment_form.hours.errors.0 }}</span>
-        {% endif %}
+    {% endif %}
+    {% if 'pm.add_comment' in permissions %}
+      <hr>
+      <h5>说明</h5>
+      <div class="form-group">
+        <div class="col-md-12">
+          {{ comment_form.content|add_class:"form-control"|attr:"rows:3" }}
+          {% if comment_form.hours.errors %}
+            <span class="help-block">{{ comment_form.hours.errors.0 }}</span>
+          {% endif %}
+        </div>
       </div>
-    </div>
+    {% endif %}
   </div>
   <div class="form-actions">
     <div class="row">

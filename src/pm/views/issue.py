@@ -126,26 +126,28 @@ class Update(PermCheckUpdateView):
         self.worktime_form = WorktimeBlankForm(self.request.POST, prefix=_worktime_form_prefix)
         self.comment_form = CommentBlankForm(self.request.POST, prefix=_comment_form_prefix)
 
-        if self.worktime_form.is_valid():
-            if self.worktime_form.cleaned_data['hours']:
-                if not self.request.user.has_perm('pm.add_worktime', self.object.project):
-                    return no_perm()
-                self.worktime_form.cleaned_data['issue'] = self.object
-                self.worktime_form.cleaned_data['author'] = self.request.user
-                self.worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
-                Worktime(**self.worktime_form.cleaned_data).save()
-        else:
-            return super(Update, self).form_invalid(form)
+        if self.request.user.has_perm('pm.add_worktime', self.object.project):
+            if self.worktime_form.is_valid():
+                if self.worktime_form.cleaned_data['hours']:
+                    if not self.request.user.has_perm('pm.add_worktime', self.object.project):
+                        return no_perm()
+                    self.worktime_form.cleaned_data['issue'] = self.object
+                    self.worktime_form.cleaned_data['author'] = self.request.user
+                    self.worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
+                    Worktime(**self.worktime_form.cleaned_data).save()
+            else:
+                return super(Update, self).form_invalid(form)
 
-        if self.comment_form.is_valid():
-            if self.comment_form.cleaned_data['content']:
-                if not self.request.user.has_perm('pm.add_comment', self.object.project):
-                    return no_perm()
-                self.comment_form.cleaned_data['issue'] = self.object
-                self.comment_form.cleaned_data['author'] = self.request.user
-                Comment(**self.comment_form.cleaned_data).save()
-        else:
-            return super(Update, self).form_invalid(form)
+        if self.request.user.has_perm('pm.add_comment', self.object.project):
+            if self.comment_form.is_valid():
+                if self.comment_form.cleaned_data['content']:
+                    if not self.request.user.has_perm('pm.add_comment', self.object.project):
+                        return no_perm()
+                    self.comment_form.cleaned_data['issue'] = self.object
+                    self.comment_form.cleaned_data['author'] = self.request.user
+                    Comment(**self.comment_form.cleaned_data).save()
+            else:
+                return super(Update, self).form_invalid(form)
 
         return super(Update, self).form_valid(form)
 
@@ -278,10 +280,11 @@ class WorktimeUpdate(PermCheckUpdateView):
         return kwargs
 
     def has_perm(self, request, *args, **kwargs):
-        worktime = Worktime.objects.get(pk=self.kwargs['pk'])
-        return request.user.has_perm('pm.change_worktime', worktime.issue.project) or \
-            (request.user.has_perm('pm.change_own_worktime', worktime.issue.project) and
-             worktime.author == request.user)
+        worktime = Worktime.objects.get(pk=kwargs['pk'])
+        project = worktime.issue.project
+        user = self.request.user
+        return user.has_perm('pm.change_worktime', project) or \
+            (user.has_perm('pm.change_own_worktime', project) and user == worktime.author)
 
 
 class WorktimeDelete(PermCheckView):
@@ -292,7 +295,11 @@ class WorktimeDelete(PermCheckView):
         return HttpResponseRedirect(reverse('worktime_list', kwargs={'pk': issue_id}))
 
     def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.change_worktime', Worktime.objects.get(pk=self.kwargs['pk']).issue.project)
+        worktime = Worktime.objects.get(pk=kwargs['pk'])
+        project = worktime.issue.project
+        user = self.request.user
+        return user.has_perm('pm.change_worktime', project) or \
+            (user.has_perm('pm.change_own_worktime', project) and user == worktime.author)
 
 
 class AllIssues(ListView):

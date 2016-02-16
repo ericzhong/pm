@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load i18n %}
+{% load permission_tags %}
 
 {% block page-content %}
   <div class="row">
@@ -11,7 +12,7 @@
             <span class="caption-subject font-green-sharp bold">{% trans 'Projects' %}</span>
           </div>
           <div class="actions btn-set">
-            {% if user.is_authenticated %}
+            {% if perms.pm.add_project %}
               <a type="button" class="btn btn-default btn-circle" href="{% url 'project_add' %}"><i class="fa fa-plus"></i> 新建项目</a>
             {% endif %}
             <a class="btn btn-default btn-circle" href="{% url 'issue_all' %}"> 查看所有问题</a>

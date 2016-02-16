@@ -3,6 +3,8 @@
 {% load permission_tags %}
 
 {% block page-content %}
+  {% get_user_perm user project as permissions %}
+
   <div class="row">
     <div class="col-md-12">
       <div class="portlet light bordered">
@@ -11,18 +13,19 @@
             <span class="caption-subject font-green-sharp bold">{{ project.name }}</span>
           </div>
           <div class="actions btn-set">
-            {% if user.is_authenticated %}
+            {% hasperm user 'pm.add_subproject' project %}
               {% if project.CLOSED_STATUS != project.status %}
-                {% hasperm user 'pm.add_subproject' project %}
-                  <a href="{% url 'project_add'  %}?parent={{ project.id }}" class="btn btn-default btn-circle"><i class="fa fa-plus"></i>新建子项目</a>
-                {% endhasperm %}
+                <a href="{% url 'project_add'  %}?parent={{ project.id }}" class="btn btn-default btn-circle"><i class="fa fa-plus"></i>新建子项目</a>
               {% endif %}
+            {% endhasperm %}
+
+            {% hasperm user 'pm.close_project' project %}
               {% if project.status == project.CLOSED_STATUS %}
                 <a href="{% url 'project_reopen' project.id %}" class="btn btn-default btn-circle"><i class="fa fa-unlock"></i>Reopen</a>
               {% else %}
                 <a href="{% url 'project_close' project.id %}" class="btn btn-default btn-circle"><i class="fa fa-lock"></i>Close</a>
               {% endif %}
-            {% endif %}
+            {% endhasperm %}
 
             {% if other_projects %}
               <div class="btn-group">
@@ -41,18 +44,22 @@
             <ul class="nav nav-tabs">
               <li id="tab_overview"><a href="{% url 'project_detail' project.id %}"> 概述 </a></li>
               <li id="tab_roadmap"><a href="{% url 'version_roadmap' project.id %}"> 路线图 </a></li>
-              <li id="tab_issues"><a href="{% url 'issue_list' project.id %}"> 问题 </a></li>
-              {% if user.is_authenticated %}
+              {% if 'pm.read_issue' in permissions %}
+                <li id="tab_issues"><a href="{% url 'issue_list' project.id %}"> 问题 </a></li>
+              {% endif %}
+              {% if 'pm.add_issue' in permissions %}
                 <li id="tab_create_issue"><a href="{% url 'issue_add' project.id %}"> 新建问题 </a></li>
               {% endif %}
-              <li id="tab_gantt"><a href="/projects/1/gantt"> 甘特图 </a></li>
+              {% if 'pm.read_gantt' in permissions %}
+                <li id="tab_gantt"><a href="/projects/1/gantt"> 甘特图 </a></li>
+              {% endif %}
               <!--
               <li id="tab_calendar"><a href="/projects/1/issues/calendar"> 日历 </a></li>
               <li id="tab_news"><a href="/projects/1/news"> 新闻 </a></li>
               <li id="tab_documents"><a href="/projects/1/documents"> 文档 </a></li>
               -->
-              {% if user.is_authenticated %}
-                {% if project.CLOSED_STATUS != project.status %}
+              {% if project.CLOSED_STATUS != project.status %}
+                {% if perms.pm.change_project or 'pm.manage_member' in permissions or 'pm.manage_version' in permissions or 'pm.manage_issue_category' in permissions %}
                   <li id="tab_settings"><a href="{% url 'project_settings' project.id %}"> 配置 </a></li>
                 {% endif %}
               {% endif %}

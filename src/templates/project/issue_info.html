@@ -2,11 +2,14 @@
 
 {% load i18n %}
 {% load widget_tweaks %}
+{% load permission_tags %}
 
 {% block tab_toggle %}tab_issues{% endblock %}
 
 
 {% block tab_content %}
+  {% get_user_perm user project as permissions %}
+
   <div class="portlet issue-info">
     <div class="portlet-title">
       <div class="caption">
@@ -14,15 +17,23 @@
       </div>
       <div class="actions btn-set small">
         {% if user.is_authenticated %}
-          <a id="btn-edit-issue"><i class="fa fa-edit"></i>编辑</a>
-          <a href="{% url 'worktime_add' issue.id %}"><i class="fa fa-clock-o"></i>登记工时 </a>
-          {% if watch %}
-            <a href="{% url 'issue_unwatch' issue.id %}"><i class="fa fa-star"></i>Unwatch</a>
-          {% else %}
-            <a href="{% url 'issue_watch' issue.id %}"><i class="fa fa-star-o"></i>Watch</a>
+          {% if 'pm.change_issue' in permissions %}
+            <a id="btn-edit-issue"><i class="fa fa-edit"></i>编辑</a>
           {% endif %}
-          <a><i class="fa fa-copy"></i>复制 </a>
-          <a data-href="{% url 'issue_delete' issue.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+          {% if 'pm.add_worktime' in permissions %}
+            <a href="{% url 'worktime_add' issue.id %}"><i class="fa fa-clock-o"></i>登记工时</a>
+          {% endif %}
+          {% if user.is_authenticated and user.is_active %}
+            {% if watch %}
+              <a href="{% url 'issue_unwatch' issue.id %}"><i class="fa fa-star"></i>Unwatch</a>
+            {% else %}
+              <a href="{% url 'issue_watch' issue.id %}"><i class="fa fa-star-o"></i>Watch</a>
+            {% endif %}
+          {% endif %}
+          <!--<a><i class="fa fa-copy"></i>复制</a>-->
+          {% if 'pm.delete_issue' in permissions %}
+            <a data-href="{% url 'issue_delete' issue.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+          {% endif %}
         {% endif %}
       </div>
     </div>
@@ -52,7 +63,9 @@
           <div class="col-md-3"><label class="label-name">类别:</label></div>
           <div class="col-md-3"><label class="label-value">{{ issue.category|default:"" }}</label></div>
           <div class="col-md-3"><label class="label-name">耗时:</label></div>
-          <div class="col-md-3"><label class="label-value"><a href="{% url 'worktime_list' issue.id %}">{{ spent_time }} 小时</a></label></div>
+          <div class="col-md-3"><label class="label-value">
+            {% if 'pm.read_worktime' in permissions %}<a href="{% url 'worktime_list' issue.id %}">{{ spent_time }} 小时</a>{% else %}{{ spent_time }} 小时{% endif %}
+          </label></div>
         </div>
         <div class="row">
           <div class="col-md-3"><label class="label-name">目标版本:</label></div>
@@ -71,7 +84,7 @@
               <span>子任务</span>
             </div>
             <div class="actions btn-set extra-small">
-              {% if user.is_authenticated %}
+              {% if 'pm.add_issue' in permissions %}
                 <a href="{% url 'issue_add' project.id %}?parent={{ issue.id }}&redirect={% url 'issue_detail' issue.id %}">新增</a>
               {% endif %}
             </div>
@@ -103,11 +116,15 @@
                 </a>
                 <div class="media-body todo-comment">
                   <div class="actions btn-set todo-comment-btn small">
-                    <a name="btn-quote-comment" data-href="{% url 'issue_quote' issue.id %}?comment={{ comment.id }}"><i class="fa fa-comment-o"></i>引用</a>
-                    <a data-href="{% url 'comment_update' comment.id %}" name="btn-edit-comment"><i class="fa fa-edit"></i>编辑</a>
+                    {% if 'pm.add_comment' in permissions %}
+                      <a name="btn-quote-comment" data-href="{% url 'issue_quote' issue.id %}?comment={{ comment.id }}"><i class="fa fa-comment-o"></i>引用</a>
+                    {% endif %}
+                    {% if 'pm.change_comment' in permissions or user == comment.author %}
+                      <a data-href="{% url 'comment_update' comment.id %}" name="btn-edit-comment"><i class="fa fa-edit"></i>编辑</a>
+                    {% endif %}
                   </div>
                   <p class="todo-comment-head">
-                    <span class="todo-comment-username">{{ comment.author }}</span> &nbsp; <span class="todo-comment-date">{{ comment.updated_on|date:"Y-m-d H:i:s" }}</span>
+                    <span class="todo-comment-username">{{ comment.author.get_full_name }}</span> &nbsp; <span class="todo-comment-date">{{ comment.updated_on|date:"Y-m-d H:i:s" }}</span>
                   </p>
                   <!--
                   <p class="todo-text-color">
