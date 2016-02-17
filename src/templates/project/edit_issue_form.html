@@ -12,23 +12,28 @@
 <form action="{% url 'issue_update' issue.id %}" class="form-horizontal" method="post">
   {% csrf_token %}
   <div class="form-body">
-    <h5>属性</h5>
-    <div class="row">
-      <div class="col-md-12">
-        <div class="form-group {% if form.project.errors %}has-error{% endif %}">
-          <label class="control-label col-md-2">项目<span class="required">*</span></label>
-          <div class="col-md-3">
-            {{ form.project|add_class:"form-control" }}
-            {% if form.project.errors %}
-              <span class="help-block">{{ form.project.errors.0 }}</span>
-            {% endif %}
+    {% if 'pm.change_issue' in permissions %}
+      <h5>属性</h5>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group {% if form.project.errors %}has-error{% endif %}">
+            <label class="control-label col-md-2">项目<span class="required">*</span></label>
+            <div class="col-md-3">
+              {{ form.project|add_class:"form-control" }}
+              {% if form.project.errors %}
+                <span class="help-block">{{ form.project.errors.0 }}</span>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    {% include 'project/create_issue_form.html' %}
+      {% include 'project/create_issue_form.html' %}
+      {% if 'pm.add_worktime' in permissions or 'pm.add_comment' in permissions %}
+        <hr>
+      {% endif %}
+    {% endif %}
+
     {% if 'pm.add_worktime' in permissions %}
-      <hr>
       <h5>工时</h5>
       <div class="form-group">
         <label class="control-label col-md-2">耗时</label>
@@ -49,9 +54,12 @@
           {% endif %}
         </div>
       </div>
+      {% if 'pm.add_comment' in permissions %}
+        <hr>
+      {% endif %}
     {% endif %}
+
     {% if 'pm.add_comment' in permissions %}
-      <hr>
       <h5>说明</h5>
       <div class="form-group">
         <div class="col-md-12">

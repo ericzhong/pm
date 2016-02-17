@@ -17,7 +17,7 @@
       </div>
       <div class="actions btn-set small">
         {% if user.is_authenticated %}
-          {% if 'pm.change_issue' in permissions %}
+          {% if 'pm.change_issue' in permissions or 'pm.add_comment' in permissions or 'pm.add_worktime' in permissions %}
             <a id="btn-edit-issue"><i class="fa fa-edit"></i>编辑</a>
           {% endif %}
           {% if 'pm.add_worktime' in permissions %}

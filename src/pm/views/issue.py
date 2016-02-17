@@ -9,7 +9,7 @@ from ..models import Issue, Comment, Worktime, Project, Version
 from ..utils import Helper
 from .project import get_other_projects_html
 from .auth import PermCheckView, PermCheckUpdateView, PermCheckListView, \
-    PermCheckCreateView, PermCheckDetailView, no_perm
+    PermCheckCreateView, PermCheckDetailView
 import time
 
 
@@ -97,67 +97,72 @@ class Detail(PermCheckDetailView):
         return request.user.has_perm('pm.read_issue', Issue.objects.get(pk=self.kwargs['pk']).project)
 
 
-class Update(PermCheckUpdateView):
-    model = _model
-    form_class = _form
-    template_name = 'project/edit_issue.html'
+class Update(PermCheckView):
+    def __init__(self, **kwargs):
+        self.object = None
+        super(Update, self).__init__(**kwargs)
+        return
 
-    def get_success_url(self):
-        return reverse_lazy('issue_detail', kwargs={'pk': self.kwargs.get('pk')})
+    def get_object(self):
+        assert self.kwargs.get('pk', False)
+        self.object = Issue.objects.get(pk=self.kwargs['pk'])
+        assert self.object
+        return
 
-    def get_context_data(self, **kwargs):
-        context = super(Update, self).get_context_data(**kwargs)
+    def get(self, request, *args, **kwargs):
+        self.get_object()
+        context = dict()
+        context['issue'] = self.object
         context['project'] = self.object.project
-        context['worktime_form'] = self.worktime_form
-        context['comment_form'] = self.comment_form
-        return context
+        context['form'] = _form(instance=self.object)
+        context['worktime_form'] = WorktimeBlankForm(prefix=_worktime_form_prefix)
+        context['comment_form'] = CommentBlankForm(prefix=_comment_form_prefix)
+        return render(request, 'project/edit_issue.html', context)
 
-    def get_form_kwargs(self):
-        kwargs = super(Update, self).get_form_kwargs()
-        if self.request.method in ('POST', 'PUT'):
-            data = self.request.POST.copy()
-            data['author'] = self.request.user.id
-            kwargs.update({
-                'data': data,
-            })
-        return kwargs
+    def post(self, request, *args, **kwargs):
+        self.get_object()
+        error = False
+        context = dict()
 
-    def form_valid(self, form):
-        self.worktime_form = WorktimeBlankForm(self.request.POST, prefix=_worktime_form_prefix)
-        self.comment_form = CommentBlankForm(self.request.POST, prefix=_comment_form_prefix)
+        if self.request.user.has_perm('pm.change_issue', self.object.project):
+            post = self.request.POST.copy()
+            post.update({'author': self.request.user.id})
+            form = _form(post, instance=self.object)
+            if form.is_valid():
+                form.save()
+            else:
+                error = True
+                context['form'] = form
 
         if self.request.user.has_perm('pm.add_worktime', self.object.project):
-            if self.worktime_form.is_valid():
-                if self.worktime_form.cleaned_data['hours']:
-                    if not self.request.user.has_perm('pm.add_worktime', self.object.project):
-                        return no_perm()
-                    self.worktime_form.cleaned_data['issue'] = self.object
-                    self.worktime_form.cleaned_data['author'] = self.request.user
-                    self.worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
-                    Worktime(**self.worktime_form.cleaned_data).save()
+            worktime_form = WorktimeBlankForm(self.request.POST, prefix=_worktime_form_prefix)
+            if worktime_form.is_valid() and not error:
+                if worktime_form.cleaned_data['hours']:
+                    worktime_form.cleaned_data['issue'] = self.object
+                    worktime_form.cleaned_data['author'] = self.request.user
+                    worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
+                    Worktime(**worktime_form.cleaned_data).save()
             else:
-                return super(Update, self).form_invalid(form)
+                error = True
+                context['worktime_form'] = worktime_form
 
         if self.request.user.has_perm('pm.add_comment', self.object.project):
-            if self.comment_form.is_valid():
-                if self.comment_form.cleaned_data['content']:
-                    if not self.request.user.has_perm('pm.add_comment', self.object.project):
-                        return no_perm()
-                    self.comment_form.cleaned_data['issue'] = self.object
-                    self.comment_form.cleaned_data['author'] = self.request.user
-                    Comment(**self.comment_form.cleaned_data).save()
+            comment_form = CommentBlankForm(self.request.POST, prefix=_comment_form_prefix)
+            if comment_form.is_valid() and not error:
+                if comment_form.cleaned_data['content']:
+                    comment_form.cleaned_data['issue'] = self.object
+                    comment_form.cleaned_data['author'] = self.request.user
+                    Comment(**comment_form.cleaned_data).save()
             else:
-                return super(Update, self).form_invalid(form)
+                error = True
+                context['comment_form'] = comment_form
 
-        return super(Update, self).form_valid(form)
-
-    def form_invalid(self, form):
-        self.worktime_form = WorktimeBlankForm(self.request.POST, prefix=_worktime_form_prefix)
-        self.comment_form = CommentBlankForm(self.request.POST, prefix=_comment_form_prefix)
-        return super(Update, self).form_invalid(form)
-
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.change_issue', Issue.objects.get(pk=self.kwargs['pk']).project)
+        if error:
+            context['issue'] = self.object
+            context['project'] = self.object.project
+            return render(request, 'project/edit_issue.html', context)
+        else:
+            return redirect('issue_detail', pk=kwargs['pk'])
 
 
 class Delete(PermCheckView):
