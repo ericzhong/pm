@@ -27,6 +27,7 @@
       <div class="tab-pane active" id="tab_settings_general">
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
+            {% include 'form_errors.html' %}
             <form action="{% url 'settings' %}" class="form-horizontal" method="post">
               {% csrf_token %}
               <div class="form-body">
@@ -91,6 +92,7 @@
       <div class="tab-pane" id="tab_settings_display">
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
+            {% include 'form_errors.html' %}
             <form action="{% url 'settings' %}" class="form-horizontal" method="post">
               {% csrf_token %}
               <div class="form-body">
@@ -172,6 +174,7 @@
       <div class="tab-pane" id="tab_settings_project">
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
+            {% include 'form_errors.html' %}
             <form action="{% url 'settings' %}" class="form-horizontal" method="post">
               {% csrf_token %}
               <div class="form-body">
@@ -202,6 +205,7 @@
       <div class="tab-pane" id="tab_settings_issue">
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
+            {% include 'form_errors.html' %}
             <form action="{% url 'settings' %}" class="form-horizontal" method="post">
               {% csrf_token %}
               <div class="form-body">

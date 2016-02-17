@@ -61,7 +61,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <!-- BEGIN LOGIN -->
 <div class="content">
 	<!-- BEGIN LOGIN FORM -->
-  {{ form.errors }}
+  {% include 'form_errors.html' %}
 	<form class="login-form" method="post">
     {% csrf_token %}
 		<h3 class="form-title">Login to your account</h3>

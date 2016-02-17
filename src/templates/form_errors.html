@@ -1,0 +1,11 @@
+{% if form.errors %}
+  <div>
+    <ul>
+      {% for key, value in form.errors.items %}
+        {% for error in value %}
+          <li>{{ key|title }} - {{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}

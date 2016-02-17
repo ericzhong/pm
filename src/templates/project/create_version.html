@@ -9,10 +9,9 @@
   <div class="tab-caption">新建版本</div>
   <div class="portlet light grey-cararra bordered">
     <div class="portlet-body form">
+      {% include 'form_errors.html' %}
       <form class="form-horizontal" method="post">
         {% csrf_token %}
-        <!-- TODO: error info for all -->
-        {{ form.errors }}
         {% include 'project/version_form.html' %}
         <div class="form-actions">
           <div class="row">

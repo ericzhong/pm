@@ -12,18 +12,16 @@
   <div class="portlet-body">
     <div class="portlet light grey-cararra bordered">
       <div class="portlet-body form">
+        {% include 'form_errors.html' %}
         <form class="form-horizontal" method="post">
           {% csrf_token %}
           <div class="form-body">
             <div class="row">
               <div class="col-md-12">
-                <div class="form-group {% if form.name.errors %}has-error{% endif %}">
+                <div class="form-group">
                   <label class="control-label col-md-2">名称<span class="required" aria-required="true">*</span></label>
                   <div class="col-md-4">
                     {{ form.name|add_class:"form-control" }}
-                    {% if form.name.errors %}
-                      <span class="help-block">{{ form.name.errors.0 }}</span>
-                    {% endif %}
                   </div>
                 </div>
               </div>

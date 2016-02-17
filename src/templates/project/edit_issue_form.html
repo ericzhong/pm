@@ -4,11 +4,7 @@
 
 {% get_user_perm user project as permissions %}
 
-{{ form.errors }}
---------------
-{{ worktime_form.errors }}
---------------
-{{ comment_form.errors }}
+{% include 'form_errors.html' %}
 <form action="{% url 'issue_update' issue.id %}" class="form-horizontal" method="post">
   {% csrf_token %}
   <div class="form-body">
@@ -16,13 +12,10 @@
       <h5>属性</h5>
       <div class="row">
         <div class="col-md-12">
-          <div class="form-group {% if form.project.errors %}has-error{% endif %}">
+          <div class="form-group">
             <label class="control-label col-md-2">项目<span class="required">*</span></label>
             <div class="col-md-3">
               {{ form.project|add_class:"form-control" }}
-              {% if form.project.errors %}
-                <span class="help-block">{{ form.project.errors.0 }}</span>
-              {% endif %}
             </div>
           </div>
         </div>
@@ -39,9 +32,6 @@
         <label class="control-label col-md-2">耗时</label>
         <div class="col-md-10">
           {{ worktime_form.hours|add_class:"form-control input-inline input-xsmall" }}
-          {% if worktime_form.hours.errors %}
-            <span class="help-block">{{ worktime_form.hours.errors.0 }}</span>
-          {% endif %}
           <span class="help-inline">小时</span>
         </div>
       </div>
@@ -49,9 +39,6 @@
         <label class="control-label col-md-2">注释</label>
         <div class="col-md-6">
           {{ worktime_form.description|add_class:"form-control" }}
-          {% if worktime_form.description.errors %}
-            <span class="help-block">{{ worktime_form.description.errors.0 }}</span>
-          {% endif %}
         </div>
       </div>
       {% if 'pm.add_comment' in permissions %}
@@ -64,9 +51,6 @@
       <div class="form-group">
         <div class="col-md-12">
           {{ comment_form.content|add_class:"form-control"|attr:"rows:3" }}
-          {% if comment_form.hours.errors %}
-            <span class="help-block">{{ comment_form.hours.errors.0 }}</span>
-          {% endif %}
         </div>
       </div>
     {% endif %}

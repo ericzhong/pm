@@ -13,7 +13,7 @@
     <div class="portlet-body">
       <div class="portlet light grey-cararra bordered">
         <div class="portlet-body form">
-          {{ form.errors }}
+          {% include 'form_errors.html' %}
           <form class="form-horizontal" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-body">
