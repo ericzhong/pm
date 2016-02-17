@@ -120,6 +120,12 @@ class UserForm(forms.ModelForm):
         return user
 
 
+class UpdateUserForm(UserForm):
+
+    password1 = forms.CharField(widget=forms.PasswordInput(), required=False)
+    password2 = forms.CharField(widget=forms.PasswordInput(), required=False)
+
+
 class GroupForm(forms.ModelForm):
     class Meta:
         model = Group

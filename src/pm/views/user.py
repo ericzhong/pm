@@ -3,7 +3,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.models import Group
 from django.shortcuts import redirect, HttpResponseRedirect, HttpResponse
-from ..forms import UserForm
+from ..forms import UserForm, UpdateUserForm
 from ..models import Project, Role, Project_User_Role, User
 from .role import get_project_role_of_user, get_project_role_of_groups, get_user_roles_id, get_user_groups_roles_id
 import json
@@ -48,7 +48,7 @@ class Create(CreateView):
 class Update(UpdateView):
     model = _model
     template_name = '_admin/edit_user.html'
-    form_class = _form
+    form_class = UpdateUserForm
     success_url = reverse_lazy('user_list')
     context_object_name = 'account'     # conflict with login 'user'
 
