@@ -18,6 +18,7 @@ def _get_estimated_time(issues):
 
 
 class User(AbstractUser):
+
     @property
     def get_full_name(self):
         # TODO: formatted by settings

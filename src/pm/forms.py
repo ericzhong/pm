@@ -73,6 +73,12 @@ class VersionForm(forms.ModelForm):
 
 class UserForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
+        self.fields['email'].required = True
+
     password1 = forms.CharField(widget=forms.PasswordInput(), required=True)
     password2 = forms.CharField(widget=forms.PasswordInput(), required=True)
 
@@ -80,27 +86,9 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ['username', 'last_name', 'first_name', 'email', 'is_superuser']
 
-    def clean_first_name(self):
-        data = self.cleaned_data.get('first_name')
-        if not data:
-            raise forms.ValidationError('This field is required.')
-        return data
-
-    def clean_last_name(self):
-        data = self.cleaned_data.get('last_name')
-        if not data:
-            raise forms.ValidationError('This field is required.')
-        return data
-
-    def clean_email(self):
-        data = self.cleaned_data.get('email')
-        if not data:
-            raise forms.ValidationError('This field is required.')
-        return data
-
     def clean(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
+        password1 = self.cleaned_data.get('password1', None)
+        password2 = self.cleaned_data.get('password2', None)
 
         if password1 or password2:
             if password1 != password2:
@@ -190,7 +178,7 @@ class RoleForm(forms.ModelForm):
         return role
 
 
-class UserAccountForm(forms.ModelForm):
+class UserAccountForm(UpdateUserForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
