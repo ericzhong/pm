@@ -208,11 +208,7 @@ div.confirm .btn {
     font-size: 13px;
 }
 
-div.warning {
+#project-locked {
     text-align: center;
-    background-color: #FFEBC1;
-    color: #A6750C;
-    padding: 4px 4px 4px 30px;
-    margin-bottom: 12px;
-    border: 2px solid #FDBF3B;
+    padding: 4px;
 }
