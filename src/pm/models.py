@@ -4,7 +4,8 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils.translation import ugettext as _
-
+from django.core.validators import MinValueValidator
+from datetime import datetime
 
 _STRING_MAX_LENGTH = 255
 
@@ -281,8 +282,8 @@ class Comment(models.Model):
 class Worktime(models.Model):
     issue = models.ForeignKey('Issue')
     author = models.ForeignKey('User')
-    hours = models.IntegerField()
-    date = models.DateField()
+    hours = models.IntegerField(validators=[MinValueValidator(1)])
+    date = models.DateField(default=datetime.now)
     description = models.CharField(max_length=_STRING_MAX_LENGTH, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
