@@ -3,6 +3,7 @@
 {% block settings_tab_toggle %}tab_version{% endblock %}
 
 {% block settings_tab_content %}
+  {% include 'form_success.html' %}
   <div class="actions btn-set small btn-table">
     <a href="{% url 'version_add' project.id %}?backurl="><i class="fa fa-plus"></i>新建版本</a>
   </div>

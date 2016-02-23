@@ -6,6 +6,7 @@ from django.shortcuts import redirect, HttpResponseRedirect, HttpResponse
 from ..forms import UserForm, UpdateUserForm
 from ..models import Project, Role, Project_User_Role, User
 from .role import get_project_role_of_user, get_project_role_of_groups, get_user_roles_id, get_user_groups_roles_id
+from .base import CreateSuccessMessageMixin, DeleteSuccessMessageMixin, UpdateSuccessMessageMixin
 import json
 
 
@@ -38,18 +39,17 @@ class Detail(DetailView):
         return context
 
 
-class Create(CreateView):
+class Create(CreateSuccessMessageMixin, CreateView):
     model = _model
     form_class = _form
     template_name = '_admin/create_user.html'
     success_url = reverse_lazy('user_list')
 
 
-class Update(UpdateView):
+class Update(UpdateSuccessMessageMixin, UpdateView):
     model = _model
     template_name = '_admin/edit_user.html'
     form_class = UpdateUserForm
-    success_url = reverse_lazy('user_list')
     context_object_name = 'account'     # conflict with login 'user'
 
     def get_form_kwargs(self):
@@ -91,8 +91,11 @@ class Update(UpdateView):
         context['roles'] = Role.objects.all()
         return context
 
+    def get_success_url(self):
+        return reverse_lazy('user_update', kwargs={'pk': self.object.id})
 
-class Delete(DeleteView):
+
+class Delete(DeleteSuccessMessageMixin, DeleteView):
     model = _model
     success_url = reverse_lazy('user_list')
 

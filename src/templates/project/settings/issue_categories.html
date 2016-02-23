@@ -3,6 +3,7 @@
 {% block settings_tab_toggle %}tab_issue_category{% endblock %}
 
 {% block settings_tab_content %}
+  {% include 'form_success.html' %}
   <div class="actions btn-set small btn-table">
     <a href="{% url 'issue_category_add' project.id %}"><i class="fa fa-plus"></i>新建问题类别</a>
   </div>

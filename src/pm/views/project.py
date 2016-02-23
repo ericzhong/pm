@@ -12,6 +12,8 @@ import json
 from ..utils import Helper
 from ..models import User
 from .auth import PermCheckCreateView, PermCheckUpdateView, PermCheckView, no_perm
+from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin, \
+    delete_success_message
 
 
 _model = Project
@@ -108,7 +110,7 @@ class Detail(DetailView):
         return context
 
 
-class Create(PermCheckCreateView):
+class Create(CreateSuccessMessageMixin, PermCheckCreateView):
     model = _model
     template_name = 'create_project.html'
     form_class = _form
@@ -136,13 +138,13 @@ class Create(PermCheckCreateView):
             return request.user.has_perm('pm.add_project')
 
 
-class Update(PermCheckUpdateView):
+class Update(UpdateSuccessMessageMixin, PermCheckUpdateView):
     model = _model
     template_name = 'project/settings/info.html'
     form_class = UpdateProjectForm
 
     def get_success_url(self):
-        return reverse('project_detail', kwargs={'pk': self.object.pk})
+        return reverse('project_update', kwargs={'pk': self.object.pk})
 
     def get_context_data(self, **kwargs):
         context = super(Update, self).get_context_data(**kwargs)
@@ -160,7 +162,7 @@ class Admin(ListView):
     context_object_name = 'projects'
 
 
-class Delete(DeleteView):
+class Delete(DeleteSuccessMessageMixin, DeleteView):
     model = _model
     template_name = '_admin/delete_project.html'
     success_url = reverse_lazy('admin_project')
@@ -257,15 +259,22 @@ class ListMember(PermCheckView):
 class DeleteMember(PermCheckView):
     def post(self, request, *args, **kwargs):
         project_id = kwargs['pk']
+        name = None
 
         if 'user_id' in request.GET:
             user_id = request.GET['user_id']
+            name = User.objects.get(pk=user_id).get_full_name
             if check_user_in_groups(project_id, user_id) is False:
                 Project_User_Role.objects.filter(project_id=project_id, user_id=user_id).delete()
 
         elif 'group_id' in request.GET:
             group_id = request.GET['group_id']
+            name = str(Group.objects.get(pk=group_id))
             Project_Group_Role.objects.filter(project_id=project_id, group_id=group_id).delete()
+
+        if name:
+            from django.contrib import messages
+            messages.success(self.request, delete_success_message % name)
 
         return redirect('member_list', pk=project_id)
 
@@ -279,13 +288,18 @@ class CreateMember(PermCheckView):
         users = request.POST.getlist('user')
         groups = request.POST.getlist('group')
         roles = request.POST.getlist('role')
-        for id in users:
-            for r in roles:
-                Project_User_Role(project_id=project_id, user_id=id, role_id=r).save()
 
-        for id in groups:
-            for r in roles:
-                Project_Group_Role(project_id=project_id, group_id=id, role_id=r).save()
+        if (users or groups) and roles:
+            for id in users:
+                for r in roles:
+                    Project_User_Role(project_id=project_id, user_id=id, role_id=r).save()
+
+            for id in groups:
+                for r in roles:
+                    Project_Group_Role(project_id=project_id, group_id=id, role_id=r).save()
+
+            from django.contrib import messages
+            messages.success(self.request, 'member was added successfully')
 
         return redirect('member_list', pk=project_id)
 
@@ -315,8 +329,10 @@ class MemberRoles(View):
     def post(self, request, *args, **kwargs):
         project_id = kwargs['pk']
         data = set(map(int, request.POST.getlist('item')))
+        empty = True
 
         if 'user_id' in request.GET:
+            empty = False
             user_id = request.GET['user_id']
             old_of_user = set(get_user_roles_id(project_id, user_id))
             old_of_groups = set(get_user_groups_roles_id(project_id, user_id))
@@ -331,6 +347,7 @@ class MemberRoles(View):
             Project_User_Role.objects.filter(project_id=project_id, user_id=user_id, role_id__in=unselect).delete()
 
         elif 'group_id' in request.GET:
+            empty = False
             group_id = request.GET['group_id']
             old = set(get_group_roles_id(project_id, group_id))
             new = data
@@ -341,6 +358,10 @@ class MemberRoles(View):
             for n in select:
                 Project_Group_Role(project_id=project_id, group_id=group_id, role_id=n).save()
             Project_Group_Role.objects.filter(project_id=project_id, group_id=group_id, role_id__in=unselect).delete()
+
+        if not empty:
+            from django.contrib import messages
+            messages.success(self.request, 'member role was updated successfully')
 
         return redirect('member_list', pk=project_id)
 

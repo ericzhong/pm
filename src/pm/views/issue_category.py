@@ -4,12 +4,13 @@ from ..models import Project, IssueCategory
 from ..forms import IssueCategoryForm
 from .project import get_other_projects_html
 from .auth import PermCheckListView, PermCheckUpdateView, PermCheckView, PermCheckCreateView
+from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, delete_success_message
 
 _model = IssueCategory
 _form = IssueCategoryForm
 
 
-class Create(PermCheckCreateView):
+class Create(CreateSuccessMessageMixin, PermCheckCreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_issue_category.html'
@@ -56,7 +57,7 @@ class List(PermCheckListView):
         return request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
 
 
-class Update(PermCheckUpdateView):
+class Update(UpdateSuccessMessageMixin, PermCheckUpdateView):
     model = _model
     form_class = _form
     template_name = 'project/edit_issue_category.html'
@@ -88,8 +89,13 @@ class Update(PermCheckUpdateView):
 class Delete(PermCheckView):
     def post(self, request, *args, **kwargs):
         query_set = IssueCategory.objects.filter(pk=kwargs['pk'])
+        name = str(query_set[0])
         project_id = query_set[0].project.id
         query_set.delete()
+
+        from django.contrib import messages
+        messages.success(self.request, delete_success_message % name)
+
         return HttpResponseRedirect(reverse('issue_category_list', kwargs={'pk': project_id}))
 
     def has_perm(self, request, *args, **kwargs):

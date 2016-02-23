@@ -212,3 +212,33 @@ div.confirm .btn {
     text-align: center;
     padding: 4px;
 }
+
+div.alert {
+    padding: 8px 10px;
+    margin-bottom: 10px;
+}
+
+ul.message {
+    list-style: none;
+    padding: 0;
+}
+
+ul.message li {
+    padding-left: 1.3em;
+}
+
+ul.message.error li:before {
+    content: "\f06a"; /* FontAwesome Unicode */
+    font-family: FontAwesome;
+    display: inline-block;
+    margin-left: -0.8em;
+    width: 1.3em;
+}
+
+ul.message.success li:before {
+    content: "\f00c"; /* FontAwesome Unicode */
+    font-family: FontAwesome;
+    display: inline-block;
+    margin-left: -0.8em;
+    width: 1.3em;
+}

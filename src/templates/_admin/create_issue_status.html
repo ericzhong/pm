@@ -7,12 +7,13 @@
 
 
 {% block tab_content %}
+  {% include 'form_errors.html' %}
   <div class="page-title">问题状态 >> 新建</div>
 
   <div class="portlet-body">
     <div class="portlet light grey-cararra bordered">
       <div class="portlet-body form">
-        {% include 'form_errors.html' %}
+
         <form class="form-horizontal" method="post">
           {% csrf_token %}
           <div class="form-body">

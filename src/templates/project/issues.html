@@ -7,6 +7,7 @@
 {% block tab_content %}
   {% get_user_perm user project as permissions %}
 
+  {% include 'form_success.html' %}
   <div class="tab-caption">
     <span>问题</span>
     <div class="actions btn-set small">

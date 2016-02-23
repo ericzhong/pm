@@ -6,6 +6,7 @@
 {% block tab_toggle %}tab_users{% endblock %}
 
 {% block tab_content %}
+  {% include 'form_success.html' %}
   <div class="page-title">
     <span>编辑用户 >> {{ account.username }}</span>
   </div>
@@ -21,7 +22,7 @@
         <div class="portlet light grey-cararra bordered">
           <div class="portlet-body form">
             {% include 'form_errors.html' %}
-            <form class="form-horizontal" method="post">
+            <form class="form-horizontal" method="post" action="{% url 'user_update' account.id %}">
               {% csrf_token %}
               <div class="form-body">
                 <div class="row">

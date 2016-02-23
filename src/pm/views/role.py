@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
 from ..models import Role, Project_Group_Role, Project_User_Role, User
 from ..forms import RoleForm
+from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin
 
 
 _model = Role
@@ -95,7 +96,7 @@ class List(ListView):
     context_object_name = 'roles'
 
 
-class Create(CreateView):
+class Create(CreateSuccessMessageMixin, CreateView):
     model = _model
     form_class = _form
     template_name = '_admin/create_role.html'
@@ -107,14 +108,16 @@ class Create(CreateView):
             return reverse_lazy('role_list')
 
 
-class Update(UpdateView):
+class Update(UpdateSuccessMessageMixin, UpdateView):
     model = _model
     form_class = _form
     template_name = '_admin/edit_role.html'
-    success_url = reverse_lazy('role_list')
+
+    def get_success_url(self):
+        return reverse_lazy('role_update', kwargs={'pk': self.object.id})
 
 
-class Delete(DeleteView):
+class Delete(DeleteSuccessMessageMixin, DeleteView):
     model = _model
     success_url = reverse_lazy('role_list')
 

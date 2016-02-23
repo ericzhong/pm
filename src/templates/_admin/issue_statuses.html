@@ -3,11 +3,11 @@
 {% block tab_toggle %}tab_issue_statuses{% endblock %}
 
 {% block tab_content %}
+  {% include 'form_success.html' %}
   <div class="page-title">问题状态</div>
   <div class="actions btn-set small btn-table">
     <a href="{% url 'issue_status_add' %}"><i class="fa fa-plus"></i>新建问题状态</a>
   </div>
-
   {% if issue_statuses %}
     <div class="dataTables_wrapper">
       <div class="table-scrollable">

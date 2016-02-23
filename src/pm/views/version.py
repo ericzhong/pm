@@ -5,6 +5,7 @@ from ..models import Version, Project
 from ..forms import VersionForm
 from .project import get_other_projects_html
 from .auth import PermCheckCreateView, PermCheckUpdateView, PermCheckListView, PermCheckView
+from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, delete_success_message
 
 _model = Version
 _form = VersionForm
@@ -21,7 +22,7 @@ def _get_back_url(view, version_id=None, project_id=None):
             return reverse_lazy('version_roadmap', kwargs={'pk': project_id})
 
 
-class Create(PermCheckCreateView):
+class Create(CreateSuccessMessageMixin, PermCheckCreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_version.html'
@@ -69,7 +70,7 @@ class List(PermCheckListView):
         return request.user.has_perm('pm.manage_version', Project.objects.get(pk=self.kwargs.get('pk')))
 
 
-class Update(PermCheckUpdateView):
+class Update(UpdateSuccessMessageMixin, PermCheckUpdateView):
     model = _model
     form_class = _form
     template_name = 'project/edit_version.html'
@@ -114,8 +115,13 @@ class Detail(DetailView):
 class Delete(PermCheckView):
     def post(self, request, *args, **kwargs):
         query_set = Version.objects.filter(pk=kwargs['pk'])
+        obj = query_set[0]
         project_id = query_set[0].project.id
         query_set.delete()
+
+        from django.contrib import messages
+        messages.success(self.request, delete_success_message % obj)
+
         return HttpResponseRedirect(_get_back_url(self, project_id=project_id))
 
     def has_perm(self, request, *args, **kwargs):

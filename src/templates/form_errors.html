@@ -1,6 +1,6 @@
 {% if form.errors %}
   <div class="alert alert-danger">
-    <ul>
+    <ul class="message error">
       {% for key, value in form.errors.items %}
         {% for error in value %}
           <li>{{ key|title }} - {{ error|title }}</li>

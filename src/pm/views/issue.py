@@ -10,6 +10,7 @@ from ..utils import Helper
 from .project import get_other_projects_html
 from .auth import PermCheckView, PermCheckUpdateView, PermCheckListView, \
     PermCheckCreateView, PermCheckDetailView
+from .base import CreateSuccessMessageMixin, update_success_message, delete_success_message
 import time
 
 
@@ -19,7 +20,7 @@ _worktime_form_prefix = 'worktime'
 _comment_form_prefix = 'comment'
 
 
-class Create(PermCheckCreateView):
+class Create(CreateSuccessMessageMixin, PermCheckCreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_issue.html'
@@ -162,14 +163,22 @@ class Update(PermCheckView):
             context['project'] = self.object.project
             return render(request, 'project/edit_issue.html', context)
         else:
+            from django.contrib import messages
+            messages.success(self.request, update_success_message % self.object)
+
             return redirect('issue_detail', pk=kwargs['pk'])
 
 
 class Delete(PermCheckView):
     def post(self, request, *args, **kwargs):
         issues = Issue.objects.filter(pk=kwargs['pk'])
-        project_id = issues[0].project.id
+        obj = issues[0]
+        project_id = obj.project.id
         issues.delete()
+
+        from django.contrib import messages
+        messages.success(self.request, delete_success_message % obj)
+
         return HttpResponseRedirect(reverse('issue_list', kwargs={'pk': project_id}))
 
     def has_perm(self, request, *args, **kwargs):

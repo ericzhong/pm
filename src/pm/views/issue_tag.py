@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
 from ..models import IssueTag
 from ..forms import IssueTagForm
+from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin
 
 
 _model = IssueTag
@@ -16,7 +17,7 @@ class List(ListView):
     context_object_name = 'issue_tags'
 
 
-class Create(CreateView):
+class Create(CreateSuccessMessageMixin, CreateView):
     model = _model
     template_name = '_admin/create_issue_tag.html'
     form_class = _form
@@ -28,14 +29,16 @@ class Create(CreateView):
             return reverse_lazy('issue_tag_add')
 
 
-class Update(UpdateView):
+class Update(UpdateSuccessMessageMixin, UpdateView):
     model = _model
     template_name = '_admin/edit_issue_tag.html'
     form_class = _form
-    success_url = reverse_lazy('issue_tag_list')
+
+    def get_success_url(self):
+        return reverse_lazy('issue_tag_update', kwargs={'pk': self.object.id})
 
 
-class Delete(DeleteView):
+class Delete(DeleteSuccessMessageMixin, DeleteView):
     model = _model
     success_url = reverse_lazy('issue_tag_list')
 

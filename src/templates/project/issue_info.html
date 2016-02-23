@@ -10,6 +10,7 @@
 {% block tab_content %}
   {% get_user_perm user project as permissions %}
 
+  {% include 'form_success.html' %}
   <div class="portlet issue-info">
     <div class="portlet-title">
       <div class="caption">

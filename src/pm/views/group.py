@@ -6,6 +6,7 @@ from django.shortcuts import redirect, HttpResponseRedirect, HttpResponse
 from ..forms import GroupForm
 from ..models import Project, Role, Project_Group_Role, User
 from .role import get_group_roles_id, get_project_role_of_group
+from .base import CreateSuccessMessageMixin, DeleteSuccessMessageMixin, UpdateSuccessMessageMixin
 import json
 
 
@@ -25,7 +26,7 @@ class Detail(DetailView):
     context_object_name = 'group'
 
 
-class Create(CreateView):
+class Create(CreateSuccessMessageMixin, CreateView):
     model = _model
     form_class = _form
     template_name = '_admin/create_group.html'
@@ -37,11 +38,10 @@ class Create(CreateView):
             return reverse_lazy('group_list')
 
 
-class Update(UpdateView):
+class Update(UpdateSuccessMessageMixin, UpdateView):
     model = _model
     form_class = _form
     template_name = '_admin/edit_group.html'
-    success_url = reverse_lazy('group_list')
 
     def get_context_data(self, **kwargs):
         context = super(Update, self).get_context_data(**kwargs)
@@ -63,8 +63,11 @@ class Update(UpdateView):
         context['roles'] = Role.objects.all()
         return context
 
+    def get_success_url(self):
+        return reverse_lazy('group_update', kwargs={'pk': self.object.id})
 
-class Delete(DeleteView):
+
+class Delete(DeleteSuccessMessageMixin, DeleteView):
     model = _model
     success_url = reverse_lazy('group_list')
 

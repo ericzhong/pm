@@ -3,6 +3,7 @@
 {% block tab_toggle %}tab_roles{% endblock %}
 
 {% block tab_content %}
+  {% include 'form_success.html' %}
   <div class="page-title">角色</div>
   <div class="actions btn-set small btn-table">
     <a href="{% url 'role_add' %}"><i class="fa fa-plus"></i>新建角色</a>

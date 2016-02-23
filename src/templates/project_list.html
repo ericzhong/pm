@@ -19,6 +19,7 @@
           </div>
         </div>
         <div class="portlet-body">
+          {% include 'form_success.html' %}
           <div class="project-list">
             {% if projects %}
               {{ projects|safe }}
