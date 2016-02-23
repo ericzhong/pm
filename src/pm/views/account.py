@@ -5,12 +5,13 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from ..forms import UserAccountForm, UploadAvatarForm
 from ..models import Profile
+from .base import UpdateSuccessMessageMixin, update_success_message
 from django.conf import settings
 import os
 from PIL import Image
 
 
-class MyAccount(UpdateView):
+class MyAccount(UpdateSuccessMessageMixin, UpdateView):
     model = User
     form_class = UserAccountForm
     template_name = 'my_account.html'
@@ -56,4 +57,7 @@ class MyAvatar(View):
         form = UploadAvatarForm(request.POST, request.FILES)
         if form.is_valid():
             self.handle_uploaded_file(request.FILES['file'], form.cleaned_data['file'].name)
+
+            from django.contrib import messages
+            messages.success(self.request, update_success_message % 'avatar')
         return render(request, 'avatar.html', {'form': form})
