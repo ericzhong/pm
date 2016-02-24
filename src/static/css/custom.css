@@ -101,9 +101,13 @@ html, body, label {
     font-size: 16px;
 }
 
+#tab-content {
+    padding-top: 10px;
+}
+
 .tab-caption {
-    font-size: 17px;
-    padding: 20px 0 15px 0;
+    font-size: 16px;
+    padding: 15px 0;
 }
 
 .nav-tabs.second > li > a {
@@ -242,3 +246,4 @@ ul.message.success li:before {
     margin-left: -0.8em;
     width: 1.3em;
 }
+
