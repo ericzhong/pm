@@ -34,7 +34,8 @@ $("button[name='btn-hide-checkboxlist']").live('click', function() {
 
 
 // tab active
-$('li#'+$('#tab-content').attr('tab-toggle')).attr('class', 'active');
+$('li#'+$('#admin-tab-content').attr('tab-toggle')).attr('class', 'active');
+$('li#'+$('#project-tab-content').attr('tab-toggle')).attr('class', 'active');
 $('li#'+$('#settings-tab-content').attr('tab-toggle')).attr('class', 'active');
 
 
