@@ -8,16 +8,31 @@
     <div id="project-locked" class="alert alert-warning"><i class="fa fa-lock"></i>当前项目已关闭，内容只读。</div>
   {% endif %}
   <p>{{ project.description }}</p>
-  {% if subprojects %}
-    <ul>
-      <li>Subprojects: {% for project in subprojects %}<a href="{% url 'project_detail' project.id %}">{{ project.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</li>
-    </ul>
-  {% endif %}
 
-  工时统计：预期时间 {{ project.estimated_time }} 小时，耗时 {{ project.spent_time }} 小时
   <div class="row">
-    <div class="col-md-6">
-      <div class="portlet solid warning-box">
+    <div class="col-md-3">
+      <div class="portlet green-haze box">
+        <div class="portlet-title">
+          <div class="caption">
+            <i class="fa fa-cubes"></i>
+            子项目
+          </div>
+        </div>
+        <div class="portlet-body">
+          {% if subprojects %}
+            <ul>
+              {% for project in subprojects %}
+                <li><a href="{% url 'project_detail' project.id %}">{{ project.name }}</a></li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            {% include 'no_data.html' %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="portlet green-haze box">
         <div class="portlet-title">
           <div class="caption">
             <i class="fa fa-list-alt"></i>
@@ -25,33 +40,58 @@
           </div>
         </div>
         <div class="portlet-body">
-          <ul>
-            {% for key,value in project.issue_report.items %}
-              <li>{{ key.name }}：<a href="{% url 'issue_all' %}?open&issue_tag_id={{ key.id }}">{{ value.open }}</a> 打开 / {{ value.total }}</li>
-            {% endfor %}
-          </ul>
+          {% if project.issue_report.items %}
+            <ul>
+              {% for key,value in project.issue_report.items %}
+                <li>{{ key.name }}：<a href="{% url 'issue_all' %}?open&issue_tag_id={{ key.id }}">{{ value.open }}</a> 打开 / {{ value.total }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            {% include 'no_data.html' %}
+          {% endif %}
         </div>
       </div>
     </div>
-    <div class="col-md-6">
-      {% if role_users %}
-        <div class="portlet solid warning-box">
-          <div class="portlet-title">
-            <div class="caption">
-              <i class="fa fa-user"></i>
-              成员
-            </div>
-          </div>
-          <div class="portlet-body">
-            {% for item in role_users %}
-              {{ item.0.name }}:
-              {% for user in item.1 %}
-                <a href="{% url 'user_detail' user.id %}">{{ user.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
-              {% endfor %}{% if not forloop.last %}<br>{% endif %}
-            {% endfor %}
+    <div class="col-md-3">
+      <div class="portlet green-haze box">
+        <div class="portlet-title">
+          <div class="caption">
+            <i class="fa fa-user"></i>
+            成员
           </div>
         </div>
-      {% endif %}
+        <div class="portlet-body">
+          {% if role_users %}
+            <ul>
+              {% for item in role_users %}
+                <li>{{ item.0.name }}:
+                  {% for user in item.1 %}
+                    <a href="{% url 'user_detail' user.id %}">{{ user.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            {% include 'no_data.html' %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="portlet green-haze box">
+        <div class="portlet-title">
+          <div class="caption">
+            <i class="fa fa-clock-o"></i>
+            工时
+          </div>
+        </div>
+        <div class="portlet-body">
+          <ul>
+            <li>预计时间：{{ project.estimated_time }} 小时</li>
+            <li>实际耗时：{{ project.spent_time }} 小时</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}

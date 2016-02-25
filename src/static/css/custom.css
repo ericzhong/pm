@@ -91,15 +91,21 @@ html, body, label {
     color: #666;
 }
 
-.portlet.solid.warning-box {
-    background-color: #fcf8e3;
-    /*color: #8a6d3b;*/
-    border: 1px solid #faebcc;
+.portlet.box > .portlet-title {
+    min-height: 0px;
 }
 
-.portlet.solid.warning-box > .portlet-title > .caption {
-    font-size: 16px;
+.portlet.box > .portlet-body > ul {
+    padding-left: 18px;
+    list-style-type: none;
+    margin: 5px 0;
 }
+
+.portlet.box > .portlet-title > .caption {
+    font-size: 14px;
+    padding: 6px 0;
+}
+
 
 #project-tab-content {
     padding-top: 10px;
