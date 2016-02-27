@@ -253,3 +253,16 @@ ul.message.success li:before {
     width: 1.3em;
 }
 
+/**
+ * my-project label
+ */
+
+#my-project {
+    float: right;
+    font-style: italic;
+    color: #c5c5c5;
+}
+
+#my-project > i {
+    padding-right: 3px;
+}
