@@ -145,6 +145,7 @@ var EcommerceProductsEdit = function () {
         });
     } 
 
+    /*
     var initComponents = function () {
         //init datepickers
         $('.date-picker').datepicker({
@@ -167,7 +168,7 @@ var EcommerceProductsEdit = function () {
             alwaysShow: true,
             threshold: 5
         });
-    }
+    }*/
 
     return {
 

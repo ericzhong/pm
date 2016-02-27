@@ -62,8 +62,8 @@
     <div class="form-group">
       <label class="control-label col-md-2">开始日期</label>
       <div class="col-md-6">
-        <div class="input-group date date-picker" data-date-format="yyyy-mm-dd">
-          {{ form.start_date|add_class:"form-control"|attr:"name=datepicker"|attr:"readonly" }}
+        <div class="input-group date date-picker start-date">
+            {{ form.start_date|add_class:"form-control" }}
           <span class="input-group-btn">
             <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
           </span>
@@ -75,8 +75,8 @@
     <div class="form-group">
       <label class="control-label col-md-2">完成日期</label>
       <div class="col-md-6">
-        <div class="input-group date date-picker" data-date-format="yyyy-mm-dd">
-          {{ form.due_date|add_class:"form-control"|attr:"name=datepicker"|attr:"readonly" }}
+        <div class="input-group date date-picker end-date">
+            {{ form.due_date|add_class:"form-control" }}
           <span class="input-group-btn">
             <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
           </span>

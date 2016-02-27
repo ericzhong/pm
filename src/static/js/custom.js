@@ -45,3 +45,30 @@ $('#confirm-delete').on('show.bs.modal', function(e) {
   // v-align center
   $(e.target).css('padding-top', $(document).height()/2-200);
 });
+
+
+/**
+ * datepicker
+ */
+
+$('.date-picker.start-date').find("button").datepicker({
+  autoclose: true,
+}).on('changeDate', function(selected){
+  date = new Date(selected.date.valueOf());
+  $(this).closest('.date-picker').find('input').val($(this).data('datepicker').getFormattedDate('yyyy-mm-dd'));
+  $('.date-picker.end-date').find('button').datepicker('setStartDate', date);
+});
+
+$('.date-picker.end-date').find("button").datepicker({
+  autoclose: true
+}).on('changeDate', function(selected){
+  date = new Date(selected.date.valueOf());
+  $(this).closest('.date-picker').find('input').val($(this).data('datepicker').getFormattedDate('yyyy-mm-dd'));
+  $('.date-picker.start-date').find('button').datepicker('setEndDate', date);
+});
+
+$('.date-picker').find("button").datepicker({
+  autoclose: true,
+}).on('changeDate', function(selected){
+  $(this).closest('.date-picker').find('input').val($(this).data('datepicker').getFormattedDate('yyyy-mm-dd'));
+});

@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group, Permission
 from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Version, Comment, Worktime, Role, User
 from django.conf import settings
 from django.forms import ModelMultipleChoiceField
+from datetime import datetime
 
 _EMPTY_LABEL = ''
 
@@ -45,6 +46,13 @@ class IssueForm(forms.ModelForm):
         for n in ['parent', 'assigned_to', 'version']:
             self.fields[n].empty_label = _EMPTY_LABEL
         return
+
+    def clean(self):
+        start_date = self.cleaned_data.get('start_date', None)
+        due_date = self.cleaned_data.get('due_date', None)
+        if start_date and due_date and start_date > due_date:
+            raise forms.ValidationError('Due date should be greater than start date')
+        return super(IssueForm, self).clean()
 
 
 class IssueCategoryForm(forms.ModelForm):
