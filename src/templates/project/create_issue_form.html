@@ -62,10 +62,10 @@
     <div class="form-group">
       <label class="control-label col-md-2">开始日期</label>
       <div class="col-md-6">
-        <div class="input-group date date-picker start-date">
+        <div class="input-group">
             {{ form.start_date|add_class:"form-control" }}
           <span class="input-group-btn">
-            <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
+            <button class="btn default date-picker" type="button" show-date="id_start_date" end-date="bp-end" id="bp-start"><i class="fa fa-calendar"></i></button>
           </span>
         </div>
       </div>
@@ -75,10 +75,10 @@
     <div class="form-group">
       <label class="control-label col-md-2">完成日期</label>
       <div class="col-md-6">
-        <div class="input-group date date-picker end-date">
+        <div class="input-group">
             {{ form.due_date|add_class:"form-control" }}
           <span class="input-group-btn">
-            <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
+            <button class="btn default date-picker" type="button" show-date="id_due_date" start-date="bp-start" id="bp-end"><i class="fa fa-calendar"></i></button>
           </span>
         </div>
       </div>

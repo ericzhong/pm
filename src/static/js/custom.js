@@ -51,24 +51,34 @@ $('#confirm-delete').on('show.bs.modal', function(e) {
  * datepicker
  */
 
-$('.date-picker.start-date').find("button").datepicker({
-  autoclose: true,
-}).on('changeDate', function(selected){
-  date = new Date(selected.date.valueOf());
-  $(this).closest('.date-picker').find('input').val($(this).data('datepicker').getFormattedDate('yyyy-mm-dd'));
-  $('.date-picker.end-date').find('button').datepicker('setStartDate', date);
+$.fn.datepicker.defaults.format = "yyyy-mm-dd";
+$.fn.datepicker.defaults.autoclose = true;
+
+$('.date-picker').datepicker().on('changeDate', function(selected){
+  var start_date = $(this).attr("start-date");
+  var end_date = $(this).attr("end-date");
+  var show_date = $(this).attr("show-date");
+  var date = new Date(selected.date.valueOf());
+
+  if (show_date) $('#' + show_date).val($(this).data('datepicker').getFormattedDate($.fn.datepicker.defaults.format));
+  if (start_date) $('#' + start_date).datepicker('setEndDate', date);
+  if (end_date) $('#' + end_date).datepicker('setStartDate', date);
 });
 
-$('.date-picker.end-date').find("button").datepicker({
-  autoclose: true
-}).on('changeDate', function(selected){
-  date = new Date(selected.date.valueOf());
-  $(this).closest('.date-picker').find('input').val($(this).data('datepicker').getFormattedDate('yyyy-mm-dd'));
-  $('.date-picker.start-date').find('button').datepicker('setEndDate', date);
-});
+// initial value
+(function(){
+  $('.date-picker').each(function(){
+    var start_date = $(this).attr("start-date");
+    var end_date = $(this).attr("end-date");
+    var show_date = $(this).attr("show-date");
 
-$('.date-picker').find("button").datepicker({
-  autoclose: true,
-}).on('changeDate', function(selected){
-  $(this).closest('.date-picker').find('input').val($(this).data('datepicker').getFormattedDate('yyyy-mm-dd'));
-});
+    var date = null;
+    if (show_date)
+      date = $('#' + show_date).val();
+    else
+      date = $(this).val();
+
+    if (end_date && date) $('#' + end_date).datepicker('setStartDate', new Date(date));
+    if (start_date && date) $('#' + start_date).datepicker('setEndDate', new Date(date));
+  });
+})();

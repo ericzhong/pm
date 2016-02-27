@@ -29,12 +29,10 @@
         </div>
         -->
         <div class="form-group">
-          <div class="input-group input-large date-picker input-daterange" data-date-format="yyyy-mm-dd">
-            <input type="text" class="form-control"
-                   ng-model="options.fromDate" max-date="{{options.toDate}}">
+          <div class="input-group input-large">
+            <input type="text" class="form-control date-picker" ng-model="options.fromDate" end-date="dp-end" id="dp-start">
             <span class="input-group-addon"> to </span>
-            <input type="text" class="form-control"
-                   ng-model="options.toDate" min-date="{{options.fromDate}}">
+            <input type="text" class="form-control date-picker" ng-model="options.toDate" start-date="dp-start" id="dp-end">
           </div>
         </div>
         <div class="form-group text-center">
