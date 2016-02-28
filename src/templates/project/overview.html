@@ -7,7 +7,10 @@
   {% if project.CLOSED_STATUS == project.status %}
     <div id="project-locked" class="alert alert-warning"><i class="fa fa-lock"></i>当前项目已关闭，内容只读。</div>
   {% endif %}
-  <p>{{ project.description }}</p>
+
+  {% if project.description %}
+    <p id="project-description">{{ project.description }}</p>
+  {% endif %}
 
   <div class="row">
     <div class="col-md-3">

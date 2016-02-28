@@ -6,10 +6,11 @@
 
 {% block tab_content %}
 {% get_user_perm user project as permissions %}
+{% include 'form_success.html' %}
 <div class="tab-caption">
   <span><a href="{% url 'issue_detail' issue.id %}">{{ issue.tag }} #{{ issue.id }}</a> >> 工时</span>
   <div class="actions btn-set small btn-table">
-    {% if 'pm.add_worktime' in permissions %}
+    {% if 'pm.add_worktime' in permissions and project.status != project.CLOSED_STATUS %}
       <a href="{% url 'worktime_add' issue.id %}"><i class="fa fa-plus"></i>登记工时</a>
     {% endif %}
   </div>
@@ -26,22 +27,30 @@
       </tr>
     </thead>
     <tbody>
-    {% for worktime in worktimes %}
+    {% if worktimes %}
+      {% for worktime in worktimes %}
+        <tr>
+          <td>{{ worktime.date|date:"Y-m-d" }}</td>
+          <td>{{ worktime.author.get_full_name }}</td>
+          <td>{{ worktime.hours }}</td>
+          <td>{{ worktime.description }}</td>
+          <td>
+            <div class="actions btn-set small">
+              {% if project.status != project.CLOSED_STATUS %}
+                {% if 'pm.change_worktime' in permissions or 'pm.change_own_worktime' in permissions and user == worktime.author %}
+                  <a href="{% url 'worktime_update' worktime.id %}"><i class="fa fa-pencil"></i></a>
+                  <a data-href="{% url 'worktime_delete' worktime.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
+                {% endif %}
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    {% else %}
       <tr>
-        <td>{{ worktime.date|date:"Y-m-d" }}</td>
-        <td>{{ worktime.author.get_full_name }}</td>
-        <td>{{ worktime.hours }}</td>
-        <td>{{ worktime.description }}</td>
-        <td>
-          <div class="actions btn-set small">
-            {% if 'pm.change_worktime' in permissions or 'pm.change_own_worktime' in permissions and user == worktime.author %}
-              <a href="{% url 'worktime_update' worktime.id %}"><i class="fa fa-pencil"></i></a>
-              <a data-href="{% url 'worktime_delete' worktime.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
-            {% endif %}
-          </div>
-        </td>
+        <td colspan="5">{% include 'no_data.html' %}</td>
       </tr>
-    {% endfor %}
+    {% endif %}
     </tbody>
   </table>
 </div>

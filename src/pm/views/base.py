@@ -3,14 +3,18 @@ from django.views.generic import View
 from django.contrib import messages
 
 
-create_success_message = '\"%s\" was created successfully.'
-update_success_message = '\"%s\" was updated successfully.'
-delete_success_message = '\"%s\" was deleted successfully.'
+create_success_message = '%s was created successfully.'
+update_success_message = '%s was updated successfully.'
+delete_success_message = '%s was deleted successfully.'
 
 
 class homepage(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'index.html')
+
+
+def decorate_object(obj):
+    return '\"%s\"' % obj
 
 
 class SuccessMessageMixin(object):
@@ -29,12 +33,12 @@ class SuccessMessageMixin(object):
 
 class CreateSuccessMessageMixin(SuccessMessageMixin):
     def get_success_message(self):
-        return create_success_message % self.object
+        return self.success_message or create_success_message % decorate_object(self.object)
 
 
 class UpdateSuccessMessageMixin(SuccessMessageMixin):
     def get_success_message(self):
-        return update_success_message % self.object
+        return self.success_message or update_success_message % decorate_object(self.object)
 
 
 class DeleteSuccessMessageMixin(object):
@@ -46,4 +50,4 @@ class DeleteSuccessMessageMixin(object):
         return super(DeleteSuccessMessageMixin, self).delete(request, *args, **kwargs)
 
     def get_success_message(self):
-        return delete_success_message % self.get_object()
+        return delete_success_message % decorate_object(self.get_object())

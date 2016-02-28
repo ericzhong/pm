@@ -6,11 +6,11 @@
 
 {% block tab_content %}
   {% get_user_perm user project as permissions %}
-
+  {% include 'form_success.html' %}
   <div class="tab-caption">
     <span>版本 >> {{ version.name }}</span>
     <div class="actions btn-set small">
-      {% if 'pm.manage_version' in permissions %}
+      {% if 'pm.manage_version' in permissions and project.status != project.CLOSED_STATUS %}
         <a href="{% url 'version_update' version.id %}"><i class="fa fa-plus"></i>编辑</a>
         <a data-href="{% url 'version_delete' version.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
       {% endif %}

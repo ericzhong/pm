@@ -87,7 +87,7 @@ html, body, label {
 }
 
 .table-caption {
-    font-size: 16px;
+    font-size: 15px;
     color: #666;
 }
 
@@ -218,11 +218,6 @@ div.confirm .btn {
     font-size: 13px;
 }
 
-#project-locked {
-    text-align: center;
-    padding: 4px;
-}
-
 div.alert {
     padding: 8px 10px;
     margin-bottom: 10px;
@@ -254,15 +249,25 @@ ul.message.success li:before {
 }
 
 /**
- * my-project label
+ * project related
  */
 
 #my-project {
     float: right;
     font-style: italic;
-    color: #c5c5c5;
+    color: #b5b5b5;
 }
 
 #my-project > i {
     padding-right: 3px;
+}
+
+#project-locked {
+    text-align: center;
+    padding: 6px;
+    margin-bottom: 30px;
+}
+
+#project-description {
+    margin-bottom: 25px;
 }

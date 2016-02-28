@@ -11,12 +11,11 @@
   <div class="tab-caption">
     <span>问题</span>
     <div class="actions btn-set small">
-      {% if 'pm.add_issue' in permissions %}
+      {% if 'pm.add_issue' in permissions and project.status != project.CLOSED_STATUS %}
         <a href="{% url 'issue_add' project.id %}"><i class="fa fa-plus"></i>新建问题</a>
       {% endif %}
     </div>
   </div>
-  {% if issues %}
   <div class="dataTables_wrapper">
     <div class="table-scrollable">
       <table class="table table-light table-advance table-hover table-condensed second">
@@ -31,22 +30,25 @@
         </tr>
         </thead>
         <tbody>
-        {% for issue in issues %}
+        {% if issues %}
+          {% for issue in issues %}
+            <tr>
+              <td>{{ issue.tag }}</td>
+              <td>{{ issue.status }}</td>
+              <td>{{ issue.get_priority_display }}</td>
+              <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
+              <td>{% if issue.assigned_to %}<a href="{% url 'user_detail' issue.assigned_to.id %}">{{ issue.assigned_to }}</a>{% else %}-{% endif %}</td>
+              <td>{{ issue.updated_on|date:'Y-m-d H:i:s' }}</td>
+            </tr>
+          {% endfor %}
+        {% else %}
           <tr>
-            <td>{{ issue.tag }}</td>
-            <td>{{ issue.status }}</td>
-            <td>{{ issue.get_priority_display }}</td>
-            <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
-            <td>{% if issue.assigned_to %}<a href="{% url 'user_detail' issue.assigned_to.id %}">{{ issue.assigned_to }}</a>{% else %}-{% endif %}</td>
-            <td>{{ issue.updated_on|date:'Y-m-d H:i:s' }}</td>
+            <td colspan="6">{% include 'no_data.html' %}</td>
           </tr>
-        {% endfor %}
+        {% endif %}
         </tbody>
       </table>
     </div>
     {% include "table_footer.html" %}
   </div>
-  {% else %}
-    <div class="nodata"><span>暂无数据可显示</span></div>
-  {% endif %}
 {% endblock %}

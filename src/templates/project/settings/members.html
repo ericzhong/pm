@@ -18,36 +18,42 @@
         </tr>
         </thead>
         <tbody>
-        {% for item in user_roles_deletable %}
+        {% if user_roles_deletable or group_roles %}
+          {% for item in user_roles_deletable %}
+            <tr>
+              <td><a href="{% url 'user_detail' item.0.id %}">{{ item.0.get_full_name }}</a></td>
+              <td data-toggle="checkboxlist_form">
+                <span>{% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+              </td>
+              <td>
+                <div class="actions btn-set small">
+                  <a name="btn-show-checkboxlist" data-href="{% url 'member_roles' project.id %}?user_id={{ item.0.id }}"><i class="fa fa-edit"></i>编辑</a>
+                  {% if item.2 == True %}
+                    <a data-href="{% url 'member_delete' project.id %}?user_id={{ item.0.id }}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          {% for item in group_roles %}
+            <tr>
+              <td><i class="fa fa-group"></i> {{ item.0.name }}</td>
+              <td data-toggle="checkboxlist_form">
+                <span>{% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+              </td>
+              <td>
+                <div class="actions btn-set small">
+                  <a name="btn-show-checkboxlist" data-href="{% url 'member_roles' project.id %}?group_id={{ item.0.id }}"><i class="fa fa-edit"></i>编辑</a>
+                  <a data-href="{% url 'member_delete' project.id %}?group_id={{ item.0.id }}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
           <tr>
-            <td><a href="{% url 'user_detail' item.0.id %}">{{ item.0.get_full_name }}</a></td>
-            <td data-toggle="checkboxlist_form">
-              <span>{% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
-            </td>
-            <td>
-              <div class="actions btn-set small">
-                <a name="btn-show-checkboxlist" data-href="{% url 'member_roles' project.id %}?user_id={{ item.0.id }}"><i class="fa fa-edit"></i>编辑</a>
-                {% if item.2 == True %}
-                  <a data-href="{% url 'member_delete' project.id %}?user_id={{ item.0.id }}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
-                {% endif %}
-              </div>
-            </td>
+            <td colspan="3">{% include 'no_data.html' %}</td>
           </tr>
-        {% endfor %}
-        {% for item in group_roles %}
-          <tr>
-            <td><i class="fa fa-group"></i> {{ item.0.name }}</td>
-            <td data-toggle="checkboxlist_form">
-              <span>{% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
-            </td>
-            <td>
-              <div class="actions btn-set small">
-                <a name="btn-show-checkboxlist" data-href="{% url 'member_roles' project.id %}?group_id={{ item.0.id }}"><i class="fa fa-edit"></i>编辑</a>
-                <a data-href="{% url 'member_delete' project.id %}?group_id={{ item.0.id }}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
-              </div>
-            </td>
-          </tr>
-        {% endfor %}
+        {% endif %}
         </tbody>
       </table>
     </div>

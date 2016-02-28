@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
-{% block tab_toggle %}tab_create_issue{% endblock %}
+{% block tab_toggle %}tab_issues{% endblock %}
 
 {% block tab_content %}
 <div class="tab-caption">新建问题</div>
@@ -19,7 +19,7 @@
         <div class="row">
           <div class="col-md-offset-3">
             <button type="submit" class="btn green">创建</button>
-            <button type="button" class="btn default">取消</button>
+            <button type="button" class="btn default" onclick="location='{% url 'issue_list' project.id %}'">取消</button>
           </div>
         </div>
       </div>

@@ -17,17 +17,23 @@
         </tr>
         </thead>
         <tbody>
-        {% for category in issue_categories %}
+        {% if issue_categories %}
+          {% for category in issue_categories %}
+            <tr>
+              <td>{{ category.name }}</td>
+              <td>
+                <div class="actions btn-set small">
+                  <a href="{% url 'issue_category_update' category.id %}"><i class="fa fa-edit"></i></a>
+                  <a data-href="{% url 'issue_category_delete' category.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
           <tr>
-            <td>{{ category.name }}</td>
-            <td>
-              <div class="actions btn-set small">
-                <a href="{% url 'issue_category_update' category.id %}"><i class="fa fa-edit"></i></a>
-                <a data-href="{% url 'issue_category_delete' category.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
-              </div>
-            </td>
+            <td colspan="2">{% include 'no_data.html' %}</td>
           </tr>
-        {% endfor %}
+        {% endif %}
         </tbody>
       </table>
     </div>

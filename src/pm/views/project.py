@@ -13,7 +13,7 @@ from ..utils import Helper
 from ..models import User
 from .auth import PermCheckCreateView, PermCheckUpdateView, PermCheckView, no_perm
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin, \
-    delete_success_message
+    delete_success_message, create_success_message, decorate_object, update_success_message
 
 
 _model = Project
@@ -131,6 +131,22 @@ class Create(CreateSuccessMessageMixin, PermCheckCreateView):
             })
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        context = super(Create, self).get_context_data(**kwargs)
+        if 'backurl' in self.request.GET:
+            context['backurl'] = reverse_lazy('admin_project')
+        elif 'parent' in self.request.GET:
+            context['backurl'] = reverse_lazy('project_detail', kwargs={'pk': self.request.GET['parent']})
+        else:
+            context['backurl'] = reverse_lazy('project_list')
+        return context
+
+    def get_success_url(self):
+        if 'backurl' in self.request.GET:
+            return reverse_lazy('admin_project')
+        else:
+            return reverse_lazy('project_list')
+
     def has_perm(self, request, *args, **kwargs):
         if 'parent' in self.request.GET:
             return request.user.has_perm('pm.add_subproject', Project.objects.get(pk=self.request.GET['parent']))
@@ -144,12 +160,16 @@ class Update(UpdateSuccessMessageMixin, PermCheckUpdateView):
     form_class = UpdateProjectForm
 
     def get_success_url(self):
-        return reverse('project_update', kwargs={'pk': self.object.pk})
+        url = reverse('project_update', kwargs={'pk': self.object.pk})
+        if 'backurl' in self.request.GET:
+            url += '?backurl='
+        return url
 
     def get_context_data(self, **kwargs):
         context = super(Update, self).get_context_data(**kwargs)
         project_id = self.kwargs['pk']
         context['other_projects'] = get_other_projects_html(project_id)
+        context['backurl'] = reverse_lazy('admin_project') if 'backurl' in self.request.GET else None
         return context
 
     def has_perm(self, request, *args, **kwargs):
@@ -274,7 +294,7 @@ class DeleteMember(PermCheckView):
 
         if name:
             from django.contrib import messages
-            messages.success(self.request, delete_success_message % name)
+            messages.success(self.request, delete_success_message % decorate_object(name))
 
         return redirect('member_list', pk=project_id)
 
@@ -299,7 +319,7 @@ class CreateMember(PermCheckView):
                     Project_Group_Role(project_id=project_id, group_id=id, role_id=r).save()
 
             from django.contrib import messages
-            messages.success(self.request, 'member was added successfully')
+            messages.success(self.request, create_success_message % 'member')
 
         return redirect('member_list', pk=project_id)
 
@@ -329,10 +349,8 @@ class MemberRoles(View):
     def post(self, request, *args, **kwargs):
         project_id = kwargs['pk']
         data = set(map(int, request.POST.getlist('item')))
-        empty = True
 
         if 'user_id' in request.GET:
-            empty = False
             user_id = request.GET['user_id']
             old_of_user = set(get_user_roles_id(project_id, user_id))
             old_of_groups = set(get_user_groups_roles_id(project_id, user_id))
@@ -346,8 +364,10 @@ class MemberRoles(View):
                 Project_User_Role(project_id=project_id, user_id=user_id, role_id=n).save()
             Project_User_Role.objects.filter(project_id=project_id, user_id=user_id, role_id__in=unselect).delete()
 
+            from django.contrib import messages
+            messages.success(self.request, update_success_message % decorate_object(User.objects.get(pk=user_id)))
+
         elif 'group_id' in request.GET:
-            empty = False
             group_id = request.GET['group_id']
             old = set(get_group_roles_id(project_id, group_id))
             new = data
@@ -359,9 +379,8 @@ class MemberRoles(View):
                 Project_Group_Role(project_id=project_id, group_id=group_id, role_id=n).save()
             Project_Group_Role.objects.filter(project_id=project_id, group_id=group_id, role_id__in=unselect).delete()
 
-        if not empty:
             from django.contrib import messages
-            messages.success(self.request, 'member role was updated successfully')
+            messages.success(self.request, update_success_message % decorate_object(Group.objects.get(pk=group_id)))
 
         return redirect('member_list', pk=project_id)
 

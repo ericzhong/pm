@@ -11,7 +11,7 @@
   <div class="tab-caption">
     <span>路线图</span>
     <div class="actions btn-set small">
-      {% if 'pm.manage_version' in permissions %}
+      {% if 'pm.manage_version' in permissions and project.status != project.CLOSED_STATUS %}
         <a href="{% url 'version_add' project.id %}"><i class="fa fa-plus"></i>新建版本</a>
       {% endif %}
     </div>

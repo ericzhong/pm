@@ -7,8 +7,9 @@
 
 {% block tab_content %}
 <div class="tab-caption">
-  <span><a href="{% url 'issue_detail' issue.id %}">{{ issue.tag }} #{{ issue.id }}</a> >> 工时</span>
+  <span>登记工时</span>
 </div>
+{% include 'form_success.html' %}
 <div class="portlet light grey-cararra bordered">
   <div class="portlet-body form">
     {% include 'form_errors.html' %}
@@ -22,6 +23,7 @@
           <div class="col-md-offset-2">
             <button type="submit" class="btn green">创建</button>
             <button type="submit" name="continue" class="btn green">创建并继续</button>
+            <button type="button" class="btn default" onclick="location='{% url 'worktime_list' issue.id %}'">取消</button>
           </div>
         </div>
       </div>

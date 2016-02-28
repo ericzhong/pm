@@ -15,7 +15,12 @@
             <div class="col-md-6">
               <div class="portlet box">
                 <div class="portlet-body">
-                  <div class="table-caption"><span>指派给我的问题 ({{ assigned_issues|length }})</span><small class="pull-right"><a href="{% url 'issue_all' %}?assigned_to_id={{ user.id }}">更多»</a></small></div>
+                  <div class="table-caption">
+                    <span>指派给我的问题 ({{ assigned_issues|length }})</span>
+                    {% if assigned_issues %}
+                      <small class="pull-right"><a href="{% url 'issue_all' %}?assigned_to_id={{ user.id }}">更多»</a></small>
+                    {% endif %}
+                  </div>
                   <div class="table-scrollable">
                     <table class="table table-light table-advance table-hover table-condensed second">
                       <thead>
@@ -27,6 +32,7 @@
                       </tr>
                       </thead>
                       <tbody>
+                      {% if assigned_issues %}
                       {% for issue in assigned_issues %}
                         <tr>
                           <td>{{ issue.id }}</td>
@@ -35,6 +41,11 @@
                           <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
                         </tr>
                       {% endfor %}
+                      {% else %}
+                        <tr>
+                          <td colspan="4">{% include 'no_data.html' %}</td>
+                        </tr>
+                      {% endif %}
                       </tbody>
                     </table>
                   </div>
@@ -44,7 +55,12 @@
             <div class="col-md-6">
               <div class="portlet box">
                 <div class="portlet-body">
-                  <div class="table-caption"><span>我关注的问题 ({{ watch_issues|length }})</span><small class="pull-right"><a href="{% url 'issue_all' %}?watcher_id={{ user.id }}">更多»</a></small></div>
+                  <div class="table-caption">
+                    <span>我关注的问题 ({{ watch_issues|length }})</span>
+                    {% if watch_issues %}
+                      <small class="pull-right"><a href="{% url 'issue_all' %}?watcher_id={{ user.id }}">更多»</a></small>
+                    {% endif %}
+                  </div>
                   <div class="table-scrollable">
                     <table class="table table-light table-advance table-hover table-condensed second">
                       <thead>
@@ -56,14 +72,20 @@
                       </tr>
                       </thead>
                       <tbody>
-                      {% for issue in watch_issues %}
+                      {% if watch_issues %}
+                        {% for issue in watch_issues %}
+                          <tr>
+                            <td>{{ issue.id }}</td>
+                            <td><a href="{% url 'project_detail' issue.project.id %}">{{ issue.project.name }}</a></td>
+                            <td>{{ issue.tag }}</td>
+                            <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
+                          </tr>
+                        {% endfor %}
+                      {% else %}
                         <tr>
-                          <td>{{ issue.id }}</td>
-                          <td><a href="{% url 'project_detail' issue.project.id %}">{{ issue.project.name }}</a></td>
-                          <td>{{ issue.tag }}</td>
-                          <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
+                          <td colspan="4">{% include 'no_data.html' %}</td>
                         </tr>
-                      {% endfor %}
+                      {% endif %}
                       </tbody>
                     </table>
                   </div>

@@ -10,7 +10,8 @@ from ..utils import Helper
 from .project import get_other_projects_html
 from .auth import PermCheckView, PermCheckUpdateView, PermCheckListView, \
     PermCheckCreateView, PermCheckDetailView
-from .base import CreateSuccessMessageMixin, update_success_message, delete_success_message
+from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin, \
+    update_success_message, delete_success_message
 import time
 
 
@@ -172,13 +173,12 @@ class Update(PermCheckView):
 class Delete(PermCheckView):
     def post(self, request, *args, **kwargs):
         issues = Issue.objects.filter(pk=kwargs['pk'])
-        obj = issues[0]
-        project_id = obj.project.id
-        issues.delete()
+        project_id = issues[0].project.id
 
         from django.contrib import messages
-        messages.success(self.request, delete_success_message % obj)
+        messages.success(self.request, delete_success_message % issues[0])
 
+        issues.delete()
         return HttpResponseRedirect(reverse('issue_list', kwargs={'pk': project_id}))
 
     def has_perm(self, request, *args, **kwargs):
@@ -226,11 +226,14 @@ class WorktimeList(PermCheckListView):
         context['other_projects'] = get_other_projects_html(issue.project.id)
         return context
 
+    def get_queryset(self):
+        return Worktime.objects.filter(issue__id=self.kwargs.get('pk')).order_by('-date')
+
     def has_perm(self, request, *args, **kwargs):
         return request.user.has_perm('pm.read_worktime', Issue.objects.get(pk=self.kwargs['pk']).project)
 
 
-class WorktimeCreate(PermCheckCreateView):
+class WorktimeCreate(CreateSuccessMessageMixin, PermCheckCreateView):
     model = Worktime
     form_class = WorktimeForm
     template_name = 'project/create_worktime.html'
@@ -267,7 +270,7 @@ class WorktimeCreate(PermCheckCreateView):
         return request.user.has_perm('pm.add_worktime', Issue.objects.get(pk=self.kwargs['pk']).project)
 
 
-class WorktimeUpdate(PermCheckUpdateView):
+class WorktimeUpdate(UpdateSuccessMessageMixin, PermCheckUpdateView):
     model = Worktime
     form_class = WorktimeForm
     template_name = 'project/edit_worktime.html'
@@ -305,6 +308,10 @@ class WorktimeDelete(PermCheckView):
     def post(self, request, *args, **kwargs):
         query_set = Worktime.objects.filter(pk=kwargs['pk'])
         issue_id = query_set[0].issue.id
+
+        from django.contrib import messages
+        messages.success(self.request, delete_success_message % query_set[0])
+
         query_set.delete()
         return HttpResponseRedirect(reverse('worktime_list', kwargs={'pk': issue_id}))
 

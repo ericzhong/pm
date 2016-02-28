@@ -5,7 +5,7 @@ from ..models import Version, Project
 from ..forms import VersionForm
 from .project import get_other_projects_html
 from .auth import PermCheckCreateView, PermCheckUpdateView, PermCheckListView, PermCheckView
-from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, delete_success_message
+from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, delete_success_message, decorate_object
 
 _model = Version
 _form = VersionForm
@@ -93,8 +93,9 @@ class Update(UpdateSuccessMessageMixin, PermCheckUpdateView):
         return kwargs
 
     def get_success_url(self):
-        project_id = Version.objects.get(pk=self.kwargs['pk']).project.id
-        return _get_back_url(self, project_id=project_id)
+        version_id = self.kwargs['pk']
+        project_id = Version.objects.get(pk=version_id).project.id
+        return _get_back_url(self, version_id=version_id, project_id=project_id)
 
     def has_perm(self, request, *args, **kwargs):
         return request.user.has_perm('pm.manage_version', Version.objects.get(pk=self.kwargs['pk']).project)
@@ -115,13 +116,12 @@ class Detail(DetailView):
 class Delete(PermCheckView):
     def post(self, request, *args, **kwargs):
         query_set = Version.objects.filter(pk=kwargs['pk'])
-        obj = query_set[0]
         project_id = query_set[0].project.id
-        query_set.delete()
 
         from django.contrib import messages
-        messages.success(self.request, delete_success_message % obj)
+        messages.success(self.request, delete_success_message % decorate_object(query_set[0]))
 
+        query_set.delete()
         return HttpResponseRedirect(_get_back_url(self, project_id=project_id))
 
     def has_perm(self, request, *args, **kwargs):

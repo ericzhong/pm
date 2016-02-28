@@ -6,7 +6,7 @@
   {% include 'form_success.html' %}
   <div class="page-title">项目</div>
   <div class="actions btn-set small btn-table">
-    <a href="{% url 'project_add' %}"><i class="fa fa-plus"></i>新建项目</a>
+    <a href="{% url 'project_add' %}?backurl="><i class="fa fa-plus"></i>新建项目</a>
   </div>
   {% if projects %}
     <div class="dataTables_wrapper">
@@ -23,7 +23,7 @@
           <tbody>
           {% for project in projects %}
           <tr>
-            <td><a href="{% url 'project_update' project.id  %}">{{ project.name }}</a></td>
+            <td><a href="{% url 'project_update' project.id  %}?backurl=">{{ project.name }}</a></td>
             {% if project.is_public %}
               <td><i class="fa fa-check"></i></td>
             {% else %}

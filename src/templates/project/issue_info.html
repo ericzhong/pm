@@ -17,7 +17,7 @@
         <span class="caption-subject">{{ issue.tag }} #{{ issue.id }}</span>
       </div>
       <div class="actions btn-set small">
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated and project.status != project.CLOSED_STATUS %}
           {% if 'pm.change_issue' in permissions or 'pm.add_comment' in permissions or 'pm.add_worktime' in permissions %}
             <a id="btn-edit-issue"><i class="fa fa-edit"></i>编辑</a>
           {% endif %}
@@ -85,7 +85,7 @@
               <span>子任务</span>
             </div>
             <div class="actions btn-set extra-small">
-              {% if 'pm.add_issue' in permissions %}
+              {% if 'pm.add_issue' in permissions and project.status != project.CLOSED_STATUS %}
                 <a href="{% url 'issue_add' project.id %}?parent={{ issue.id }}&redirect={% url 'issue_detail' issue.id %}">新增</a>
               {% endif %}
             </div>

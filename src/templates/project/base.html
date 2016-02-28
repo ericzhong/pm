@@ -47,9 +47,6 @@
               {% if 'pm.read_issue' in permissions %}
                 <li id="tab_issues"><a href="{% url 'issue_list' project.id %}"> 问题 </a></li>
               {% endif %}
-              {% if 'pm.add_issue' in permissions %}
-                <li id="tab_create_issue"><a href="{% url 'issue_add' project.id %}"> 新建问题 </a></li>
-              {% endif %}
               {% if 'pm.read_gantt' in permissions %}
                 <li id="tab_gantt"><a href="{% url 'project_gantt' project.id %}"> 甘特图 </a></li>
               {% endif %}
