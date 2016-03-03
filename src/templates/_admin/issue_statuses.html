@@ -35,7 +35,7 @@
       {% include "table_footer.html" %}
     </div>
   {% else %}
-    <div class="nodata"><span>暂无数据可显示</span></div>
+    {% include 'no_data.html' %}
   {% endif %}
 
   {% include 'confirm_delete.html' %}

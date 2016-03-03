@@ -18,10 +18,9 @@ def _get_estimated_time(issues):
     return n * 8
 
 
+@python_2_unicode_compatible
 class User(AbstractUser):
-
-    @property
-    def get_full_name(self):
+    def __str__(self):
         # TODO: formatted by settings
         full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
@@ -164,6 +163,17 @@ class IssueCategory(models.Model):
 
 @python_2_unicode_compatible
 class IssueTag(models.Model):
+
+    BUG_TAG = 1
+    DEVELOPMENT_TAG = 2
+    REQUIREMENT_TAG = 3
+
+    _initial_data = (
+        {'pk': BUG_TAG, 'name': _('Bug')},
+        {'pk': DEVELOPMENT_TAG, 'name': _('Development')},
+        {'pk': REQUIREMENT_TAG, 'name': _('Requirement')},
+    )
+
     name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
 
     class Meta:
@@ -175,6 +185,18 @@ class IssueTag(models.Model):
 
 @python_2_unicode_compatible
 class IssueStatus(models.Model):
+
+    NEW_STATUS = 1
+    FINISHED_STATUS = 2
+    CLOSED_STATUS = 3
+    NOT_CLOSED_STATUS = -CLOSED_STATUS
+
+    _initial_data = (
+        {'pk': NEW_STATUS, 'name': _('New')},
+        {'pk': FINISHED_STATUS, 'name': _('Finished')},
+        {'pk': CLOSED_STATUS, 'name': _('Closed')},
+    )
+
     name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
     #default_done_ratio = models.IntegerField(null=True, blank=True)
 

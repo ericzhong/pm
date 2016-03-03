@@ -17,3 +17,4 @@ migrations
 
 plugins/
 avata/
+initial_data.yaml

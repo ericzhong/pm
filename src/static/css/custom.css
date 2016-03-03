@@ -249,7 +249,7 @@ ul.message.success li:before {
 }
 
 /**
- * project related
+ * project
  */
 
 #my-project {
@@ -270,4 +270,13 @@ ul.message.success li:before {
 
 #project-description {
     margin-bottom: 25px;
+}
+
+
+/**
+ * issue
+ */
+
+.form-control.issue-filter {
+    margin: 10px 0;
 }

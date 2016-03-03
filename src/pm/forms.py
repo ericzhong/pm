@@ -5,7 +5,6 @@ from django.contrib.auth.models import Group, Permission
 from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Version, Comment, Worktime, Role, User
 from django.conf import settings
 from django.forms import ModelMultipleChoiceField
-from datetime import datetime
 
 _EMPTY_LABEL = ''
 
@@ -206,3 +205,27 @@ class UploadAvatarForm(forms.Form):
             raise forms.ValidationError('Upload format limit %s' % ','.join(settings.UPLOAD_AVATAR_MIME_TYPES))
 
         return self.cleaned_data['file']
+
+
+class AllIssuesForm(forms.Form):
+
+    project = forms.ChoiceField()
+    tag = forms.ChoiceField()
+    status = forms.ChoiceField()
+    priority = forms.ChoiceField()
+    assignee = forms.ChoiceField()
+    watcher = forms.ChoiceField()
+    start_date = forms.DateField()
+    due_date = forms.DateField()
+
+    def __init__(self, *args, **kwargs):
+        super(AllIssuesForm, self).__init__(*args, **kwargs)
+        _user_choices = [(str(u.id), str(u)) for u in User.objects.all()]
+        self.fields['project'].choices = [('', 'All projects')] + list(Project.objects.all().values_list('id', 'name'))
+        self.fields['tag'].choices = [('', 'All issue tags')] + list(IssueTag.objects.all().values_list('id', 'name'))
+        self.fields['status'].choices = [('', 'All issue statuses')] + \
+                                        list(IssueStatus.objects.all().values_list('id', 'name')) + \
+                                        [(IssueStatus.NOT_CLOSED_STATUS, 'Not closed')]
+        self.fields['priority'].choices = [('', 'All priorities')] + list(Issue.PRIORITY_CHOICES)
+        self.fields['assignee'].choices = [('', 'All assignees')] + _user_choices
+        self.fields['watcher'].choices = [('', 'All watchers')] + _user_choices

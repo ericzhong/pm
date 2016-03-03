@@ -41,13 +41,7 @@
         </div>
       </div>
     {% endfor %}
-    <!--
-    <div class="version">
-      <div class="version-title"><i class="fa fa-cube"></i><a>No Issue</a></div>
-      <div class="nodata">该版本没有问题</div>
-    </div>
-    -->
   {% else %}
-    <div class="nodata">暂无数据可显示</div>
+    {% include 'no_data.html' %}
   {% endif %}
 {% endblock %}

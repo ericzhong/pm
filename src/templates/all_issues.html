@@ -14,61 +14,23 @@
       <div class="row">
         <div class="col-md-12">
           <div class="form-inline table-options">
-            <div class="form-group">
-              <select class="form-control input-small">
-                <option>所有项目</option>
-                <option>Option 1</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-                <option>Option 4</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <select class="form-control input-small">
-                <option>所有跟踪</option>
-                <option>Option 1</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-                <option>Option 4</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <select class="form-control input-small">
-                <option>所有状态</option>
-                <option>Option 1</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-                <option>Option 4</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <select class="form-control input-small">
-                <option>所有优先级</option>
-                <option>Option 1</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-                <option>Option 4</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <select class="form-control input-small">
-                <option>所有指派</option>
-                <option>Option 1</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-                <option>Option 4</option>
-              </select>
-            </div>
+            <div class="form-group">{{ form.project|add_class:"form-control issue-filter" }}</div>
+            <div class="form-group">{{ form.tag|add_class:"form-control issue-filter" }}</div>
+            <div class="form-group">{{ form.status|add_class:"form-control issue-filter" }}</div>
+            <div class="form-group">{{ form.priority|add_class:"form-control issue-filter" }}</div>
+            <div class="form-group">{{ form.assignee|add_class:"form-control issue-filter" }}</div>
+            <div class="form-group">{{ form.watcher|add_class:"form-control issue-filter" }}</div>
             <div class="form-group">
               <div class="input-group input-large">
-                <input type="text" class="form-control date-picker" id="issue-start" end-date="issue-end">
+                {{ form.start_date|add_class:"form-control date-picker"|attr:"end-date:id_due_date"}}
                 <span class="input-group-addon"> to </span>
-                <input type="text" class="form-control date-picker" id="issue-end" start-date="issue-start">
+                {{ form.due_date|add_class:"form-control date-picker"|attr:"start-date:id_start_date" }}
               </div>
             </div>
+            <div class="form-group"><button class="form-control btn default" id="view_issues">View</button></div>
           </div>
           <div class="table-scrollable">
-            <table class="table table-light table-advance table-hover table-condensed second" aria-describedby="">
+            <table class="table table-light table-advance table-hover table-condensed second">
               <thead>
               <tr>
                 <th># <i class="fa fa-caret-down"></i></th>
@@ -107,4 +69,34 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block page-level-scripts %}
+<script>
+  function get_query_string(obj, name) {
+    var value = obj.val();
+    return (value) ? (name + "=" + value) : '';
+  }
+
+  $('#view_issues').click(function(){
+    var url = '{% url 'issue_all' %}';
+    var items = [
+        {% for field in form %}
+          ["{{ field.auto_id }}", "{{ field.html_name }}"],
+        {% endfor %}
+    ];
+
+    var first = true;
+    for (var i=0; i<items.length; i++) {
+      var item = items[i];
+      var str = get_query_string($('#' + item[0]), item[1]);
+      if (str) {
+        url = url + ((first) ? '?' : '&') + str;
+        first = false;
+      }
+    }
+
+    location = url;
+  });
+</script>
 {% endblock %}

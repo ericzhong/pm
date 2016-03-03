@@ -4,13 +4,13 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Sum
 from django.shortcuts import render, redirect
-from ..forms import IssueForm, CommentForm, WorktimeForm, WorktimeBlankForm, CommentBlankForm
-from ..models import Issue, Comment, Worktime, Project, Version
+from ..forms import IssueForm, CommentForm, WorktimeForm, WorktimeBlankForm, CommentBlankForm, AllIssuesForm
+from ..models import Issue, Comment, Worktime, Project, IssueStatus
 from ..utils import Helper
 from .project import get_other_projects_html
 from .auth import PermCheckView, PermCheckUpdateView, PermCheckListView, \
     PermCheckCreateView, PermCheckDetailView
-from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin, \
+from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, \
     update_success_message, delete_success_message
 import time
 
@@ -330,34 +330,50 @@ class AllIssues(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(AllIssues, self).get_context_data(**kwargs)
-        version_id = self.request.GET.get('version_id', None)
-        open = True if 'open' in self.request.GET else False
-        status_id = self.request.GET.get('status_id', None)
-        issue_tag_id = self.request.GET.get('issue_tag_id', None)
-        assigned_to_id = self.request.GET.get('assigned_to_id', None)
-        watcher_id = self.request.GET.get('watcher_id', None)
+        context['form'] = AllIssuesForm(
+            initial={n: self.request.GET.get(n, None) for n in AllIssuesForm.declared_fields})
+        return context
+
+    def get_queryset(self):
+        project = self.request.GET.get('project', None)
+        tag = self.request.GET.get('tag', None)
+        status = self.request.GET.get('status', None)
+        priority = self.request.GET.get('priority', None)
+        assignee = self.request.GET.get('assignee', None)
+        watcher = self.request.GET.get('watcher', None)
+        start_date = self.request.GET.get('start_date', None)
+        due_date = self.request.GET.get('due_date', None)
 
         issues = Issue.objects.all()
-        if version_id:
-            issues = issues.filter(version_id=version_id)
 
-        if open:
-            issues = issues.exclude(status_id=Version.CLOSED_STATUS)
-        else:
-            if status_id:
-                issues = issues.filter(status_id=status_id)
+        if project:
+            issues = issues.filter(project__id=project)
 
-        if issue_tag_id:
-            issues = issues.filter(tag_id=issue_tag_id)
+        if tag:
+            issues = issues.filter(tag_id=tag)
 
-        if assigned_to_id:
-            issues = issues.filter(assigned_to_id=assigned_to_id)
+        if status:
+            if int(status) == IssueStatus.NOT_CLOSED_STATUS:
+                issues = issues.exclude(status__id=IssueStatus.CLOSED_STATUS)
+            else:
+                issues = issues.filter(status__id=status)
 
-        if watcher_id:
-            issues = issues.filter(watchers__id=watcher_id)
+        if assignee:
+            issues = issues.filter(assigned_to_id=assignee)
 
-        context['issues'] = issues
-        return context
+        if watcher:
+            issues = issues.filter(watchers__id=watcher)
+
+        if priority:
+            issues = issues.filter(priority=priority)
+
+        if start_date:
+            issues = issues.filter(start_date__gte=start_date)
+
+        if due_date:
+            issues = issues.filter(due_date__lte=due_date)
+
+        return issues
 
 
 class Watch(View):
