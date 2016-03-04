@@ -94,7 +94,7 @@
                   {% if roles %}
                     <div class="icheck-inline">
                       {% for role in roles %}
-                        <label><input name="role" type="checkbox" value="{{ role.id }}">{{ role.name }}</label>
+                        <label><input type="checkbox" name="role" value="{{ role.id }}">{{ role.name }}</label>
                       {% endfor %}
                     </div>
                   {% else %}
@@ -107,11 +107,22 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn default" data-dismiss="modal">关闭</button>
-          <button type="button" class="btn green" onclick="document.add_member_form.submit()">保存</button>
+          <button type="button" class="btn green" onclick="document.add_member_form.submit()" disabled id="btn_add_member">保存</button>
         </div>
       </div>
     </div>
   </div>
   {% include "confirm_delete.html" %}
   {% include "_admin/checkboxlist_form.html" %}
+{% endblock %}
+
+{% block page-level-scripts %}
+<script>
+  $("input:checkbox[name='user'], input:checkbox[name='group'], input:checkbox[name='role']").change(function(){
+    var member_len = $("input:checkbox:checked[name='user'], input:checkbox:checked[name='group']").length;
+    var role_len = $("input:checkbox:checked[name='role']").length;
+    var btn = $("#btn_add_member");
+    (member_len == 0 || role_len == 0) ? btn.prop('disabled', true) : btn.prop('disabled', false);
+  });
+</script>
 {% endblock %}
