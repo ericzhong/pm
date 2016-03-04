@@ -23,7 +23,7 @@ class User(AbstractUser):
     def __str__(self):
         # TODO: formatted by settings
         full_name = '%s %s' % (self.first_name, self.last_name)
-        return full_name.strip()
+        return full_name.strip() or self.username
 
 
 @python_2_unicode_compatible
@@ -237,17 +237,17 @@ class Version(models.Model):
         return Issue.objects.filter(version=self).count()
 
     def total_open_issue(self):
-        return Issue.objects.filter(version=self).exclude(status__id=self.CLOSED_STATUS).count()
+        return Issue.objects.filter(version=self).exclude(status__id=IssueStatus.CLOSED_STATUS).count()
 
     def total_closed_issue(self):
-        return Issue.objects.filter(version=self).filter(status__id=self.CLOSED_STATUS).count()
+        return Issue.objects.filter(version=self).filter(status__id=IssueStatus.CLOSED_STATUS).count()
 
     def issues(self):
         return Issue.objects.filter(version=self)
 
     def done_ratio(self):
         return int(Issue.objects.filter(version=self)
-                   .exclude(status__id=self.CLOSED_STATUS)
+                   .exclude(status__id=IssueStatus.CLOSED_STATUS)
                    .aggregate(data=models.Avg('done_ratio'))['data'])
 
     def estimated_time(self):

@@ -210,6 +210,7 @@ class UploadAvatarForm(forms.Form):
 class AllIssuesForm(forms.Form):
 
     project = forms.ChoiceField()
+    version = forms.ChoiceField()
     tag = forms.ChoiceField()
     status = forms.ChoiceField()
     priority = forms.ChoiceField()
@@ -222,6 +223,7 @@ class AllIssuesForm(forms.Form):
         super(AllIssuesForm, self).__init__(*args, **kwargs)
         _user_choices = [(str(u.id), str(u)) for u in User.objects.all()]
         self.fields['project'].choices = [('', 'All projects')] + list(Project.objects.all().values_list('id', 'name'))
+        self.fields['version'].choices = [('', 'All versions')] + list(Version.objects.all().values_list('id', 'name'))
         self.fields['tag'].choices = [('', 'All issue tags')] + list(IssueTag.objects.all().values_list('id', 'name'))
         self.fields['status'].choices = [('', 'All issue statuses')] + \
                                         list(IssueStatus.objects.all().values_list('id', 'name')) + \

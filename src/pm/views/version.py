@@ -110,6 +110,8 @@ class Detail(DetailView):
         context = super(Detail, self).get_context_data(**kwargs)
         context['project'] = self.object.project
         context['other_projects'] = get_other_projects_html(self.object.project.id)
+        from ..models import IssueStatus
+        context['IssueStatus'] = IssueStatus
         return context
 
 
@@ -138,4 +140,6 @@ class Roadmap(ListView):
         project_id = self.kwargs['pk']
         context['project'] = Project.objects.get(pk=project_id)
         context['other_projects'] = get_other_projects_html(project_id)
+        from ..models import IssueStatus
+        context['IssueStatus'] = IssueStatus
         return context

@@ -107,6 +107,8 @@ class Detail(DetailView):
         context['subprojects'] = Project.objects.filter(parent=self.object)
         context['role_users'] = get_role_users(self.kwargs['pk'])
         context['other_projects'] = get_other_projects_html(self.object.id)
+        from ..models import IssueStatus
+        context['IssueStatus'] = IssueStatus
         return context
 
 

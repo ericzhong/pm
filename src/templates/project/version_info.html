@@ -33,9 +33,9 @@
         </table>
         <div class="version-detail">
           <span>
-            <a href="{% url 'issue_all' %}?version_id={{ version.id }}">{{ version.total_issue }} 问题</a>
+            <a href="{% url 'issue_all' %}?version={{ version.id }}">{{ version.total_issue }} 问题</a>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            (<a href="{% url 'issue_all' %}?version_id={{ version.id }}&status_id={{ version.CLOSED_STATUS }}">{{ version.total_closed_issue }} 关闭</a> — <a href="{% url 'issue_all' %}?version_id={{ version.id }}&open">{{ version.total_open_issue }} 打开</a>)
+            (<a href="{% url 'issue_all' %}?version={{ version.id }}&status={{ IssueStatus.CLOSED_STATUS }}">{{ version.total_closed_issue }} 关闭</a> — <a href="{% url 'issue_all' %}?version={{ version.id }}&status={{ IssueStatus.NOT_CLOSED_STATUS }}">{{ version.total_open_issue }} 打开</a>)
           </span>
         </div>
       </div>

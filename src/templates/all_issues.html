@@ -15,6 +15,7 @@
         <div class="col-md-12">
           <div class="form-inline table-options">
             <div class="form-group">{{ form.project|add_class:"form-control issue-filter" }}</div>
+            <div class="form-group">{{ form.version|add_class:"form-control issue-filter" }}</div>
             <div class="form-group">{{ form.tag|add_class:"form-control issue-filter" }}</div>
             <div class="form-group">{{ form.status|add_class:"form-control issue-filter" }}</div>
             <div class="form-group">{{ form.priority|add_class:"form-control issue-filter" }}</div>
@@ -33,8 +34,9 @@
             <table class="table table-light table-advance table-hover table-condensed second">
               <thead>
               <tr>
-                <th># <i class="fa fa-caret-down"></i></th>
-                <th>项目<i class="fa fa-caret-up"></i></th>
+                <th>#</th>
+                <th>项目</th>
+                <th>版本</th>
                 <th>标签</th>
                 <th>状态</th>
                 <th>优先级</th>
@@ -49,9 +51,10 @@
                     <tr>
                       <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.id }}</a></td>
                       <td><a href="{% url 'project_detail' issue.project.id %}">{{ issue.project.name }}</a></td>
-                      <td>{{ issue.tag }}</td>
-                      <td>{{ issue.status }}</td>
-                      <td>{{ issue.get_priority_display }}</td>
+                      <td>{% if issue.version %}<a href="{% url 'version_detail' issue.version.id %}">{{ issue.version.name }}</a>{% else %}-{% endif %}</td>
+                      <td>{{ issue.tag|default:"-" }}</td>
+                      <td>{{ issue.status|default:"-" }}</td>
+                      <td>{{ issue.get_priority_display|default:"-" }}</td>
                       <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
                       <td>{% if issue.assigned_to %}<a href="{% url 'user_detail' issue.assigned_to.id %}">{{ issue.assigned_to }}</a>{% else %}-{% endif %}</td>
                       <td>{{ issue.updated_on|date:'Y-m-d H:i:s' }}</td>

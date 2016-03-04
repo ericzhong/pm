@@ -336,6 +336,7 @@ class AllIssues(ListView):
 
     def get_queryset(self):
         project = self.request.GET.get('project', None)
+        version = self.request.GET.get('version', None)
         tag = self.request.GET.get('tag', None)
         status = self.request.GET.get('status', None)
         priority = self.request.GET.get('priority', None)
@@ -348,6 +349,9 @@ class AllIssues(ListView):
 
         if project:
             issues = issues.filter(project__id=project)
+
+        if version:
+            issues = issues.filter(version__id=version)
 
         if tag:
             issues = issues.filter(tag_id=tag)

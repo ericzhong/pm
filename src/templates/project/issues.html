@@ -21,6 +21,7 @@
       <table class="table table-light table-advance table-hover table-condensed second">
         <thead>
         <tr>
+          <th>#</th>
           <th>标签</th>
           <th>状态</th>
           <th>优先级</th>
@@ -33,9 +34,10 @@
         {% if issues %}
           {% for issue in issues %}
             <tr>
-              <td>{{ issue.tag }}</td>
-              <td>{{ issue.status }}</td>
-              <td>{{ issue.get_priority_display }}</td>
+              <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.id }}</a></td>
+              <td>{{ issue.tag|default:"-" }}</td>
+              <td>{{ issue.status|default:"-" }}</td>
+              <td>{{ issue.get_priority_display|default:"-" }}</td>
               <td><a href="{% url 'issue_detail' issue.id %}">{{ issue.subject }}</a></td>
               <td>{% if issue.assigned_to %}<a href="{% url 'user_detail' issue.assigned_to.id %}">{{ issue.assigned_to }}</a>{% else %}-{% endif %}</td>
               <td>{{ issue.updated_on|date:'Y-m-d H:i:s' }}</td>

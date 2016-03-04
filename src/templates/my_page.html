@@ -18,7 +18,7 @@
                   <div class="table-caption">
                     <span>指派给我的问题 ({{ assigned_issues|length }})</span>
                     {% if assigned_issues %}
-                      <small class="pull-right"><a href="{% url 'issue_all' %}?assigned_to_id={{ user.id }}">更多»</a></small>
+                      <small class="pull-right"><a href="{% url 'issue_all' %}?assignee={{ user.id }}">更多»</a></small>
                     {% endif %}
                   </div>
                   <div class="table-scrollable">
@@ -58,7 +58,7 @@
                   <div class="table-caption">
                     <span>我关注的问题 ({{ watch_issues|length }})</span>
                     {% if watch_issues %}
-                      <small class="pull-right"><a href="{% url 'issue_all' %}?watcher_id={{ user.id }}">更多»</a></small>
+                      <small class="pull-right"><a href="{% url 'issue_all' %}?watcher={{ user.id }}">更多»</a></small>
                     {% endif %}
                   </div>
                   <div class="table-scrollable">
