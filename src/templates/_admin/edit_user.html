@@ -332,7 +332,6 @@
                   <div class="form-body">
                     <div class="form-group">
                       <div class="input-group">
-                        <label>项目：</label>
                         <div class="icheck-inline">
                           {% if not_joined_groups %}
                             {% for group in not_joined_groups %}
@@ -349,7 +348,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn green" onclick="document.user_join_groups_form.submit()">保存</button>
+                <button type="button" class="btn green" onclick="document.user_join_groups_form.submit()" disabled id="btn_user_join_groups">保存</button>
               </div>
             </div>
           </div>
@@ -426,7 +425,7 @@
                         {% if roles %}
                           <div class="icheck-inline">
                             {% for role in roles %}
-                              <label><input name="role" type="checkbox" value="{{ role.id }}">{{ role.name }}</label>
+                              <label><input type="checkbox" name="role" value="{{ role.id }}">{{ role.name }}</label>
                             {% endfor %}
                           </div>
                         {% else %}
@@ -439,7 +438,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn green" onclick="document.user_join_projects_form.submit()">保存</button>
+                <button type="button" class="btn green" onclick="document.user_join_projects_form.submit()" disabled id="btn_user_join_projects">保存</button>
               </div>
             </div>
           </div>
@@ -450,4 +449,21 @@
 
   {% include 'confirm_delete.html' %}
   {% include "_admin/checkboxlist_form.html" %}
+{% endblock %}
+
+{% block page-level-scripts %}
+<script>
+  $("input:checkbox[name='group']").change(function(){
+    var len = $("input:checkbox:checked[name='group']").length;
+    var btn = $("#btn_user_join_groups");
+    (len == 0) ? btn.prop('disabled', true) : btn.prop('disabled', false);
+  });
+
+  $("input:checkbox[name='project'], input:checkbox[name='role']").change(function(){
+    var project_len = $("input:checkbox:checked[name='project']").length;
+    var role_len = $("input:checkbox:checked[name='role']").length;
+    var btn = $("#btn_user_join_projects");
+    (project_len == 0 || role_len == 0) ? btn.prop('disabled', true) : btn.prop('disabled', false);
+  });
+</script>
 {% endblock %}
