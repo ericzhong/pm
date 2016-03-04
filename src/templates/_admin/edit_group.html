@@ -63,7 +63,7 @@
               <tbody>
               {% for user in joined_users %}
                 <tr>
-                  <td><a href="{% url 'user_detail' user.id %}">{{ user.get_full_name }}</a></td>
+                  <td><a href="{% url 'user_detail' user.id %}">{{ user }}</a></td>
                   <td>
                     <div class="actions btn-set small">
                       <a data-href="{% url 'group_delete_user' group.id user.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
@@ -94,7 +94,7 @@
                         <div class="icheck-inline">
                           {% if not_joined_users %}
                             {% for user in not_joined_users %}
-                              <label><input type="checkbox" name="user" value="{{ user.id }}">{{ user.get_full_name }}</label>
+                              <label><input type="checkbox" name="user" value="{{ user.id }}">{{ user }}</label>
                             {% endfor %}
                           {% else %}
                             {% include "no_data.html" %}

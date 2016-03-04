@@ -125,7 +125,7 @@
                     {% endif %}
                   </div>
                   <p class="todo-comment-head">
-                    <span class="todo-comment-username">{{ comment.author.get_full_name }}</span> &nbsp; <span class="todo-comment-date">{{ comment.updated_on|date:"Y-m-d H:i:s" }}</span>
+                    <span class="todo-comment-username">{{ comment.author }}</span> &nbsp; <span class="todo-comment-date">{{ comment.updated_on|date:"Y-m-d H:i:s" }}</span>
                   </p>
                   <!--
                   <p class="todo-text-color">

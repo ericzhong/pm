@@ -69,7 +69,7 @@
               {% for item in role_users %}
                 <li>{{ item.0.name }}:
                   {% for user in item.1 %}
-                    <a href="{% url 'user_detail' user.id %}">{{ user.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+                    <a href="{% url 'user_detail' user.id %}">{{ user }}</a>{% if not forloop.last %}, {% endif %}
                   {% endfor %}
                 </li>
               {% endfor %}

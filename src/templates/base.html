@@ -114,6 +114,7 @@
             <li><a href="{% url 'my_page' %}">我的工作台</a></li>
           {% endif %}
 					<li><a href="{% url 'project_list' %}">项目</a></li>
+          <li><a href="{% url 'issue_all' %}">所有问题</a></li>
           {% if user.is_authenticated and user.is_superuser and user.is_active %}
             <li><a href="{% url 'admin' %}">管理</a></li>
           {% endif %}

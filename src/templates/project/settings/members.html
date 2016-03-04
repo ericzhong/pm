@@ -21,7 +21,7 @@
         {% if user_roles_deletable or group_roles %}
           {% for item in user_roles_deletable %}
             <tr>
-              <td><a href="{% url 'user_detail' item.0.id %}">{{ item.0.get_full_name }}</a></td>
+              <td><a href="{% url 'user_detail' item.0.id %}">{{ item.0 }}</a></td>
               <td data-toggle="checkboxlist_form">
                 <span>{% for role in item.1 %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
               </td>
@@ -76,7 +76,7 @@
                   {% if not_joined_users or not_joined_groups %}
                     <div class="icheck-inline">
                       {% for user in not_joined_users %}
-                        <label><input type="checkbox" name="user" value="{{ user.id }}">{{ user.get_full_name }}</label>
+                        <label><input type="checkbox" name="user" value="{{ user.id }}">{{ user }}</label>
                       {% endfor %}
                       {% for group in not_joined_groups %}
                         <label><input type="checkbox" name="group" value="{{ group.id }}">{{ group.name }}</label>

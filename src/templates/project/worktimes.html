@@ -31,7 +31,7 @@
       {% for worktime in worktimes %}
         <tr>
           <td>{{ worktime.date|date:"Y-m-d" }}</td>
-          <td>{{ worktime.author.get_full_name }}</td>
+          <td>{{ worktime.author }}</td>
           <td>{{ worktime.hours }}</td>
           <td>{{ worktime.description }}</td>
           <td>
