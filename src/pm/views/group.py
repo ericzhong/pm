@@ -7,6 +7,7 @@ from ..forms import GroupForm
 from ..models import Project, Role, Project_Group_Role, User
 from .role import get_group_roles_id, get_project_role_of_group
 from .base import CreateSuccessMessageMixin, DeleteSuccessMessageMixin, UpdateSuccessMessageMixin
+from .auth import SuperuserRequiredMixin
 import json
 
 
@@ -14,19 +15,19 @@ _model = Group
 _form = GroupForm
 
 
-class List(ListView):
+class List(SuperuserRequiredMixin, ListView):
     model = _model
     template_name = '_admin/groups.html'
     context_object_name = 'groups'
 
 
-class Detail(DetailView):
+class Detail(SuperuserRequiredMixin, DetailView):
     model = _model
     template_name = '_admin/groups.html'
     context_object_name = 'group'
 
 
-class Create(CreateSuccessMessageMixin, CreateView):
+class Create(SuperuserRequiredMixin, CreateSuccessMessageMixin, CreateView):
     model = _model
     form_class = _form
     template_name = '_admin/create_group.html'
@@ -38,7 +39,7 @@ class Create(CreateSuccessMessageMixin, CreateView):
             return reverse_lazy('group_list')
 
 
-class Update(UpdateSuccessMessageMixin, UpdateView):
+class Update(SuperuserRequiredMixin, UpdateSuccessMessageMixin, UpdateView):
     model = _model
     form_class = _form
     template_name = '_admin/edit_group.html'
@@ -67,7 +68,7 @@ class Update(UpdateSuccessMessageMixin, UpdateView):
         return reverse_lazy('group_update', kwargs={'pk': self.object.id})
 
 
-class Delete(DeleteSuccessMessageMixin, DeleteView):
+class Delete(SuperuserRequiredMixin, DeleteSuccessMessageMixin, DeleteView):
     model = _model
     success_url = reverse_lazy('group_list')
 
@@ -75,7 +76,7 @@ class Delete(DeleteSuccessMessageMixin, DeleteView):
         return redirect('group_list')
 
 
-class AddUsers(View):
+class AddUsers(SuperuserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         pk = kwargs['pk']
         add_users = request.POST.getlist('user')
@@ -84,13 +85,13 @@ class AddUsers(View):
         return HttpResponseRedirect(reverse('group_update', args=(pk,))+'#tab_group_user')
 
 
-class DeleteUser(View):
+class DeleteUser(SuperuserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         User.groups.through.objects.filter(user_id=kwargs['id'], group_id=kwargs['pk']).delete()
         return HttpResponseRedirect(reverse('group_update', args=(kwargs['pk'],))+'#tab_group_user')
 
 
-class JoinProjects(View):
+class JoinProjects(SuperuserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         group_id = kwargs['pk']
         projects = request.POST.getlist('project')
@@ -104,7 +105,7 @@ class JoinProjects(View):
         return HttpResponseRedirect(reverse('group_update', args=(group_id,))+'#tab_group_project')
 
 
-class QuitProject(View):
+class QuitProject(SuperuserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         group_id = kwargs['pk']
         project_id = kwargs['id']

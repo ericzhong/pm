@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import ListView, DetailView, View, UpdateView, CreateView
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import render,redirect
@@ -11,7 +11,7 @@ from .role import get_user_roles_id, get_role_users, get_role_user, get_user_gro
 import json
 from ..utils import Helper
 from ..models import User
-from .auth import PermCheckCreateView, PermCheckUpdateView, PermCheckView, no_perm
+from .auth import UserPermMixin, SuperuserRequiredMixin, AnonPermMixin, is_superuser, redirect_no_perm
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin, \
     delete_success_message, create_success_message, decorate_object, update_success_message
 
@@ -61,7 +61,7 @@ def get_other_projects_html(project_id):
     return get_html.text
 
 
-class List(ListView):
+class List(AnonPermMixin, ListView):
     model = _model
     template_name = 'project_list.html'
     context_object_name = 'projects'
@@ -97,7 +97,7 @@ class List(ListView):
         return get_html.text
 
 
-class Detail(DetailView):
+class Detail(AnonPermMixin, DetailView):
     model = _model
     template_name = 'project/overview.html'
     context_object_name = 'project'
@@ -112,7 +112,7 @@ class Detail(DetailView):
         return context
 
 
-class Create(CreateSuccessMessageMixin, PermCheckCreateView):
+class Create(UserPermMixin, CreateSuccessMessageMixin, CreateView):
     model = _model
     template_name = 'create_project.html'
     form_class = _form
@@ -149,14 +149,15 @@ class Create(CreateSuccessMessageMixin, PermCheckCreateView):
         else:
             return reverse_lazy('project_list')
 
-    def has_perm(self, request, *args, **kwargs):
+    def has_perm(self):
+        user = self.request.user
         if 'parent' in self.request.GET:
-            return request.user.has_perm('pm.add_subproject', Project.objects.get(pk=self.request.GET['parent']))
+            return user.has_perm('pm.add_subproject', Project.objects.get(pk=self.request.GET['parent']))
         else:
-            return request.user.has_perm('pm.add_project')
+            return user.has_perm('pm.add_project')
 
 
-class Update(UpdateSuccessMessageMixin, PermCheckUpdateView):
+class Update(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
     model = _model
     template_name = 'project/settings/info.html'
     form_class = UpdateProjectForm
@@ -174,23 +175,27 @@ class Update(UpdateSuccessMessageMixin, PermCheckUpdateView):
         context['backurl'] = reverse_lazy('admin_project') if 'backurl' in self.request.GET else None
         return context
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.change_project', Project.objects.get(pk=self.kwargs['pk']))
+    def has_perm(self):
+        return self.request.user.has_perm('pm.change_project', Project.objects.get(pk=self.kwargs['pk']))
 
 
-class Admin(ListView):
+class Admin(SuperuserRequiredMixin, ListView):
     model = _model
     template_name = '_admin/projects.html'
     context_object_name = 'projects'
 
 
-class Delete(DeleteSuccessMessageMixin, DeleteView):
+class Delete(UserPermMixin, DeleteSuccessMessageMixin, DeleteView):
     model = _model
     template_name = '_admin/delete_project.html'
     success_url = reverse_lazy('admin_project')
 
+    def has_perm(self):
+        user = self.request.user
+        return is_superuser(user) or user.has_perm('pm.delete_project', Project.objects.get(pk=self.kwargs['pk']))
 
-class Settings(View):
+
+class Settings(UserPermMixin, View):
     def get(self, request, *args, **kwargs):
         pk = kwargs['pk']
 
@@ -207,10 +212,10 @@ class Settings(View):
             return redirect('issue_category_list', pk=kwargs['pk'])
 
         else:
-            return no_perm()
+            return redirect_no_perm()
 
 
-class Close(PermCheckView):
+class Close(UserPermMixin, View):
     def get(self, request, **kwargs):
         project = Project.objects.get(pk=kwargs['pk'])
         if project.OPEN_STATUS == project.status:
@@ -218,11 +223,11 @@ class Close(PermCheckView):
             project.save()
         return redirect('project_detail', pk=project.id)
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.close_project', Project.objects.get(pk=self.kwargs['pk']))
+    def has_perm(self):
+        return self.request.user.has_perm('pm.close_project', Project.objects.get(pk=self.kwargs['pk']))
 
 
-class Reopen(PermCheckView):
+class Reopen(UserPermMixin, View):
     def get(self, request, **kwargs):
         project = Project.objects.get(pk=kwargs['pk'])
         if project.CLOSED_STATUS == project.status:
@@ -230,11 +235,11 @@ class Reopen(PermCheckView):
             project.save()
         return redirect('project_detail', pk=project.id)
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.close_project', Project.objects.get(pk=self.kwargs['pk']))
+    def has_perm(self):
+        return self.request.user.has_perm('pm.close_project', Project.objects.get(pk=self.kwargs['pk']))
 
 
-class ListMember(PermCheckView):
+class ListMember(UserPermMixin, View):
     template_name = 'project/settings/members.html'
 
     def get(self, request, *args, **kwargs):
@@ -274,11 +279,11 @@ class ListMember(PermCheckView):
         context['roles'] = Role.objects.all()
         return render(request, self.template_name, context)
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.manage_member', Project.objects.get(pk=self.kwargs['pk']))
+    def has_perm(self):
+        return self.request.user.has_perm('pm.manage_member', Project.objects.get(pk=self.kwargs['pk']))
 
 
-class DeleteMember(PermCheckView):
+class DeleteMember(UserPermMixin, View):
     def post(self, request, *args, **kwargs):
         project_id = kwargs['pk']
         name = None
@@ -300,11 +305,11 @@ class DeleteMember(PermCheckView):
 
         return redirect('member_list', pk=project_id)
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.manage_member', Project.objects.get(pk=self.kwargs['pk']))
+    def has_perm(self):
+        return self.request.user.has_perm('pm.manage_member', Project.objects.get(pk=self.kwargs['pk']))
 
 
-class CreateMember(PermCheckView):
+class CreateMember(UserPermMixin, View):
     def post(self, request, *args, **kwargs):
         project_id = kwargs['pk']
         users = request.POST.getlist('user')
@@ -325,8 +330,8 @@ class CreateMember(PermCheckView):
 
         return redirect('member_list', pk=project_id)
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.manage_member', Project.objects.get(pk=self.kwargs['pk']))
+    def has_perm(self):
+        return self.request.user.has_perm('pm.manage_member', Project.objects.get(pk=self.kwargs['pk']))
 
 
 class MemberRoles(View):
@@ -387,7 +392,7 @@ class MemberRoles(View):
         return redirect('member_list', pk=project_id)
 
 
-class Gantt(PermCheckView):
+class Gantt(UserPermMixin, View):
     def get(self, request, *args, **kwargs):
         project_id = kwargs['pk']
         project = Project.objects.get(id=project_id)
@@ -459,5 +464,5 @@ class Gantt(PermCheckView):
 
         return render(request, 'project/gantt.html', context)
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.read_gantt', Project.objects.get(pk=self.kwargs['pk']))
+    def has_perm(self):
+        return self.request.user.has_perm('pm.read_gantt', Project.objects.get(pk=self.kwargs['pk']))

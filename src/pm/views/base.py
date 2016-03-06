@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.contrib import messages
-
+from .auth import AnonPermMixin
 
 create_success_message = '%s was created successfully.'
 update_success_message = '%s was updated successfully.'
 delete_success_message = '%s was deleted successfully.'
 
 
-class homepage(View):
+class homepage(AnonPermMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'index.html')
 

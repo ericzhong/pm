@@ -7,6 +7,7 @@ from ..forms import UserForm, UpdateUserForm
 from ..models import Project, Role, Project_User_Role, User
 from .role import get_project_role_of_user, get_project_role_of_groups, get_user_roles_id, get_user_groups_roles_id
 from .base import CreateSuccessMessageMixin, DeleteSuccessMessageMixin, UpdateSuccessMessageMixin
+from .auth import SuperuserRequiredMixin
 import json
 
 
@@ -14,13 +15,13 @@ _model = User
 _form = UserForm
 
 
-class List(ListView):
+class List(SuperuserRequiredMixin, ListView):
     model = _model
     template_name = '_admin/users.html'
     context_object_name = 'users'
 
 
-class Detail(DetailView):
+class Detail(SuperuserRequiredMixin, DetailView):
     model = _model
     template_name = 'user_info.html'
     context_object_name = 'account'     # conflict with login 'user'
@@ -39,14 +40,14 @@ class Detail(DetailView):
         return context
 
 
-class Create(CreateSuccessMessageMixin, CreateView):
+class Create(SuperuserRequiredMixin, CreateSuccessMessageMixin, CreateView):
     model = _model
     form_class = _form
     template_name = '_admin/create_user.html'
     success_url = reverse_lazy('user_list')
 
 
-class Update(UpdateSuccessMessageMixin, UpdateView):
+class Update(SuperuserRequiredMixin, UpdateSuccessMessageMixin, UpdateView):
     model = _model
     template_name = '_admin/edit_user.html'
     form_class = UpdateUserForm
@@ -95,7 +96,7 @@ class Update(UpdateSuccessMessageMixin, UpdateView):
         return reverse_lazy('user_update', kwargs={'pk': self.object.id})
 
 
-class Delete(DeleteSuccessMessageMixin, DeleteView):
+class Delete(SuperuserRequiredMixin, DeleteSuccessMessageMixin, DeleteView):
     model = _model
     success_url = reverse_lazy('user_list')
 
@@ -103,7 +104,7 @@ class Delete(DeleteSuccessMessageMixin, DeleteView):
         return redirect('user_list')
 
 
-class Lock(View):
+class Lock(SuperuserRequiredMixin, View):
     def get(self, request, **kwargs):
         user = User.objects.get(pk=kwargs['pk'])
         if user.is_active:
@@ -112,7 +113,7 @@ class Lock(View):
         return redirect('user_list')
 
 
-class Unlock(View):
+class Unlock(SuperuserRequiredMixin, View):
     def get(self, request, **kwargs):
         user = User.objects.get(pk=kwargs['pk'])
         if not user.is_active:
@@ -121,7 +122,7 @@ class Unlock(View):
         return redirect('user_list')
 
 
-class JoinProjects(View):
+class JoinProjects(SuperuserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         user_id = kwargs['pk']
         projects = request.POST.getlist('project')
@@ -135,7 +136,7 @@ class JoinProjects(View):
         return HttpResponseRedirect(reverse('user_update', args=(user_id,))+'#tab_user_project')
 
 
-class QuitProject(View):
+class QuitProject(SuperuserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         user_id = kwargs['pk']
         project_id = kwargs['id']
@@ -143,7 +144,7 @@ class QuitProject(View):
         return HttpResponseRedirect(reverse('user_update', args=(user_id,))+'#tab_user_project')
 
 
-class JoinGroups(View):
+class JoinGroups(SuperuserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         pk = kwargs['pk']
         join_groups = request.POST.getlist('group')
@@ -152,7 +153,7 @@ class JoinGroups(View):
         return HttpResponseRedirect(reverse('user_update', args=(pk,))+'#tab_user_group')
 
 
-class QuitGroup(View):
+class QuitGroup(SuperuserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         User.groups.through.objects.filter(user_id=kwargs['pk'], group_id=kwargs['id']).delete()
         return HttpResponseRedirect(reverse('user_update', args=(kwargs['pk'],))+'#tab_user_group')

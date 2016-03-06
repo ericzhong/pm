@@ -6,12 +6,13 @@ from django.shortcuts import render
 from ..forms import UserAccountForm, UploadAvatarForm
 from ..models import Profile
 from .base import UpdateSuccessMessageMixin, update_success_message
+from .auth import UserPermMixin
 from django.conf import settings
 import os
 from PIL import Image
 
 
-class MyAccount(UpdateSuccessMessageMixin, UpdateView):
+class MyAccount(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
     model = User
     form_class = UserAccountForm
     template_name = 'my_account.html'
@@ -21,7 +22,7 @@ class MyAccount(UpdateSuccessMessageMixin, UpdateView):
         return self.request.user
 
 
-class MyAvatar(View):
+class MyAvatar(UserPermMixin, View):
 
     _AVATAR_MAX_WIDTH = 100
     _AVATAR_MAX_HEIGHT = 100

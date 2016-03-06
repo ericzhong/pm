@@ -1,23 +1,19 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import Permission
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
-from .setting import anonymous_access
-from .role import get_group_permissions, get_project_group_permissions, \
-    get_user_permissions, get_project_user_permissions
+from django.core.urlresolvers import reverse_lazy
 
 
 class AuthBackend(ModelBackend):
     def _get_user_permissions(self, user_obj, obj=None):
+        from .role import get_user_permissions, get_project_user_permissions
         if obj is None:
             return get_user_permissions(user_obj)
         else:
             return get_project_user_permissions(user_obj, obj)
 
     def _get_group_permissions(self, user_obj, obj=None):
+        from .role import get_group_permissions, get_project_group_permissions
         if obj is None:
             return get_group_permissions(user_obj)
         else:
@@ -56,138 +52,53 @@ class AuthBackend(ModelBackend):
         return perm in self.get_all_permissions(user_obj, obj)
 
 
-def admin_required(function=None):
-    actual_decorator = user_passes_test(
-        lambda u: u.is_authenticated() and u.is_active and u.is_superuser,
-        login_url='/',               # can not use reverse() in urlconf
-        redirect_field_name=None
-    )
-    if function:
-        return actual_decorator(function)
-    return actual_decorator
+def redirect_no_perm():
+    return redirect('status_403')
 
 
-def anonymous_perm(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
-    actual_decorator = user_passes_test(
-        lambda u: anonymous_access() or u.is_authenticated(),
-        login_url=login_url,
-        redirect_field_name=redirect_field_name
-    )
-    if function:
-        return actual_decorator(function)
-    return actual_decorator
+def redirect_login():
+    return redirect(reverse_lazy('login'))
 
 
-class PermCheckCreateView(CreateView):
-    def get(self, request, *args, **kwargs):
-        user = self.request.user
-        if user.is_authenticated and user.is_active and (user.is_superuser or self.has_perm(request, *args, **kwargs)):
-            return super(PermCheckCreateView, self).get(request, *args, **kwargs)
-        else:
-            return self.no_perm()
-
-    def post(self, request, *args, **kwargs):
-        user = self.request.user
-        if user.is_authenticated and user.is_active and (user.is_superuser or self.has_perm(request, *args, **kwargs)):
-            return super(PermCheckCreateView, self).post(request, *args, **kwargs)
-        else:
-            return self.no_perm()
-
-    def has_perm(self, request, *args, **kwargs):
-        return True
-
-    def no_perm(self):
-        return no_perm()
+def is_logged_in(user):
+    return user.is_authenticated()
 
 
-class PermCheckUpdateView(UpdateView):
-    def get(self, request, *args, **kwargs):
-        user = self.request.user
-        if user.is_authenticated and user.is_active and (user.is_superuser or self.has_perm(request, *args, **kwargs)):
-            return super(PermCheckUpdateView, self).get(request, *args, **kwargs)
-        else:
-            return self.no_perm()
-
-    def post(self, request, *args, **kwargs):
-        user = self.request.user
-        if user.is_authenticated and user.is_active and (user.is_superuser or self.has_perm(request, *args, **kwargs)):
-            return super(PermCheckUpdateView, self).post(request, *args, **kwargs)
-        else:
-            return self.no_perm()
-
-    def has_perm(self, request, *args, **kwargs):
-        return True
-
-    def no_perm(self):
-        return no_perm()
+def is_active(user):
+    return user.is_active
 
 
-class PermCheckListView(ListView):
-    def get(self, request, *args, **kwargs):
-        user = self.request.user
-        if user.is_authenticated and user.is_active and (user.is_superuser or self.has_perm(request, *args, **kwargs)):
-            return super(PermCheckListView, self).get(request, *args, **kwargs)
-        else:
-            return self.no_perm()
-
-    def has_perm(self, request, *args, **kwargs):
-        return True
-
-    def no_perm(self):
-        return no_perm()
+def is_superuser(user):
+    return user.is_superuser
 
 
-class PermCheckDetailView(DetailView):
-    def get(self, request, *args, **kwargs):
-        user = self.request.user
-        if user.is_authenticated and user.is_active and (user.is_superuser or self.has_perm(request, *args, **kwargs)):
-            return super(PermCheckDetailView, self).get(request, *args, **kwargs)
-        else:
-            return self.no_perm()
-
-    def has_perm(self, request, *args, **kwargs):
-        return True
-
-    def no_perm(self):
-        return no_perm()
-
-
-class PermCheckDeleteView(DeleteView):
-    def delete(self, request, *args, **kwargs):
-        user = self.request.user
-        if user.is_authenticated and user.is_active and (user.is_superuser or self.has_perm(request, *args, **kwargs)):
-            return super(PermCheckDeleteView, self).get(request, *args, **kwargs)
-        else:
-            return self.no_perm()
-
-    def post(self, request, *args, **kwargs):
-        user = self.request.user
-        if user.is_authenticated and user.is_active and (user.is_superuser or self.has_perm(request, *args, **kwargs)):
-            return super(PermCheckDeleteView, self).get(request, *args, **kwargs)
-        else:
-            return self.no_perm()
-
-    def has_perm(self, request, *args, **kwargs):
-        return True
-
-    def no_perm(self):
-        return no_perm()
-
-
-class PermCheckView(View):
+class UserPermMixin(object):
     def dispatch(self, request, *args, **kwargs):
         user = self.request.user
-        if user.is_authenticated and user.is_active and (user.is_superuser or self.has_perm(request, *args, **kwargs)):
-            return super(PermCheckView, self).dispatch(request, *args, **kwargs)
-        else:
-            return self.no_perm()
 
-    def has_perm(self, request, *args, **kwargs):
+        if not is_logged_in(user):
+            return redirect_login()
+
+        if not self.has_perm():
+            return redirect_no_perm()
+
+        return super(UserPermMixin, self).dispatch(request, *args, **kwargs)
+
+    def has_perm(self):
         return True
 
-    def no_perm(self):
-        return no_perm()
+
+class AnonPermMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        user = self.request.user
+
+        from .setting import anonymous_access
+        if not is_logged_in(user) and not anonymous_access():
+            return redirect_login()
+
+        return super(AnonPermMixin, self).dispatch(request, *args, **kwargs)
 
 
-def no_perm():
-    return redirect('status_403')
+class SuperuserRequiredMixin(UserPermMixin):
+    def has_perm(self):
+        return is_superuser(self.request.user)

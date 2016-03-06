@@ -1,16 +1,17 @@
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.views.generic import CreateView, UpdateView, View, ListView
 from django.http import HttpResponseRedirect
 from ..models import Project, IssueCategory
 from ..forms import IssueCategoryForm
 from .project import get_other_projects_html
-from .auth import PermCheckListView, PermCheckUpdateView, PermCheckView, PermCheckCreateView
+from .auth import UserPermMixin
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, delete_success_message
 
 _model = IssueCategory
 _form = IssueCategoryForm
 
 
-class Create(CreateSuccessMessageMixin, PermCheckCreateView):
+class Create(UserPermMixin, CreateSuccessMessageMixin, CreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_issue_category.html'
@@ -37,11 +38,11 @@ class Create(CreateSuccessMessageMixin, PermCheckCreateView):
         else:
             return reverse_lazy('issue_category_list', kwargs={'pk': self.kwargs['pk']})
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
+    def has_perm(self):
+        return self.request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
 
 
-class List(PermCheckListView):
+class List(UserPermMixin, ListView):
     model = _model
     template_name = 'project/settings/issue_categories.html'
     context_object_name = 'issue_categories'
@@ -53,11 +54,11 @@ class List(PermCheckListView):
         context['other_projects'] = get_other_projects_html(project_id)
         return context
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
+    def has_perm(self):
+        return self.request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
 
 
-class Update(UpdateSuccessMessageMixin, PermCheckUpdateView):
+class Update(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
     model = _model
     form_class = _form
     template_name = 'project/edit_issue_category.html'
@@ -81,12 +82,12 @@ class Update(UpdateSuccessMessageMixin, PermCheckUpdateView):
         project_id = IssueCategory.objects.get(pk=self.kwargs['pk']).project.id
         return reverse_lazy('issue_category_list', kwargs={'pk': project_id})
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.manage_issue_category',
-                                     IssueCategory.objects.get(pk=self.kwargs.get('pk')).project)
+    def has_perm(self):
+        return self.request.user.has_perm('pm.manage_issue_category',
+                                          IssueCategory.objects.get(pk=self.kwargs.get('pk')).project)
 
 
-class Delete(PermCheckView):
+class Delete(UserPermMixin, View):
     def post(self, request, *args, **kwargs):
         query_set = IssueCategory.objects.filter(pk=kwargs['pk'])
         name = str(query_set[0])
@@ -98,6 +99,6 @@ class Delete(PermCheckView):
 
         return HttpResponseRedirect(reverse('issue_category_list', kwargs={'pk': project_id}))
 
-    def has_perm(self, request, *args, **kwargs):
-        return request.user.has_perm('pm.manage_issue_category',
-                                     IssueCategory.objects.get(pk=self.kwargs.get('pk')).project)
+    def has_perm(self):
+        return self.request.user.has_perm('pm.manage_issue_category',
+                                          IssueCategory.objects.get(pk=self.kwargs.get('pk')).project)

@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from ..models import Role, Project_Group_Role, Project_User_Role, User
 from ..forms import RoleForm
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin
-
+from .auth import SuperuserRequiredMixin
 
 _model = Role
 _form = RoleForm
@@ -90,13 +90,13 @@ def get_project_group_permissions(user, project):
     return list(set([item.permission for item in Role.permissions.through.objects.filter(role_id__in=roles_id)]))
 
 
-class List(ListView):
+class List(SuperuserRequiredMixin, ListView):
     model = _model
     template_name = '_admin/roles.html'
     context_object_name = 'roles'
 
 
-class Create(CreateSuccessMessageMixin, CreateView):
+class Create(SuperuserRequiredMixin, CreateSuccessMessageMixin, CreateView):
     model = _model
     form_class = _form
     template_name = '_admin/create_role.html'
@@ -108,7 +108,7 @@ class Create(CreateSuccessMessageMixin, CreateView):
             return reverse_lazy('role_list')
 
 
-class Update(UpdateSuccessMessageMixin, UpdateView):
+class Update(SuperuserRequiredMixin, UpdateSuccessMessageMixin, UpdateView):
     model = _model
     form_class = _form
     template_name = '_admin/edit_role.html'
@@ -117,7 +117,7 @@ class Update(UpdateSuccessMessageMixin, UpdateView):
         return reverse_lazy('role_update', kwargs={'pk': self.object.id})
 
 
-class Delete(DeleteSuccessMessageMixin, DeleteView):
+class Delete(SuperuserRequiredMixin, DeleteSuccessMessageMixin, DeleteView):
     model = _model
     success_url = reverse_lazy('role_list')
 

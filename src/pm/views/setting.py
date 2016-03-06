@@ -1,7 +1,7 @@
 from django.views.generic import View
 from django.shortcuts import render
 from ..models import Setting as SettingModel
-
+from .auth import SuperuserRequiredMixin
 
 _settings = ['app_name',
              'welcome_text',
@@ -11,7 +11,7 @@ _settings = ['app_name',
              'file_display_size_limit']
 
 
-class Setting(View):
+class Setting(SuperuserRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         context = dict()
         context['data'] = { n.name: n.value for n in SettingModel.objects.all() }

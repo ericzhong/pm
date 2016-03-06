@@ -5,19 +5,19 @@ from django.shortcuts import redirect
 from ..models import IssueTag
 from ..forms import IssueTagForm
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin
-
+from .auth import SuperuserRequiredMixin
 
 _model = IssueTag
 _form = IssueTagForm
 
 
-class List(ListView):
+class List(SuperuserRequiredMixin, ListView):
     model = _model
     template_name = '_admin/issue_tags.html'
     context_object_name = 'issue_tags'
 
 
-class Create(CreateSuccessMessageMixin, CreateView):
+class Create(SuperuserRequiredMixin, CreateSuccessMessageMixin, CreateView):
     model = _model
     template_name = '_admin/create_issue_tag.html'
     form_class = _form
@@ -29,7 +29,7 @@ class Create(CreateSuccessMessageMixin, CreateView):
             return reverse_lazy('issue_tag_add')
 
 
-class Update(UpdateSuccessMessageMixin, UpdateView):
+class Update(SuperuserRequiredMixin, UpdateSuccessMessageMixin, UpdateView):
     model = _model
     template_name = '_admin/edit_issue_tag.html'
     form_class = _form
@@ -38,7 +38,7 @@ class Update(UpdateSuccessMessageMixin, UpdateView):
         return reverse_lazy('issue_tag_update', kwargs={'pk': self.object.id})
 
 
-class Delete(DeleteSuccessMessageMixin, DeleteView):
+class Delete(SuperuserRequiredMixin, DeleteSuccessMessageMixin, DeleteView):
     model = _model
     success_url = reverse_lazy('issue_tag_list')
 
