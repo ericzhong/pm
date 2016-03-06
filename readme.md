@@ -2,6 +2,11 @@
 
 PM is a Project Management platform.
 
+# Install Dependencies
+
+    pip install -r requirements.txt
+    bower install
+
 # Run
 
 ## Init Database
