@@ -54,6 +54,12 @@ class IssueForm(forms.ModelForm):
         return super(IssueForm, self).clean()
 
 
+class UpdateIssueForm(IssueForm):
+    class Meta:
+        model = Issue
+        exclude = ['created_on', 'updated_on', 'watchers', 'author']
+
+
 class IssueCategoryForm(forms.ModelForm):
     class Meta:
         model = IssueCategory
@@ -173,6 +179,13 @@ class RoleForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(),
         required=False
     )
+
+    def __init__(self, *args, **kwargs):
+        super(RoleForm, self).__init__(*args, **kwargs)
+        if self.instance.id == Role.ANONYMOUS_ROLE:
+            self.fields['permissions'].queryset = Permission.objects.filter(content_type__app_label='pm',
+                                                                            content_type__model='project',
+                                                                            codename__startswith="read_").order_by('id')
 
     class Meta:
         model = Role

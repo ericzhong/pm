@@ -17,7 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
-from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, setting, \
+from pm.views import user, project, issue, issue_status, issue_tag, version, group, role, settings, \
     issue_category, base, account
 
 urlpatterns = [
@@ -129,7 +129,7 @@ urlpatterns = [
     url(r'^roles/(?P<pk>\d+)/delete/$', role.Delete.as_view(), name='role_delete'),
 
     # settings
-    url(r'^settings/$', setting.Setting.as_view(), name='settings'),
+    url(r'^settings/$', settings.Setting.as_view(), name='settings'),
     url(r'^admin/$', project.Admin.as_view(), name='admin'),
     url(r'^admin/projects/$', project.Admin.as_view(), name='admin_project'),
 

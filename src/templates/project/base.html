@@ -43,7 +43,9 @@
           <div class="tabbable-line">
             <ul class="nav nav-tabs">
               <li id="tab_overview"><a href="{% url 'project_detail' project.id %}"> 概述 </a></li>
-              <li id="tab_roadmap"><a href="{% url 'version_roadmap' project.id %}"> 路线图 </a></li>
+              {% if 'pm.read_version' in permissions or 'pm.manage_version' in permissions %}
+                <li id="tab_roadmap"><a href="{% url 'version_roadmap' project.id %}"> 路线图 </a></li>
+              {% endif %}
               {% if 'pm.read_issue' in permissions %}
                 <li id="tab_issues"><a href="{% url 'issue_list' project.id %}"> 问题 </a></li>
               {% endif %}
@@ -56,7 +58,7 @@
               <li id="tab_documents"><a href="/projects/1/documents"> 文档 </a></li>
               -->
               {% if project.CLOSED_STATUS != project.status %}
-                {% if perms.pm.change_project or 'pm.manage_member' in permissions or 'pm.manage_version' in permissions or 'pm.manage_issue_category' in permissions %}
+                {% if user.is_superuser or 'pm.change_project' in permissions or 'pm.manage_member' in permissions or 'pm.manage_version' in permissions or 'pm.manage_issue_category' in permissions %}
                   <li id="tab_settings"><a href="{% url 'project_settings' project.id %}"> 配置 </a></li>
                 {% endif %}
               {% endif %}

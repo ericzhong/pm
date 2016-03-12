@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from django.shortcuts import redirect, HttpResponseRedirect, HttpResponse
 from ..forms import GroupForm
 from ..models import Project, Role, Project_Group_Role, User
-from .role import get_group_roles_id, get_project_role_of_group
+from .role import get_group_roles_id, get_project_role_of_group, get_active_roles
 from .base import CreateSuccessMessageMixin, DeleteSuccessMessageMixin, UpdateSuccessMessageMixin
 from .auth import SuperuserRequiredMixin
 import json
@@ -61,7 +61,7 @@ class Update(SuperuserRequiredMixin, UpdateSuccessMessageMixin, UpdateView):
         joined_projects = list(set([ i[0].id for i in project_role_of_group ]))
         context['not_joined_projects'] = Project.objects.all().exclude(id__in=joined_projects)
 
-        context['roles'] = Role.objects.all()
+        context['roles'] = get_active_roles()
         return context
 
     def get_success_url(self):
@@ -118,7 +118,7 @@ class Roles(View):
         group_id = kwargs['pk']
         project_id = kwargs['id']
         data = dict()
-        data['all'] = [ {'id':n.id, 'name':n.name} for n in Role.objects.all() ]
+        data['all'] = [{'id': n.id, 'name': n.name} for n in get_active_roles()]
         data['selected'] = list(get_group_roles_id(project_id, group_id))
         return HttpResponse(json.dumps(data), content_type="application/json")
 

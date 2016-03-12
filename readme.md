@@ -12,10 +12,8 @@ PM is a Project Management platform.
 ## Init Database
 
     cd src
-    python initial_data.py
-    python manage.py makemigrations pm
-    python manage.py migrate --no-initial-data
-    python manage.py loaddata initial_data.yaml
+    python manage.py migrate
+    python init_db.py
 
 ## Create Super User
 

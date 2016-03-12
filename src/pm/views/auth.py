@@ -5,6 +5,11 @@ from django.core.urlresolvers import reverse_lazy
 
 
 class AuthBackend(ModelBackend):
+
+    def _get_anon_permissions(self, user_obj, obj=None):
+        from .role import get_anon_permissions
+        return get_anon_permissions()
+
     def _get_user_permissions(self, user_obj, obj=None):
         from .role import get_user_permissions, get_project_user_permissions
         if obj is None:
@@ -25,9 +30,6 @@ class AuthBackend(ModelBackend):
         be either "group" or "user" to return permissions from
         `_get_group_permissions` or `_get_user_permissions` respectively.
         """
-        if not user_obj.is_active or user_obj.is_anonymous():
-            return set()
-
         perm_cache_name = '_%s_perm_cache' % from_name
         if not hasattr(user_obj, perm_cache_name):
             if user_obj.is_superuser:
@@ -38,17 +40,21 @@ class AuthBackend(ModelBackend):
             setattr(user_obj, perm_cache_name, set("%s.%s" % (ct, name) for ct, name in perms))
         return getattr(user_obj, perm_cache_name)
 
+    def get_anon_permissions(self, user_obj, obj=None):
+        return self._get_permissions(user_obj, obj, 'anon')
+
     def get_all_permissions(self, user_obj, obj=None):
-        if not user_obj.is_active or user_obj.is_anonymous():
-            return set()
         if not hasattr(user_obj, '_perm_cache'):
-            user_obj._perm_cache = self.get_user_permissions(user_obj, obj)
-            user_obj._perm_cache.update(self.get_group_permissions(user_obj, obj))
+            if user_obj.is_anonymous():
+                user_obj._perm_cache = self.get_anon_permissions(user_obj, obj)
+            else:
+                if not user_obj.is_active:
+                    return set()
+                user_obj._perm_cache = self.get_user_permissions(user_obj, obj)
+                user_obj._perm_cache.update(self.get_group_permissions(user_obj, obj))
         return user_obj._perm_cache
 
     def has_perm(self, user_obj, perm, obj=None):       # obj is project or None
-        if not user_obj.is_active:
-            return False
         return perm in self.get_all_permissions(user_obj, obj)
 
 
@@ -60,45 +66,37 @@ def redirect_login():
     return redirect(reverse_lazy('login'))
 
 
-def is_logged_in(user):
-    return user.is_authenticated()
+def has_no_perm(user):
+    if user.is_authenticated():
+        return redirect_no_perm()
+    else:
+        return redirect_login()
 
 
-def is_active(user):
-    return user.is_active
-
-
-def is_superuser(user):
-    return user.is_superuser
-
-
-class UserPermMixin(object):
+class PermissionMixin(object):
     def dispatch(self, request, *args, **kwargs):
         user = self.request.user
 
-        if not is_logged_in(user):
+        from .settings import allow_anonymous_access
+        if not user.is_authenticated() and not allow_anonymous_access():
             return redirect_login()
 
         if not self.has_perm():
-            return redirect_no_perm()
+            return has_no_perm(self.request.user)
 
-        return super(UserPermMixin, self).dispatch(request, *args, **kwargs)
+        return super(PermissionMixin, self).dispatch(request, *args, **kwargs)
 
     def has_perm(self):
         return True
 
 
-class AnonPermMixin(object):
-    def dispatch(self, request, *args, **kwargs):
-        user = self.request.user
-
-        from .setting import anonymous_access
-        if not is_logged_in(user) and not anonymous_access():
-            return redirect_login()
-
-        return super(AnonPermMixin, self).dispatch(request, *args, **kwargs)
-
-
-class SuperuserRequiredMixin(UserPermMixin):
+class SuperuserRequiredMixin(PermissionMixin):
     def has_perm(self):
-        return is_superuser(self.request.user)
+        user = self.request.user
+        return user.is_superuser and user.is_active
+
+
+class LoginRequiredMixin(PermissionMixin):
+    def has_perm(self):
+        user = self.request.user
+        return user.is_authenticated() and user.is_active

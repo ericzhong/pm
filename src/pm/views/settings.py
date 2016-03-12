@@ -30,5 +30,5 @@ class Setting(SuperuserRequiredMixin, View):
         return render(request, '_admin/settings.html', context=context)
 
 
-def anonymous_access():
-    return False     # TODO: data from settings
+def allow_anonymous_access():
+    return True     # TODO: data from settings

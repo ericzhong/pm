@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from ..models import Version, Project
 from ..forms import VersionForm
 from .project import get_other_projects_html
-from .auth import UserPermMixin, AnonPermMixin
+from .auth import PermissionMixin, PermissionMixin
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, delete_success_message, decorate_object
 
 _model = Version
@@ -22,7 +22,7 @@ def _get_back_url(view, version_id=None, project_id=None):
             return reverse_lazy('version_roadmap', kwargs={'pk': project_id})
 
 
-class Create(UserPermMixin, CreateSuccessMessageMixin, CreateView):
+class Create(PermissionMixin, CreateSuccessMessageMixin, CreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_version.html'
@@ -48,10 +48,12 @@ class Create(UserPermMixin, CreateSuccessMessageMixin, CreateView):
         return _get_back_url(self, project_id=self.kwargs['pk'])
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.manage_version', Project.objects.get(pk=self.kwargs.get('pk')))
+        user = self.request.user
+        return user.is_authenticated() and \
+            user.has_perm('pm.manage_version', Project.objects.get(pk=self.kwargs.get('pk')))
 
 
-class List(UserPermMixin, ListView):
+class List(PermissionMixin, ListView):
     model = _model
     template_name = 'project/settings/versions.html'
     context_object_name = 'versions'
@@ -67,10 +69,12 @@ class List(UserPermMixin, ListView):
         return Version.objects.filter(project__id=self.kwargs.get('pk')).order_by('id')
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.manage_version', Project.objects.get(pk=self.kwargs.get('pk')))
+        user = self.request.user
+        project = Project.objects.get(pk=self.kwargs.get('pk'))
+        return user.has_perm('pm.manage_version', project)
 
 
-class Update(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
+class Update(PermissionMixin, UpdateSuccessMessageMixin, UpdateView):
     model = _model
     form_class = _form
     template_name = 'project/edit_version.html'
@@ -101,7 +105,7 @@ class Update(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
         return self.request.user.has_perm('pm.manage_version', Version.objects.get(pk=self.kwargs['pk']).project)
 
 
-class Detail(AnonPermMixin, DetailView):
+class Detail(PermissionMixin, DetailView):
     model = _model
     template_name = 'project/version_info.html'
     context_object_name = 'version'
@@ -114,8 +118,13 @@ class Detail(AnonPermMixin, DetailView):
         context['IssueStatus'] = IssueStatus
         return context
 
+    def has_perm(self):
+        user = self.request.user
+        project = Version.objects.get(pk=self.request['pk']).project
+        return user.has_perm('pm.read_version', project) or user.has_perm('pm.manage_version', project)
 
-class Delete(UserPermMixin, View):
+
+class Delete(PermissionMixin, View):
     def post(self, request, *args, **kwargs):
         query_set = Version.objects.filter(pk=kwargs['pk'])
         project_id = query_set[0].project.id
@@ -130,7 +139,7 @@ class Delete(UserPermMixin, View):
         return self.request.user.has_perm('pm.manage_version', Version.objects.get(pk=self.kwargs['pk']).project)
 
 
-class Roadmap(AnonPermMixin, ListView):
+class Roadmap(PermissionMixin, ListView):
     model = _model
     template_name = 'project/roadmap.html'
     context_object_name = 'versions'
@@ -143,3 +152,8 @@ class Roadmap(AnonPermMixin, ListView):
         from ..models import IssueStatus
         context['IssueStatus'] = IssueStatus
         return context
+
+    def has_perm(self):
+        user = self.request.user
+        project = Project.objects.get(pk=self.kwargs['pk'])
+        return user.has_perm('pm.read_version', project) or user.has_perm('pm.manage_version', project)

@@ -4,15 +4,15 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Sum
 from django.shortcuts import render, redirect
-from ..forms import IssueForm, CommentForm, WorktimeForm, WorktimeBlankForm, CommentBlankForm, AllIssuesForm
+from ..forms import IssueForm, CommentForm, WorktimeForm, WorktimeBlankForm, CommentBlankForm, AllIssuesForm, \
+    UpdateIssueForm
 from ..models import Issue, Comment, Worktime, Project, IssueStatus
 from ..utils import Helper
 from .project import get_other_projects_html
-from .auth import UserPermMixin
+from .auth import PermissionMixin, redirect_no_perm, LoginRequiredMixin
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, \
     update_success_message, delete_success_message
 import time
-
 
 _model = Issue
 _form = IssueForm
@@ -20,7 +20,7 @@ _worktime_form_prefix = 'worktime'
 _comment_form_prefix = 'comment'
 
 
-class Create(UserPermMixin, CreateSuccessMessageMixin, CreateView):
+class Create(PermissionMixin, CreateSuccessMessageMixin, CreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_issue.html'
@@ -49,13 +49,15 @@ class Create(UserPermMixin, CreateSuccessMessageMixin, CreateView):
         return context
 
     def get_success_url(self):
-        return self.request.GET.get('redirect', None) or reverse_lazy('issue_list', kwargs={'pk': self.kwargs.get('pk')})
+        return self.request.GET.get('redirect', None) or reverse_lazy('issue_list',
+                                                                      kwargs={'pk': self.kwargs.get('pk')})
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.add_issue', Project.objects.get(pk=self.kwargs['pk']))
+        user = self.request.user
+        return user.is_authenticated() and user.has_perm('pm.add_issue', Project.objects.get(pk=self.kwargs['pk']))
 
 
-class List(UserPermMixin, ListView):
+class List(PermissionMixin, ListView):
     model = _model
     template_name = 'project/issues.html'
     context_object_name = 'issues'
@@ -74,7 +76,7 @@ class List(UserPermMixin, ListView):
         return self.request.user.has_perm('pm.read_issue', Project.objects.get(pk=self.kwargs['pk']))
 
 
-class Detail(UserPermMixin, DetailView):
+class Detail(PermissionMixin, DetailView):
     model = _model
     template_name = 'project/issue_info.html'
     context_object_name = 'issue'
@@ -87,7 +89,7 @@ class Detail(UserPermMixin, DetailView):
         context['comments'] = Comment.objects.filter(issue=self.object)
         context['comment_form'] = CommentForm(prefix=_comment_form_prefix)
         context['worktime_form'] = WorktimeForm(prefix=_worktime_form_prefix)
-        context['spent_time'] = Worktime.objects.filter(issue=self.object)\
+        context['spent_time'] = Worktime.objects.filter(issue=self.object) \
                                     .aggregate(Sum('hours')).get('hours__sum', 0) or 0
         context['form'] = _form(instance=self.object)
         context['subissues'] = Issue.objects.filter(parent=self.object)
@@ -98,7 +100,7 @@ class Detail(UserPermMixin, DetailView):
         return self.request.user.has_perm('pm.read_issue', Issue.objects.get(pk=self.kwargs['pk']).project)
 
 
-class Update(UserPermMixin, View):
+class Update(PermissionMixin, View):
     def __init__(self, **kwargs):
         self.object = None
         super(Update, self).__init__(**kwargs)
@@ -112,47 +114,59 @@ class Update(UserPermMixin, View):
 
     def get(self, request, *args, **kwargs):
         self.get_object()
+
+        user = self.request.user
+        if not user.has_perm('pm.change_issue', self.object.project) and \
+                not user.has_perm('pm.add_worktime', self.object.project) and \
+                not user.has_perm('pm.add_comment', self.object.project):
+            return redirect_no_perm()
+
         context = dict()
         context['issue'] = self.object
         context['project'] = self.object.project
-        context['form'] = _form(instance=self.object)
+        context['form'] = UpdateIssueForm(instance=self.object)
         context['worktime_form'] = WorktimeBlankForm(prefix=_worktime_form_prefix)
         context['comment_form'] = CommentBlankForm(prefix=_comment_form_prefix)
         return render(request, 'project/edit_issue.html', context)
 
     def post(self, request, *args, **kwargs):
         self.get_object()
+
+        user = self.request.user
+        if not user.has_perm('pm.change_issue', self.object.project) and \
+                not user.has_perm('pm.add_worktime', self.object.project) and \
+                not user.has_perm('pm.add_comment', self.object.project):
+            return redirect_no_perm()
+
         error = False
         context = dict()
 
-        if self.request.user.has_perm('pm.change_issue', self.object.project):
-            post = self.request.POST.copy()
-            post.update({'author': self.request.user.id})
-            form = _form(post, instance=self.object)
+        if user.has_perm('pm.change_issue', self.object.project):
+            form = UpdateIssueForm(self.request.POST, instance=self.object)      # instance to update
             if form.is_valid():
                 form.save()
             else:
                 error = True
                 context['form'] = form
 
-        if self.request.user.has_perm('pm.add_worktime', self.object.project):
+        if user.has_perm('pm.add_worktime', self.object.project):
             worktime_form = WorktimeBlankForm(self.request.POST, prefix=_worktime_form_prefix)
             if worktime_form.is_valid() and not error:
                 if worktime_form.cleaned_data['hours']:
                     worktime_form.cleaned_data['issue'] = self.object
-                    worktime_form.cleaned_data['author'] = self.request.user
+                    worktime_form.cleaned_data['author'] = user
                     worktime_form.cleaned_data['date'] = time.strftime("%Y-%m-%d")
                     Worktime(**worktime_form.cleaned_data).save()
             else:
                 error = True
                 context['worktime_form'] = worktime_form
 
-        if self.request.user.has_perm('pm.add_comment', self.object.project):
+        if user.has_perm('pm.add_comment', self.object.project):
             comment_form = CommentBlankForm(self.request.POST, prefix=_comment_form_prefix)
             if comment_form.is_valid() and not error:
                 if comment_form.cleaned_data['content']:
                     comment_form.cleaned_data['issue'] = self.object
-                    comment_form.cleaned_data['author'] = self.request.user
+                    comment_form.cleaned_data['author'] = user
                     Comment(**comment_form.cleaned_data).save()
             else:
                 error = True
@@ -169,7 +183,7 @@ class Update(UserPermMixin, View):
             return redirect('issue_detail', pk=kwargs['pk'])
 
 
-class Delete(UserPermMixin, View):
+class Delete(PermissionMixin, View):
     def post(self, request, *args, **kwargs):
         issues = Issue.objects.filter(pk=kwargs['pk'])
         project_id = issues[0].project.id
@@ -181,10 +195,13 @@ class Delete(UserPermMixin, View):
         return HttpResponseRedirect(reverse('issue_list', kwargs={'pk': project_id}))
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.delete_issue', Issue.objects.get(pk=self.kwargs['pk']).project)
+        issue = Issue.objects.get(pk=self.kwargs['pk'])
+        user = self.request.user
+        return user.has_perm('pm.delete_issue', issue.project) or \
+            (user.has_perm('pm.delete_own_issue', issue.project) and issue.author == user)
 
 
-class CommentUpdate(UserPermMixin, View):
+class CommentUpdate(PermissionMixin, View):
     def post(self, request, *args, **kwargs):
         pk = kwargs['pk']
         issue_id = Comment.objects.get(pk=pk).issue.id
@@ -193,17 +210,22 @@ class CommentUpdate(UserPermMixin, View):
         if comment_form.is_valid():
             Comment.objects.filter(pk=pk).update(**comment_form.cleaned_data)
 
-        return HttpResponseRedirect(reverse('issue_detail', kwargs={'pk':issue_id}))
+        return HttpResponseRedirect(reverse('issue_detail', kwargs={'pk': issue_id}))
 
     def has_perm(self):
+        user = self.request.user
         comment = Comment.objects.get(pk=self.kwargs['pk'])
-        return self.request.user.has_perm('pm.change_comment', comment.issue.project) or comment.author == request.user
+        if user.has_perm('pm.change_comment', comment.issue.project):
+            return True
+        return user.is_authenticated() and \
+            user.has_perm('pm.change_own_comment', comment.issue.project) and \
+            comment.author == user
 
 
-class Quote(UserPermMixin, View):
+class Quote(PermissionMixin, View):
     def get(self, request, *args, **kwargs):
         data = dict()
-        comment_id = request.GET.get('comment', None)             # URL?comment=id
+        comment_id = request.GET.get('comment', None)  # URL?comment=id
         if comment_id is not None:
             comment = Comment.objects.get(pk=comment_id)
             data['content'] = "%s wrote:\n%s" % (comment.author.username, Helper.quote(comment.content))
@@ -211,8 +233,13 @@ class Quote(UserPermMixin, View):
             data['content'] = ""
         return JsonResponse(data)
 
+    def has_perm(self):
+        user = self.request.user
+        return user.is_authenticated() and \
+            user.has_perm('pm.add_comment', Issue.objects.get(pk=self.request['pk']).project)
 
-class WorktimeList(UserPermMixin, View):
+
+class WorktimeList(PermissionMixin, View):
     model = Worktime
     template_name = 'project/worktimes.html'
     context_object_name = 'worktimes'
@@ -232,7 +259,7 @@ class WorktimeList(UserPermMixin, View):
         return self.request.user.has_perm('pm.read_worktime', Issue.objects.get(pk=self.kwargs['pk']).project)
 
 
-class WorktimeCreate(UserPermMixin, CreateSuccessMessageMixin, CreateView):
+class WorktimeCreate(PermissionMixin, CreateSuccessMessageMixin, CreateView):
     model = Worktime
     form_class = WorktimeForm
     template_name = 'project/create_worktime.html'
@@ -266,10 +293,12 @@ class WorktimeCreate(UserPermMixin, CreateSuccessMessageMixin, CreateView):
         return kwargs
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.add_worktime', Issue.objects.get(pk=self.kwargs['pk']).project)
+        user = self.request.user
+        return user.is_authenticated() and \
+            user.has_perm('pm.add_worktime', Issue.objects.get(pk=self.kwargs['pk']).project)
 
 
-class WorktimeUpdate(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
+class WorktimeUpdate(PermissionMixin, UpdateSuccessMessageMixin, UpdateView):
     model = Worktime
     form_class = WorktimeForm
     template_name = 'project/edit_worktime.html'
@@ -299,11 +328,13 @@ class WorktimeUpdate(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
         worktime = Worktime.objects.get(pk=self.kwargs['pk'])
         project = worktime.issue.project
         user = self.request.user
-        return user.has_perm('pm.change_worktime', project) or \
-            (user.has_perm('pm.change_own_worktime', project) and user == worktime.author)
+        if user.has_perm('pm.change_worktime', project):
+            return True
+        return user.is_authenticated() and \
+            user.has_perm('pm.change_own_worktime', project) and user == worktime.author
 
 
-class WorktimeDelete(UserPermMixin, View):
+class WorktimeDelete(PermissionMixin, View):
     def post(self, request, *args, **kwargs):
         query_set = Worktime.objects.filter(pk=kwargs['pk'])
         issue_id = query_set[0].issue.id
@@ -318,11 +349,13 @@ class WorktimeDelete(UserPermMixin, View):
         worktime = Worktime.objects.get(pk=self.kwargs['pk'])
         project = worktime.issue.project
         user = self.request.user
-        return user.has_perm('pm.change_worktime', project) or \
-            (user.has_perm('pm.change_own_worktime', project) and user == worktime.author)
+        if user.has_perm('pm.delete_worktime', project):
+            return True
+        return user.is_authenticated() and \
+            user.has_perm('pm.delete_own_worktime', project) and user == worktime.author
 
 
-class AllIssues(ListView):
+class AllIssues(PermissionMixin, ListView):
     model = _model
     template_name = 'all_issues.html'
     context_object_name = 'issues'
@@ -378,26 +411,28 @@ class AllIssues(ListView):
 
         return issues
 
+    def has_perm(self):
+        return self.request.user.has_perm("pm.read_issue")
 
-class Watch(UserPermMixin, View):
+
+class Watch(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         pk = kwargs['pk']
         Issue.watchers.through.objects.get_or_create(user=self.request.user, issue_id=pk)
         return redirect('issue_detail', pk=pk)
 
 
-class Unwatch(UserPermMixin, View):
+class Unwatch(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         pk = kwargs['pk']
         Issue.watchers.through.objects.filter(user=self.request.user, issue_id=pk).delete()
         return redirect('issue_detail', pk=pk)
 
 
-class MyPage(UserPermMixin, View):
+class MyPage(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         context = dict()
         context['assigned_issues'] = Issue.objects.filter(assigned_to=self.request.user)
         # context['watch_issues'] = [n.issue for n in Issue.watchers.through.objects.filter(user=self.request.user)]
         context['watch_issues'] = Issue.objects.filter(watchers=self.request.user)
         return render(request, 'my_page.html', context)
-

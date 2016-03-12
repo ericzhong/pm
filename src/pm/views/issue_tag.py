@@ -1,7 +1,7 @@
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import redirect, HttpResponseRedirect
 from ..models import IssueTag
 from ..forms import IssueTagForm
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin
@@ -44,3 +44,9 @@ class Delete(SuperuserRequiredMixin, DeleteSuccessMessageMixin, DeleteView):
 
     def get(self, request, *args, **kwargs):
         return redirect('issue_tag_list')
+
+    def delete(self, request, *args, **kwargs):
+        if int(self.kwargs['pk']) in IssueTag.UNDELETABLE:
+            return HttpResponseRedirect(self.success_url)
+        else:
+            return super(Delete, self).delete(request, *args, **kwargs)

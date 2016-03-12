@@ -5,7 +5,8 @@ from django.contrib.auth.models import Group
 from django.shortcuts import redirect, HttpResponseRedirect, HttpResponse
 from ..forms import UserForm, UpdateUserForm
 from ..models import Project, Role, Project_User_Role, User
-from .role import get_project_role_of_user, get_project_role_of_groups, get_user_roles_id, get_user_groups_roles_id
+from .role import get_project_role_of_user, get_project_role_of_groups, get_user_roles_id, get_user_groups_roles_id, \
+    get_active_roles
 from .base import CreateSuccessMessageMixin, DeleteSuccessMessageMixin, UpdateSuccessMessageMixin
 from .auth import SuperuserRequiredMixin
 import json
@@ -89,7 +90,7 @@ class Update(SuperuserRequiredMixin, UpdateSuccessMessageMixin, UpdateView):
         groups = Group.objects.all()
         context['not_joined_groups'] = list(set(groups)-set(context['joined_groups']))
 
-        context['roles'] = Role.objects.all()
+        context['roles'] = get_active_roles()
         return context
 
     def get_success_url(self):
@@ -165,7 +166,7 @@ class Roles(View):
         project_id = kwargs['id']
 
         data = dict()
-        data['all'] = [ {'id':n.id, 'name':n.name} for n in Role.objects.all() ]
+        data['all'] = [{'id': n.id, 'name': n.name} for n in get_active_roles()]
         data['selected'] = list(set(get_user_roles_id(project_id, user_id) +
                                     get_user_groups_roles_id(project_id, user_id)))
         data['disabled'] = list(get_user_groups_roles_id(project_id, user_id))

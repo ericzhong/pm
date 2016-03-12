@@ -7,11 +7,11 @@ from django.http import HttpResponse
 from ..models import Project, Role, Project_Group_Role, Project_User_Role, Issue
 from ..forms import ProjectForm, UpdateProjectForm
 from .role import get_user_roles_id, get_role_users, get_role_user, get_user_groups_roles_id, \
-    get_role_user_of_groups, check_user_in_groups, get_role_group, get_group_roles_id
+    get_role_user_of_groups, check_user_in_groups, get_role_group, get_group_roles_id, get_active_roles
 import json
 from ..utils import Helper
 from ..models import User
-from .auth import UserPermMixin, SuperuserRequiredMixin, AnonPermMixin, is_superuser, redirect_no_perm
+from .auth import PermissionMixin, SuperuserRequiredMixin, redirect_no_perm, has_no_perm
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin, \
     delete_success_message, create_success_message, decorate_object, update_success_message
 
@@ -61,7 +61,7 @@ def get_other_projects_html(project_id):
     return get_html.text
 
 
-class List(AnonPermMixin, ListView):
+class List(PermissionMixin, ListView):
     model = _model
     template_name = 'project_list.html'
     context_object_name = 'projects'
@@ -97,7 +97,7 @@ class List(AnonPermMixin, ListView):
         return get_html.text
 
 
-class Detail(AnonPermMixin, DetailView):
+class Detail(PermissionMixin, DetailView):
     model = _model
     template_name = 'project/overview.html'
     context_object_name = 'project'
@@ -112,7 +112,7 @@ class Detail(AnonPermMixin, DetailView):
         return context
 
 
-class Create(UserPermMixin, CreateSuccessMessageMixin, CreateView):
+class Create(SuperuserRequiredMixin, CreateSuccessMessageMixin, CreateView):
     model = _model
     template_name = 'create_project.html'
     form_class = _form
@@ -149,15 +149,8 @@ class Create(UserPermMixin, CreateSuccessMessageMixin, CreateView):
         else:
             return reverse_lazy('project_list')
 
-    def has_perm(self):
-        user = self.request.user
-        if 'parent' in self.request.GET:
-            return user.has_perm('pm.add_subproject', Project.objects.get(pk=self.request.GET['parent']))
-        else:
-            return user.has_perm('pm.add_project')
 
-
-class Update(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
+class Update(PermissionMixin, UpdateSuccessMessageMixin, UpdateView):
     model = _model
     template_name = 'project/settings/info.html'
     form_class = UpdateProjectForm
@@ -176,7 +169,8 @@ class Update(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
         return context
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.change_project', Project.objects.get(pk=self.kwargs['pk']))
+        user = self.request.user
+        return user.has_perm('pm.change_project', Project.objects.get(pk=self.kwargs['pk']))
 
 
 class Admin(SuperuserRequiredMixin, ListView):
@@ -185,37 +179,34 @@ class Admin(SuperuserRequiredMixin, ListView):
     context_object_name = 'projects'
 
 
-class Delete(UserPermMixin, DeleteSuccessMessageMixin, DeleteView):
+class Delete(SuperuserRequiredMixin, DeleteSuccessMessageMixin, DeleteView):
     model = _model
     template_name = '_admin/delete_project.html'
     success_url = reverse_lazy('admin_project')
 
-    def has_perm(self):
-        user = self.request.user
-        return is_superuser(user) or user.has_perm('pm.delete_project', Project.objects.get(pk=self.kwargs['pk']))
 
-
-class Settings(UserPermMixin, View):
+class Settings(PermissionMixin, View):
     def get(self, request, *args, **kwargs):
         pk = kwargs['pk']
+        user = self.request.user
 
-        if request.user.has_perm('pm.change_project'):
+        if user.has_perm('pm.change_project'):
             return redirect('project_update', pk=kwargs['pk'])
 
-        elif request.user.has_perm('pm.manage_member', Project.objects.get(pk=pk)):
+        elif user.has_perm('pm.manage_member', Project.objects.get(pk=pk)):
             return redirect('member_list', pk=kwargs['pk'])
 
-        elif request.user.has_perm('pm.manage_version', Project.objects.get(pk=pk)):
+        elif user.has_perm('pm.manage_version', Project.objects.get(pk=pk)):
             return redirect('version_list', pk=kwargs['pk'])
 
-        elif request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=pk)):
+        elif user.has_perm('pm.manage_issue_category', Project.objects.get(pk=pk)):
             return redirect('issue_category_list', pk=kwargs['pk'])
 
         else:
-            return redirect_no_perm()
+            return has_no_perm(user)
 
 
-class Close(UserPermMixin, View):
+class Close(PermissionMixin, View):
     def get(self, request, **kwargs):
         project = Project.objects.get(pk=kwargs['pk'])
         if project.OPEN_STATUS == project.status:
@@ -227,7 +218,7 @@ class Close(UserPermMixin, View):
         return self.request.user.has_perm('pm.close_project', Project.objects.get(pk=self.kwargs['pk']))
 
 
-class Reopen(UserPermMixin, View):
+class Reopen(PermissionMixin, View):
     def get(self, request, **kwargs):
         project = Project.objects.get(pk=kwargs['pk'])
         if project.CLOSED_STATUS == project.status:
@@ -239,7 +230,7 @@ class Reopen(UserPermMixin, View):
         return self.request.user.has_perm('pm.close_project', Project.objects.get(pk=self.kwargs['pk']))
 
 
-class ListMember(UserPermMixin, View):
+class ListMember(PermissionMixin, View):
     template_name = 'project/settings/members.html'
 
     def get(self, request, *args, **kwargs):
@@ -276,14 +267,16 @@ class ListMember(UserPermMixin, View):
         context['not_joined_users'] = User.objects.all().exclude(id__in=list(set(users_id + users_id_of_groups)))
         context['not_joined_groups'] = Group.objects.all().exclude(id__in=groups_id)
 
-        context['roles'] = Role.objects.all()
+        context['roles'] = get_active_roles()
         return render(request, self.template_name, context)
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.manage_member', Project.objects.get(pk=self.kwargs['pk']))
+        project = Project.objects.get(pk=self.kwargs['pk'])
+        user = self.request.user
+        return user.has_perm('pm.manage_member', project)
 
 
-class DeleteMember(UserPermMixin, View):
+class DeleteMember(PermissionMixin, View):
     def post(self, request, *args, **kwargs):
         project_id = kwargs['pk']
         name = None
@@ -309,7 +302,7 @@ class DeleteMember(UserPermMixin, View):
         return self.request.user.has_perm('pm.manage_member', Project.objects.get(pk=self.kwargs['pk']))
 
 
-class CreateMember(UserPermMixin, View):
+class CreateMember(PermissionMixin, View):
     def post(self, request, *args, **kwargs):
         project_id = kwargs['pk']
         users = request.POST.getlist('user')
@@ -339,7 +332,7 @@ class MemberRoles(View):
         project_id = kwargs['pk']
 
         data = dict()
-        data['all'] = [ {'id':n.id, 'name':n.name} for n in Role.objects.all() ]
+        data['all'] = [{'id': n.id, 'name': n.name} for n in get_active_roles()]
 
         if 'user_id' in request.GET:
             user_id = request.GET['user_id']
@@ -392,7 +385,7 @@ class MemberRoles(View):
         return redirect('member_list', pk=project_id)
 
 
-class Gantt(UserPermMixin, View):
+class Gantt(PermissionMixin, View):
     def get(self, request, *args, **kwargs):
         project_id = kwargs['pk']
         project = Project.objects.get(id=project_id)

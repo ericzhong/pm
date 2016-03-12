@@ -90,6 +90,14 @@ def get_project_group_permissions(user, project):
     return list(set([item.permission for item in Role.permissions.through.objects.filter(role_id__in=roles_id)]))
 
 
+def get_anon_permissions():
+    return [item.permission for item in Role.permissions.through.objects.filter(role__id=Role.ANONYMOUS_ROLE)]
+
+
+def get_active_roles():
+    return Role.objects.all().exclude(id=Role.ANONYMOUS_ROLE)
+
+
 class List(SuperuserRequiredMixin, ListView):
     model = _model
     template_name = '_admin/roles.html'

@@ -8,7 +8,7 @@
 <form action="{% url 'issue_update' issue.id %}" class="form-horizontal" method="post">
   {% csrf_token %}
   <div class="form-body">
-    {% if 'pm.change_issue' in permissions %}
+    {% if 'pm.change_issue' in permissions or 'pm.change_assigned_issue' and issue.assigned_to == user %}
       <h5>属性</h5>
       <div class="row">
         <div class="col-md-12">

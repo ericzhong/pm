@@ -31,26 +31,42 @@ class Project(models.Model):
 
     class Meta:
         default_permissions = ()
+
         # put all permissions here.
         permissions = (
-            ("add_project", "Add project"),
             ("change_project", "Change project"),
             ("close_project", "Close project"),
-            ("add_subproject", "Add subproject"),
+
+            ("read_member", "Read member"),
             ("manage_member", "Manage member"),
+
+            ("read_version", "Read version"),
             ("manage_version", "Manage version"),
+
             ("manage_issue_category", "Manage issue category"),
+
             ("read_gantt", "Read Gantt"),
+
+            ("read_issue", "Read issue"),
             ("add_issue", "Add issue"),
             ("change_issue", "Change issue"),
-            ("read_issue", "Read issue"),
+            ("change_assigned_issue", "Change assigned issue"),
             ("delete_issue", "Delete issue"),
+            ("delete_own_issue", "Delete own issue"),
+
+            ("read_comment", "Read comment"),
             ("add_comment", "Add comment"),
             ("change_comment", "Change comment"),
-            ("add_worktime", "Add worktime"),
+            ("change_own_comment", "Change own comment"),
+            ("delete_comment", "Delete comment"),
+            ("delete_own_comment", "Delete own comment"),
+
             ("read_worktime", "Read worktime"),
+            ("add_worktime", "Add worktime"),
             ("change_worktime", "Change worktime"),
             ("change_own_worktime", "Change own worktime"),
+            ("delete_worktime", "Delete worktime"),
+            ("delete_own_worktime", "Delete own worktime"),
         )
 
     OPEN_STATUS = 1
@@ -168,11 +184,13 @@ class IssueTag(models.Model):
     DEVELOPMENT_TAG = 2
     REQUIREMENT_TAG = 3
 
-    _initial_data = (
-        {'pk': BUG_TAG, 'name': _('Bug')},
-        {'pk': DEVELOPMENT_TAG, 'name': _('Development')},
-        {'pk': REQUIREMENT_TAG, 'name': _('Requirement')},
+    INITIAL_DATA = (
+        (BUG_TAG, _('Bug')),
+        (DEVELOPMENT_TAG, _('Development')),
+        (REQUIREMENT_TAG, _('Requirement')),
     )
+
+    UNDELETABLE = ()
 
     name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
 
@@ -191,14 +209,16 @@ class IssueStatus(models.Model):
     CLOSED_STATUS = 3
     NOT_CLOSED_STATUS = -CLOSED_STATUS
 
-    _initial_data = (
-        {'pk': NEW_STATUS, 'name': _('New')},
-        {'pk': FINISHED_STATUS, 'name': _('Finished')},
-        {'pk': CLOSED_STATUS, 'name': _('Closed')},
+    INITIAL_DATA = (
+        (NEW_STATUS, _('New')),
+        (FINISHED_STATUS, _('Finished')),
+        (CLOSED_STATUS, _('Closed')),
     )
 
+    UNDELETABLE = (NEW_STATUS, FINISHED_STATUS, CLOSED_STATUS)
+
     name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
-    #default_done_ratio = models.IntegerField(null=True, blank=True)
+    # default_done_ratio = models.IntegerField(null=True, blank=True)
 
     class Meta:
         default_permissions = ()
@@ -316,6 +336,59 @@ class Worktime(models.Model):
 
 @python_2_unicode_compatible
 class Role(models.Model):
+
+    ADMIN_ROLE = 1
+    ANONYMOUS_ROLE = 2
+    DEVELOPER_ROLE = 3
+
+    INITIAL_DATA = (
+        (ADMIN_ROLE, _('Administrator'), (
+            "change_project",
+            "close_project",
+            "read_member",
+            "manage_member",
+            "read_version",
+            "manage_version",
+            "manage_issue_category",
+            "read_gantt",
+            "read_issue",
+            "add_issue",
+            "change_issue",
+            "delete_issue",
+            "read_comment",
+            "add_comment",
+            "change_comment",
+            "delete_comment",
+            "read_worktime",
+            "add_worktime",
+            "change_worktime",
+            "delete_worktime",
+        )),
+        (DEVELOPER_ROLE, _('Developer'), (
+            "read_member",
+            "read_version",
+            "read_gantt",
+            "read_issue",
+            "add_issue",
+            "change_assigned_issue",
+            "delete_own_issue",
+            "read_comment",
+            "add_comment",
+            "change_own_comment",
+            "delete_own_comment",
+            "read_worktime",
+            "add_worktime",
+            "change_own_worktime",
+            "delete_own_worktime",
+        )),
+        (ANONYMOUS_ROLE, _('Anonymous'), (
+            "read_issue",
+            "read_version",
+        )),
+    )
+
+    UNDELETABLE = (ADMIN_ROLE, ANONYMOUS_ROLE)
+
     name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
     permissions = models.ManyToManyField(Permission)
 

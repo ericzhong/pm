@@ -4,14 +4,14 @@ from django.http import HttpResponseRedirect
 from ..models import Project, IssueCategory
 from ..forms import IssueCategoryForm
 from .project import get_other_projects_html
-from .auth import UserPermMixin
+from .auth import PermissionMixin
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, delete_success_message
 
 _model = IssueCategory
 _form = IssueCategoryForm
 
 
-class Create(UserPermMixin, CreateSuccessMessageMixin, CreateView):
+class Create(PermissionMixin, CreateSuccessMessageMixin, CreateView):
     model = _model
     form_class = _form
     template_name = 'project/create_issue_category.html'
@@ -39,10 +39,12 @@ class Create(UserPermMixin, CreateSuccessMessageMixin, CreateView):
             return reverse_lazy('issue_category_list', kwargs={'pk': self.kwargs['pk']})
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
+        user = self.request.user
+        return user.is_authenticated() and \
+            user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
 
 
-class List(UserPermMixin, ListView):
+class List(PermissionMixin, ListView):
     model = _model
     template_name = 'project/settings/issue_categories.html'
     context_object_name = 'issue_categories'
@@ -55,10 +57,11 @@ class List(UserPermMixin, ListView):
         return context
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
+        user = self.request.user
+        return user.has_perm('pm.manage_issue_category', Project.objects.get(pk=self.kwargs.get('pk')))
 
 
-class Update(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
+class Update(PermissionMixin, UpdateSuccessMessageMixin, UpdateView):
     model = _model
     form_class = _form
     template_name = 'project/edit_issue_category.html'
@@ -83,11 +86,11 @@ class Update(UserPermMixin, UpdateSuccessMessageMixin, UpdateView):
         return reverse_lazy('issue_category_list', kwargs={'pk': project_id})
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.manage_issue_category',
-                                          IssueCategory.objects.get(pk=self.kwargs.get('pk')).project)
+        user = self.request.user
+        return user.has_perm('pm.manage_issue_category', IssueCategory.objects.get(pk=self.kwargs.get('pk')).project)
 
 
-class Delete(UserPermMixin, View):
+class Delete(PermissionMixin, View):
     def post(self, request, *args, **kwargs):
         query_set = IssueCategory.objects.filter(pk=kwargs['pk'])
         name = str(query_set[0])
@@ -100,5 +103,5 @@ class Delete(UserPermMixin, View):
         return HttpResponseRedirect(reverse('issue_category_list', kwargs={'pk': project_id}))
 
     def has_perm(self):
-        return self.request.user.has_perm('pm.manage_issue_category',
-                                          IssueCategory.objects.get(pk=self.kwargs.get('pk')).project)
+        user = self.request.user
+        return user.has_perm('pm.manage_issue_category', IssueCategory.objects.get(pk=self.kwargs.get('pk')).project)

@@ -25,7 +25,7 @@
               <td><a href="{% url 'issue_tag_update' issue_tag.id %}">{{ issue_tag.name }}</a></td>
               <td>
                 <div class="actions btn-set small">
-                  <a data-href="{% url 'issue_tag_delete' issue_tag.id %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i>删除</a>
+                  <a data-href="{% url 'issue_tag_delete' issue_tag.id %}" data-toggle="modal" data-target="#confirm-delete">{% if not issue_tag.id in issue_tag.UNDELETABLE %}<i class="fa fa-trash-o"></i>删除{% endif %}</a>
                 </div>
               </td>
             </tr>
