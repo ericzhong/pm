@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.models import Group
 from django.shortcuts import redirect, HttpResponseRedirect, HttpResponse
 from ..forms import GroupForm
-from ..models import Project, Role, Project_Group_Role, User
+from ..models import Project, Project_Group_Role, User
 from .role import get_group_roles_id, get_project_role_of_group, get_active_roles
 from .base import CreateSuccessMessageMixin, DeleteSuccessMessageMixin, UpdateSuccessMessageMixin
 from .auth import SuperuserRequiredMixin

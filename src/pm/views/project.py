@@ -1,23 +1,38 @@
 from django.views.generic import ListView, DetailView, View, UpdateView, CreateView
 from django.views.generic.edit import DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import Group
 from django.http import HttpResponse
-from ..models import Project, Role, Project_Group_Role, Project_User_Role, Issue
+from ..models import Project, Project_Group_Role, Project_User_Role, Issue
 from ..forms import ProjectForm, UpdateProjectForm
 from .role import get_user_roles_id, get_role_users, get_role_user, get_user_groups_roles_id, \
     get_role_user_of_groups, check_user_in_groups, get_role_group, get_group_roles_id, get_active_roles
 import json
 from ..utils import Helper
 from ..models import User
-from .auth import PermissionMixin, SuperuserRequiredMixin, redirect_no_perm, has_no_perm
+from .auth import PermissionMixin, SuperuserRequiredMixin, has_no_perm
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, DeleteSuccessMessageMixin, \
     delete_success_message, create_success_message, decorate_object, update_success_message
 
 
 _model = Project
 _form = ProjectForm
+
+
+def get_joined_projects(user):
+    return [item.project for item in Project_User_Role.objects.filter(user_id=user.id)] + \
+           [item.project for item in Project_Group_Role.objects.filter(group__in=user.groups.all())]
+
+
+def get_visible_projects(user):
+    if user.is_authenticated():
+        if user.is_superuser:
+            return Project.objects.all()
+        else:
+            return set(list(Project.objects.filter(is_public=True)) + get_joined_projects(user))
+    else:
+        return Project.objects.filter(is_public=True)
 
 
 def get_hierarchical_list(objects):
@@ -70,7 +85,8 @@ class List(PermissionMixin, ListView):
         return self.get_all_projects_html()
 
     def get_all_projects_html(self):
-        projects = Project.objects.all()
+        projects = get_visible_projects(self.request.user)
+        joined_projects = get_joined_projects(self.request.user)
         if not projects:
             return None
 
@@ -81,8 +97,9 @@ class List(PermissionMixin, ListView):
         def get_html(data):
             get_html.text += '''<ol style="list-style-type: none">\n'''
             for item in data:
-                icon = '''<i class="fa %s"></i>''' % \
-                       ('fa-star font-yellow-casablanca' if item[0].created_by == self.request.user else 'fa-none')
+                icon = '''<i class="fa %s"></i><i class="fa %s"></i>''' % \
+                       (('fa-user font-yellow-casablanca' if item[0] in joined_projects else 'fa-none'),
+                        ('fa-lock font-yellow-casablanca' if item[0].is_public is False else 'fa-none'))
                 get_html.text += '''<li><a href="%s">%s<span>%s</span></a></li>\n''' % \
                                  (reverse('project_detail', kwargs={'pk': item[0].id}),
                                   icon,

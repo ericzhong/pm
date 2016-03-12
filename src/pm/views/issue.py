@@ -8,7 +8,7 @@ from ..forms import IssueForm, CommentForm, WorktimeForm, WorktimeBlankForm, Com
     UpdateIssueForm
 from ..models import Issue, Comment, Worktime, Project, IssueStatus
 from ..utils import Helper
-from .project import get_other_projects_html
+from .project import get_other_projects_html, get_visible_projects
 from .auth import PermissionMixin, redirect_no_perm, LoginRequiredMixin
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, \
     update_success_message, delete_success_message
@@ -363,7 +363,8 @@ class AllIssues(PermissionMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(AllIssues, self).get_context_data(**kwargs)
         context['form'] = AllIssuesForm(
-            initial={n: self.request.GET.get(n, None) for n in AllIssuesForm.declared_fields})
+            initial={n: self.request.GET.get(n, None) for n in AllIssuesForm.declared_fields},
+            user=self.request.user)
         return context
 
     def get_queryset(self):
@@ -377,7 +378,8 @@ class AllIssues(PermissionMixin, ListView):
         start_date = self.request.GET.get('start_date', None)
         due_date = self.request.GET.get('due_date', None)
 
-        issues = Issue.objects.all()
+        projects = get_visible_projects(self.request.user)
+        issues = Issue.objects.filter(project__in=projects)
 
         if project:
             issues = issues.filter(project__id=project)

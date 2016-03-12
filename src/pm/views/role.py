@@ -91,7 +91,7 @@ def get_project_group_permissions(user, project):
 
 
 def get_anon_permissions():
-    return [item.permission for item in Role.permissions.through.objects.filter(role__id=Role.ANONYMOUS_ROLE)]
+    return Role.permissions.all().filter(role__id=Role.ANONYMOUS_ROLE)
 
 
 def get_active_roles():

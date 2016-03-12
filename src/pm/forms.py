@@ -233,10 +233,15 @@ class AllIssuesForm(forms.Form):
     due_date = forms.DateField()
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)             # pop unexpected args
         super(AllIssuesForm, self).__init__(*args, **kwargs)
+
         _user_choices = [(str(u.id), str(u)) for u in User.objects.all()]
-        self.fields['project'].choices = [('', 'All projects')] + list(Project.objects.all().values_list('id', 'name'))
-        self.fields['version'].choices = [('', 'All versions')] + list(Version.objects.all().values_list('id', 'name'))
+        from views.project import get_visible_projects
+        projects = get_visible_projects(user)
+        versions = Version.objects.filter(project__in=projects)
+        self.fields['project'].choices = [('', 'All projects')] + [(n.id, n.name) for n in projects]
+        self.fields['version'].choices = [('', 'All versions')] + [(n.id, n.name) for n in versions]
         self.fields['tag'].choices = [('', 'All issue tags')] + list(IssueTag.objects.all().values_list('id', 'name'))
         self.fields['status'].choices = [('', 'All issue statuses')] + \
                                         list(IssueStatus.objects.all().values_list('id', 'name')) + \

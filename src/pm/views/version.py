@@ -1,10 +1,10 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, View, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, View
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from ..models import Version, Project
 from ..forms import VersionForm
 from .project import get_other_projects_html
-from .auth import PermissionMixin, PermissionMixin
+from .auth import PermissionMixin
 from .base import CreateSuccessMessageMixin, UpdateSuccessMessageMixin, delete_success_message, decorate_object
 
 _model = Version
