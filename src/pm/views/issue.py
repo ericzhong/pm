@@ -239,21 +239,21 @@ class Quote(PermissionMixin, View):
             user.has_perm('pm.add_comment', Issue.objects.get(pk=self.request['pk']).project)
 
 
-class WorktimeList(PermissionMixin, View):
+class WorktimeList(PermissionMixin, ListView):
     model = Worktime
     template_name = 'project/worktimes.html'
     context_object_name = 'worktimes'
 
     def get_context_data(self, **kwargs):
         context = super(WorktimeList, self).get_context_data(**kwargs)
-        issue = Issue.objects.get(pk=self.kwargs.get('pk'))
+        issue = Issue.objects.get(pk=self.kwargs['pk'])
         context['issue'] = issue
         context['project'] = issue.project
         context['other_projects'] = get_other_projects_html(issue.project.id)
         return context
 
     def get_queryset(self):
-        return Worktime.objects.filter(issue__id=self.kwargs.get('pk')).order_by('-date')
+        return Worktime.objects.filter(issue__id=self.kwargs['pk']).order_by('-date')
 
     def has_perm(self):
         return self.request.user.has_perm('pm.read_worktime', Issue.objects.get(pk=self.kwargs['pk']).project)
