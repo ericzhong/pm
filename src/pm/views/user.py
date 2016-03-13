@@ -77,11 +77,10 @@ class Update(SuperuserRequiredMixin, UpdateSuccessMessageMixin, UpdateView):
         for item in project_role_of_all:
             tmp[item[0]].append(item[1])
 
-        projects_of_group = list(set([ i[0] for i in project_role_of_group ]))
-        context['project_roles_deletable'] = [ ( key,
-                                                 ( r for r in value ),
-                                                 False if key in projects_of_group else True )
-                                               for key, value in tmp.iteritems() ]
+        projects_of_group = list(set([i[0] for i in project_role_of_group]))
+        # can not delete when user joined by group
+        context['project_roles_deletable'] = [(key, (r for r in value), False if key in projects_of_group else True)
+                                              for key, value in tmp.iteritems()]
 
         context['not_joined_projects'] = Project.objects.all()\
             .exclude(id__in=list(set([ i[0].id for i in project_role_of_all ])))

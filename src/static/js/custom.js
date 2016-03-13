@@ -1,3 +1,6 @@
+/**
+ * checkboxes for edit roles
+ */
 
 // show checkboxlist in table
 $("a[name='btn-show-checkboxlist']").click( function() {
@@ -32,14 +35,28 @@ $("button[name='btn-hide-checkboxlist']").live('click', function() {
   return false;
 });
 
+// select one at least
+$("td[data-toggle='checkboxlist_form'] input:checkbox").live('change', function(){
+  var form = $(this).closest("form");
+  var len = form.find("input:checkbox:checked").length;
+  var btn = form.find("button:submit[name='submit']");
+  (len == 0)? btn.prop('disabled', true) : btn.prop('disabled', false);
+});
 
-// tab active
+
+/**
+ * tab active
+ */
+
 $('li#'+$('#admin-tab-content').attr('tab-toggle')).attr('class', 'active');
 $('li#'+$('#project-tab-content').attr('tab-toggle')).attr('class', 'active');
 $('li#'+$('#settings-tab-content').attr('tab-toggle')).attr('class', 'active');
 
 
-// confirm delete
+/**
+ * confirm delete
+ */
+
 $('#confirm-delete').on('show.bs.modal', function(e) {
   $(e.target).find('form').attr('action', $(e.relatedTarget).attr('data-href'));
   // v-align center
