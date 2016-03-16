@@ -1,0 +1,109 @@
+{% if paging and paging.length > paging.page_size %}
+<div id="table-paging">
+  <form>
+    <span>Page:</span>
+    <select id="select-page"></select>
+  </form>
+  <a id="btn-pre-page"> << </a>
+  <span id="page-range"></span>
+  <a id="btn-next-page"> >> </a>
+</div>
+
+<script>
+  (function(){
+    var page_size = {{ paging.page_size }};
+    var offset = {{ paging.offset }};
+    var length = {{ paging.length }};
+
+    if (length > page_size) {
+
+      var select = document.getElementById("select-page");
+      var pre_page = document.getElementById("btn-pre-page");
+      var next_page = document.getElementById("btn-next-page");
+      var page_range = document.getElementById("page-range");
+
+      var data = (function(){
+        if (offset >= length)
+          offset = length - 1;
+        else if (offset < 0)
+          offset = 0;
+        return {
+          'page_size': page_size,
+          'offset': offset,
+          'length': length,
+          'page_total': parseInt((length-1)/page_size) + 1,
+          'page_number': parseInt(offset/page_size) + 1
+        }
+      })();
+
+      /**
+       * init
+       */
+
+      for (var n = 1; n <= data.page_total; n++) {
+        var opt = document.createElement('option');
+        opt.value = n;
+        opt.innerHTML = n;
+        select.appendChild(opt);
+
+        if (data.page_number == n)
+          opt.selected = true;
+      }
+
+      if (data.page_number == 1)
+        pre_page.parentElement.removeChild(pre_page);
+      if (data.page_number >= data.page_total)
+        next_page.parentElement.removeChild(next_page);
+
+      page_range.textContent =
+          (data.offset + 1).toString() + "-" +
+          (data.offset + data.page_size >= data.length ? data.length.toString() : (data.offset + data.page_size).toString()) +
+          "/" + data.length.toString();
+
+      /**
+       * event
+       */
+
+      function set_query_arg(name, value) {
+        var items = location.search.replace(/^\?/, '').split('&');
+        var str = "";
+        var exist = false;
+
+        for( var i = 0; i < items.length; i++ ) {
+          var split = items[i].split('=');
+          if (split[0] == name) {
+            str += (str ? "&" : "") + split[0] + "=" + value;
+            exist = true;
+          }
+          else
+            str += (str? "&" : "") + items[i];
+        }
+
+        if (!exist)
+          str += (str ? "&" : "") + name + "=" + value;
+
+        return location.origin + location.pathname + "?" + str;
+      }
+
+      select.onchange = function(){
+        var page_number = this.options[this.selectedIndex].value;
+        location = set_query_arg('offset', (page_number-1) * data.page_size);
+      };
+
+      pre_page.onclick = function(){
+        if (data.page_number > 1)
+          location = set_query_arg('offset', (data.page_number-2)*data.page_size);
+      };
+
+      next_page.onclick = function() {
+        if (data.page_number < data.page_total)
+        location = set_query_arg('offset', (data.page_number)*data.page_size);
+      };
+    } else {
+      //console.log(document.getElementsByClassName("table-paging"));
+      var el = document.getElementById("table-paging");
+      el.parentElement.removeChild(el);
+    }
+  })();
+</script>
+{% endif %}

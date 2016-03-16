@@ -185,24 +185,24 @@ button.date-picker {
     font-size: 15px;
 }
 
-.table-footer {
+#table-paging {
     text-align: center;
 }
 
-.table-footer > form {
+#table-paging > form {
     float: right;
 }
 
-.table-footer > span {
+#table-paging > span {
     padding: 0 10px;
 }
 
-.table-footer > form > select {
+#table-paging > form > select {
     background-color: #fff;
     border: 1px solid #e5e5e5;
 }
 
-.table-footer > a:link,a:visited,a:hover,a:active {
+#table-paging > a:link,a:visited,a:hover,a:active {
     text-decoration: none;
 }
 

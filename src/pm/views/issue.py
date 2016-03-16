@@ -360,11 +360,21 @@ class AllIssues(PermissionMixin, ListView):
     template_name = 'all_issues.html'
     context_object_name = 'issues'
 
+    def __init__(self, *args, **kwargs):
+        super(AllIssues, self).__init__(*args, **kwargs)
+        self.order = ''
+        from .settings import page_size
+        self.page_size = page_size()
+
     def get_context_data(self, **kwargs):
         context = super(AllIssues, self).get_context_data(**kwargs)
         context['form'] = AllIssuesForm(
             initial={n: self.request.GET.get(n, None) for n in AllIssuesForm.declared_fields},
             user=self.request.user)
+        context['order'] = self.order
+        context['paging'] = {'length': self.length,
+                             'offset': self.offset,
+                             'page_size': self.page_size}
         return context
 
     def get_queryset(self):
@@ -377,6 +387,8 @@ class AllIssues(PermissionMixin, ListView):
         watcher = self.request.GET.get('watcher', None)
         start_date = self.request.GET.get('start_date', None)
         due_date = self.request.GET.get('due_date', None)
+        offset = self.request.GET.get('offset', None)
+        order = self.request.GET.get('order', None)
 
         projects = get_visible_projects(self.request.user)
         issues = Issue.objects.filter(project__in=projects)
@@ -411,6 +423,22 @@ class AllIssues(PermissionMixin, ListView):
         if due_date:
             issues = issues.filter(due_date__lte=due_date)
 
+        if order in ['id', 'project', 'version', 'tag',
+                     'status', 'priority', 'subject', 'assigned_to', 'updated_on',
+                     '-id', '-project', '-version', '-tag',
+                     '-status', '-priority', '-subject', '-assigned_to', '-updated_on']:
+            issues = issues.order_by(order)
+            self.order = order
+
+        self.length = len(issues)
+
+        try:
+            offset = int(offset) if offset else 0
+        except ValueError:
+            offset = 0
+        issues = issues[offset:offset+self.page_size]
+        self.offset = offset
+
         return issues
 
     def has_perm(self):
@@ -435,6 +463,5 @@ class MyPage(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         context = dict()
         context['assigned_issues'] = Issue.objects.filter(assigned_to=self.request.user)
-        # context['watch_issues'] = [n.issue for n in Issue.watchers.through.objects.filter(user=self.request.user)]
         context['watch_issues'] = Issue.objects.filter(watchers=self.request.user)
         return render(request, 'my_page.html', context)

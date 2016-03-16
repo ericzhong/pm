@@ -28,21 +28,21 @@
                 {{ form.due_date|add_class:"form-control date-picker"|attr:"start-date:id_start_date" }}
               </div>
             </div>
-            <div class="form-group"><button class="form-control btn default" id="view_issues">View</button></div>
+            <div class="form-group"><button class="form-control btn default" id="btn-view">View</button></div>
           </div>
           <div class="table-scrollable">
             <table class="table table-light table-advance table-hover table-condensed second">
               <thead>
               <tr>
-                <th>#</th>
-                <th>项目</th>
-                <th>版本</th>
-                <th>标签</th>
-                <th>状态</th>
-                <th>优先级</th>
-                <th>主题</th>
-                <th>指派给</th>
-                <th>更新于</th>
+                <th><a name="btn-order" orderby="id">#</a></th>
+                <th><a name="btn-order" orderby="project">项目</a></th>
+                <th><a name="btn-order" orderby="version">版本</a></th>
+                <th><a name="btn-order" orderby="tag">标签</a></th>
+                <th><a name="btn-order" orderby="status">状态</a></th>
+                <th><a name="btn-order" orderby="priority">优先级</a></th>
+                <th><a name="btn-order" orderby="subject">主题</a></th>
+                <th><a name="btn-order" orderby="assigned_to">指派给</a></th>
+                <th><a name="btn-order" orderby="updated_on">更新于</a></th>
               </tr>
               </thead>
               <tbody>
@@ -68,6 +68,7 @@
               </tbody>
             </table>
           </div>
+          {% include 'table_paging.html' %}
         </div>
       </div>
     </div>
@@ -76,30 +77,63 @@
 
 {% block page-level-scripts %}
 <script>
-  function get_query_string(obj, name) {
-    var value = obj.val();
-    return (value) ? (name + "=" + value) : '';
-  }
-
-  $('#view_issues').click(function(){
-    var url = '{% url 'issue_all' %}';
-    var items = [
-        {% for field in form %}
-          ["{{ field.auto_id }}", "{{ field.html_name }}"],
-        {% endfor %}
-    ];
-
-    var first = true;
-    for (var i=0; i<items.length; i++) {
-      var item = items[i];
-      var str = get_query_string($('#' + item[0]), item[1]);
-      if (str) {
-        url = url + ((first) ? '?' : '&') + str;
-        first = false;
-      }
+  (function(){
+    function get_query_item(obj, name) {
+      var value = obj.val();
+      return (value) ? (name + "=" + value) : '';
     }
 
-    location = url;
-  });
+    function get_query_string() {
+      var querystr = "";
+      var items = [
+          {% for field in form %}
+            ["{{ field.auto_id }}", "{{ field.html_name }}"],
+          {% endfor %}
+      ];
+
+      var first = true;
+      for (var i=0; i<items.length; i++) {
+        var item = items[i];
+        var str = get_query_item($('#' + item[0]), item[1]);
+        if (str) {
+          querystr = querystr + ((first) ? '?' : '&') + str;
+          first = false;
+        }
+      }
+      return querystr;
+    }
+
+    var url = '{% url 'issue_all' %}';
+
+    $('#btn-view').click(function(){
+      location = url + get_query_string();
+    });
+
+    $("a[name='btn-order']").click(function(){
+      var orderby = $(this).attr('orderby');
+      var n = "";
+      if (orderby == "{{ order }}")
+        n = "-" + orderby;
+      else
+        n = orderby;
+
+      var querystr = get_query_string();
+      if (querystr)
+        location = url + querystr + "&order=" + n;
+      else
+        location = url + "?order=" + n;
+    });
+
+    // display orderby arrow in <th>
+    $("a[name='btn-order']").each(function(){
+      var orderby = $(this).attr("orderby");
+      if (orderby == "{{ order }}")
+        $(this).after("<i class=\"fa fa-font fa-caret-up\"></i>");
+      else if ("-" + orderby == "{{ order }}")
+        $(this).after("<i class=\"fa fa-font fa-caret-down\"></i>");
+      else
+        return;
+    });
+  })();
 </script>
 {% endblock %}

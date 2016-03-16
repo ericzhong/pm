@@ -32,3 +32,7 @@ class Setting(SuperuserRequiredMixin, View):
 
 def allow_anonymous_access():
     return True     # TODO: data from settings
+
+
+def page_size():
+    return 3        # TODO
