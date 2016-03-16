@@ -17,7 +17,7 @@
         <table class="table table-light table-advance table-hover table-condensed second">
           <thead>
           <tr>
-            <th>组</th>
+            <th><a name="btn-order" orderby="name">组</a></th>
             <th>用户</th>
             <th width="110px"></th>
           </tr>
@@ -44,4 +44,11 @@
   {% endif %}
 
   {% include 'confirm_delete.html' %}
+{% endblock %}
+
+{% block page-level-scripts %}
+<script>
+  var page_url = '{% url 'group_list' %}';
+  init_table_orderby(page_url, null);
+</script>
 {% endblock %}

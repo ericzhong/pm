@@ -21,13 +21,13 @@
       <table class="table table-light table-advance table-hover table-condensed second">
         <thead>
         <tr>
-          <th>#</th>
-          <th>标签</th>
-          <th>状态</th>
-          <th>优先级</th>
-          <th>主题</th>
-          <th>指派给</th>
-          <th>更新于</th>
+          <th><a name="btn-order" orderby="id">ID</a></th>
+          <th><a name="btn-order" orderby="tag">标签</a></th>
+          <th><a name="btn-order" orderby="status">状态</a></th>
+          <th><a name="btn-order" orderby="priority">优先级</a></th>
+          <th><a name="btn-order" orderby="subject">主题</a></th>
+          <th><a name="btn-order" orderby="assigned_to">指派给</a></th>
+          <th><a name="btn-order" orderby="updated_on">更新于</a></th>
         </tr>
         </thead>
         <tbody>
@@ -53,4 +53,11 @@
     </div>
     {% include "table_paging.html" %}
   </div>
+{% endblock %}
+
+{% block page-level-scripts %}
+<script>
+  var page_url = '{% url 'issue_list' project.id %}';
+  init_table_orderby(page_url, null);
+</script>
 {% endblock %}

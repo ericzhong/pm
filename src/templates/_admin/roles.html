@@ -14,7 +14,7 @@
         <table class="table table-light table-advance table-hover table-condensed second">
           <thead>
           <tr>
-            <th>角色</th>
+            <th><a name="btn-order" orderby="name">角色</a></th>
             <th width="110px"></th>
           </tr>
           </thead>
@@ -40,4 +40,11 @@
   </div>
 
   {% include 'confirm_delete.html' %}
+{% endblock %}
+
+{% block page-level-scripts %}
+<script>
+  var page_url = '{% url 'role_list' %}';
+  init_table_orderby(page_url, null);
+</script>
 {% endblock %}

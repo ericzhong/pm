@@ -21,6 +21,31 @@ class List(SuperuserRequiredMixin, ListView):
     template_name = '_admin/users.html'
     context_object_name = 'users'
 
+    def get_context_data(self, **kwargs):
+        context = super(List, self).get_context_data(**kwargs)
+        context['order'] = self.order
+        context['paging'] = {'length': self.length, 'offset': self.offset, 'page_size': self.page_size}
+        return context
+
+    def get_queryset(self):
+        objects = self.model.objects.all().order_by("-date_joined")
+
+        order = self.request.GET.get('order', None)
+        from ..utils import Helper
+        if order in Helper.get_orderby_options(['username', 'first_name', 'last_name',
+                                                'email', 'is_superuser', 'date_joined', 'last_login']):
+            objects = objects.order_by(order)
+            self.order = order
+        else:
+            self.order = ""
+
+        self.length = len(objects)
+        self.offset = Helper.get_offset(self.request.GET.get('offset', None))
+        from .settings import page_size
+        self.page_size = page_size()
+
+        return objects[self.offset:self.offset+self.page_size]
+
 
 class Detail(SuperuserRequiredMixin, DetailView):
     model = _model

@@ -14,13 +14,13 @@
         <table class="table table-light table-advance table-hover table-condensed second">
           <thead>
           <tr>
-            <th>登录名</th>
-            <th>名</th>
-            <th>姓</th>
-            <th>邮件地址</th>
-            <th>管理员</th>
-            <th>创建于</th>
-            <th>最后登录</th>
+            <th><a name="btn-order" orderby="username">登录名</a></th>
+            <th><a name="btn-order" orderby="first_name">名</a></th>
+            <th><a name="btn-order" orderby="last_name">姓</a></th>
+            <th><a name="btn-order" orderby="email">邮件地址</a></th>
+            <th><a name="btn-order" orderby="is_superuser">管理员</a></th>
+            <th><a name="btn-order" orderby="date_joined">创建于</a></th>
+            <th><a name="btn-order" orderby="last_login">最后登录</a></th>
             <th width="110px"></th>
           </tr>
           </thead>
@@ -33,7 +33,7 @@
               <td>{{ user.email|default:'-' }}</td>
               <td>{% if user.is_superuser %}<i class="fa fa-check"></i>{% else %}-{% endif %}</td>
               <td>{{ user.date_joined|date:"Y-m-d"|default:"-" }}</td>
-              <td>{{ user.last_login|default:"-" }}</td>
+              <td>{{ user.last_login|date:"Y-m-d H:i:s"|default:"-" }}</td>
               <td>
                 <div class="actions btn-set small">
                   {% if user.is_active %}
@@ -56,4 +56,11 @@
   {% endif %}
 
   {% include 'confirm_delete.html' %}
+{% endblock %}
+
+{% block page-level-scripts %}
+<script>
+  var page_url = '{% url 'user_list' %}';
+  init_table_orderby(page_url, null);
+</script>
 {% endblock %}

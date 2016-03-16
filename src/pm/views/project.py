@@ -202,21 +202,21 @@ class Admin(SuperuserRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
-        projects = Project.objects.all().order_by("-updated_on")
+        objects = self.model.objects.all().order_by("-updated_on")
 
         order = self.request.GET.get('order', None)
-        if order in Helper.get_orderby_options(['id', 'name', 'is_public', 'updated_on']):
-            projects = projects.order_by(order)
+        if order in Helper.get_orderby_options(['name', 'is_public', 'updated_on']):
+            objects = objects.order_by(order)
             self.order = order
         else:
             self.order = ""
 
-        self.length = len(projects)
+        self.length = len(objects)
         self.offset = Helper.get_offset(self.request.GET.get('offset', None))
         from .settings import page_size
         self.page_size = page_size()
 
-        return projects[self.offset:self.offset+self.page_size]
+        return objects[self.offset:self.offset+self.page_size]
 
 
 class Delete(SuperuserRequiredMixin, DeleteSuccessMessageMixin, DeleteView):

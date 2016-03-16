@@ -14,7 +14,6 @@
         <table class="table table-light table-advance table-hover table-condensed second">
           <thead>
           <tr>
-            <th><a name="btn-order" orderby="id">ID</a></th>
             <th><a name="btn-order" orderby="name">项目</a></th>
             <th><a name="btn-order" orderby="is_public">公开</a></th>
             <th><a name="btn-order" orderby="updated_on">创建于</a></th>
@@ -24,7 +23,6 @@
           <tbody>
           {% for project in projects %}
           <tr>
-            <td><a href="{% url 'project_update' project.id  %}?backurl=">{{ project.id }}</a></td>
             <td><a href="{% url 'project_update' project.id  %}?backurl=">{{ project.name }}</a></td>
             {% if project.is_public %}
               <td><i class="fa fa-check"></i></td>

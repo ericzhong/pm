@@ -12,7 +12,7 @@
       <table class="table table-light table-advance table-hover table-condensed second">
         <thead>
         <tr>
-          <th>问题类别</th>
+          <th><a name="btn-order" orderby="name">问题类别</a></th>
           <th width="110px"></th>
         </tr>
         </thead>
@@ -41,4 +41,11 @@
   </div>
 
   {% include "confirm_delete.html" %}
+{% endblock %}
+
+{% block page-level-scripts %}
+<script>
+  var page_url = '{% url 'issue_category_list' project.id %}';
+  init_table_orderby(page_url, null);
+</script>
 {% endblock %}

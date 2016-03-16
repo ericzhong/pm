@@ -15,7 +15,7 @@
         <table class="table table-light table-advance table-hover table-condensed second">
           <thead>
           <tr>
-            <th>标签</th>
+            <th><a name="btn-order" orderby="name">标签</a></th>
             <th width="110px"></th>
           </tr>
           </thead>
@@ -40,4 +40,11 @@
   {% endif %}
 
   {% include 'confirm_delete.html' %}
+{% endblock %}
+
+{% block page-level-scripts %}
+<script>
+  var page_url = '{% url 'issue_tag_list' %}';
+  init_table_orderby(page_url, null);
+</script>
 {% endblock %}

@@ -67,10 +67,26 @@ class List(PermissionMixin, ListView):
         project_id = self.kwargs['pk']
         context['project'] = Project.objects.get(pk=project_id)
         context['other_projects'] = get_other_projects_html(project_id)
+        context['order'] = self.order
+        context['paging'] = {'length': self.length, 'offset': self.offset, 'page_size': self.page_size}
         return context
 
     def get_queryset(self):
-        return Issue.objects.filter(project__id=self.kwargs.get('pk')).order_by('-updated_on')
+        objects = self.model.objects.filter(project__id=self.kwargs.get('pk')).order_by('-updated_on')
+
+        order = self.request.GET.get('order', None)
+        if order in Helper.get_orderby_options(['id', 'tag', 'status', 'priority', 'subject', 'assigned_to', 'updated_on']):
+            objects = objects.order_by(order)
+            self.order = order
+        else:
+            self.order = ""
+
+        self.length = len(objects)
+        self.offset = Helper.get_offset(self.request.GET.get('offset', None))
+        from .settings import page_size
+        self.page_size = page_size()
+
+        return objects[self.offset:self.offset+self.page_size]
 
     def has_perm(self):
         return self.request.user.has_perm('pm.read_issue', Project.objects.get(pk=self.kwargs['pk']))
