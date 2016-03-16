@@ -26,6 +26,20 @@ class Helper:
         else:
             return string
 
+    @classmethod
+    def get_offset(cls, offset_str=None):
+        try:
+            offset = int(offset_str) if offset_str else 0
+        except ValueError:
+            offset = 0
+        return offset
+
+    @classmethod
+    def get_orderby_options(cls, orders):
+        assert(isinstance(orders, list))
+        reverse = ["-" + str(x) for x in orders]
+        return orders + reverse
+
 
 if __name__ == '__main__':
     # Test

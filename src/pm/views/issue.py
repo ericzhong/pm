@@ -360,21 +360,13 @@ class AllIssues(PermissionMixin, ListView):
     template_name = 'all_issues.html'
     context_object_name = 'issues'
 
-    def __init__(self, *args, **kwargs):
-        super(AllIssues, self).__init__(*args, **kwargs)
-        self.order = ''
-        from .settings import page_size
-        self.page_size = page_size()
-
     def get_context_data(self, **kwargs):
         context = super(AllIssues, self).get_context_data(**kwargs)
         context['form'] = AllIssuesForm(
             initial={n: self.request.GET.get(n, None) for n in AllIssuesForm.declared_fields},
             user=self.request.user)
         context['order'] = self.order
-        context['paging'] = {'length': self.length,
-                             'offset': self.offset,
-                             'page_size': self.page_size}
+        context['paging'] = {'length': self.length, 'offset': self.offset, 'page_size': self.page_size}
         return context
 
     def get_queryset(self):
@@ -387,7 +379,6 @@ class AllIssues(PermissionMixin, ListView):
         watcher = self.request.GET.get('watcher', None)
         start_date = self.request.GET.get('start_date', None)
         due_date = self.request.GET.get('due_date', None)
-        offset = self.request.GET.get('offset', None)
         order = self.request.GET.get('order', None)
 
         projects = get_visible_projects(self.request.user)
@@ -423,23 +414,18 @@ class AllIssues(PermissionMixin, ListView):
         if due_date:
             issues = issues.filter(due_date__lte=due_date)
 
-        if order in ['id', 'project', 'version', 'tag',
-                     'status', 'priority', 'subject', 'assigned_to', 'updated_on',
-                     '-id', '-project', '-version', '-tag',
-                     '-status', '-priority', '-subject', '-assigned_to', '-updated_on']:
+        if order in Helper.get_orderby_options(['id', 'project', 'version', 'tag', 'status',
+                                                'priority', 'subject', 'assigned_to', 'updated_on']):
             issues = issues.order_by(order)
             self.order = order
+        else:
+            self.order = ""
 
+        from .settings import page_size
+        self.page_size = page_size()
         self.length = len(issues)
-
-        try:
-            offset = int(offset) if offset else 0
-        except ValueError:
-            offset = 0
-        issues = issues[offset:offset+self.page_size]
-        self.offset = offset
-
-        return issues
+        self.offset = Helper.get_offset(self.request.GET.get('offset', None))
+        return issues[self.offset:self.offset+self.page_size]
 
     def has_perm(self):
         return self.request.user.has_perm("pm.read_issue")

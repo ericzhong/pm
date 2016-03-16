@@ -107,3 +107,45 @@
   })();
 </script>
 {% endif %}
+
+<script>
+  var init_table_orderby = function(url, get_query_string) {
+
+    // event
+    var buttons = document.getElementsByName('btn-order');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].onclick = function () {
+        var orderby = this.getAttribute('orderby');
+        if (orderby == "{{ order }}")
+          var value = "-" + orderby;
+        else
+          var value = orderby;
+
+        var url = (typeof page_url === 'undefined') ? "/undefined_url" : page_url;
+        var querystr = ((typeof get_query_string === 'function') ? get_query_string() : "");
+        if (querystr)
+          location = url + querystr + "&order=" + value;
+        else
+          location = url + "?order=" + value;
+      };
+    }
+
+    // init
+    var elements = document.getElementsByName("btn-order");
+    for (var i = 0; i < elements.length; i++) {
+      var orderby = elements[i].getAttribute("orderby");
+
+      if (orderby == "{{ order }}") {
+        var icon = document.createElement('i');
+        icon.className = "fa fa-font fa-caret-up";
+      } else if ("-" + orderby == "{{ order }}") {
+        var icon = document.createElement('i');
+        icon.className = "fa fa-font fa-caret-down";
+      }
+      else
+        continue;
+
+      elements[i].parentNode.insertBefore(icon, elements[i].nextSibling);
+    }
+  };
+</script>

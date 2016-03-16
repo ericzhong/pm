@@ -14,15 +14,17 @@
         <table class="table table-light table-advance table-hover table-condensed second">
           <thead>
           <tr>
-            <th>项目</th>
-            <th>公开</th>
-            <th>创建于</th>
+            <th><a name="btn-order" orderby="id">ID</a></th>
+            <th><a name="btn-order" orderby="name">项目</a></th>
+            <th><a name="btn-order" orderby="is_public">公开</a></th>
+            <th><a name="btn-order" orderby="updated_on">创建于</a></th>
             <th width="110px"></th>
           </tr>
           </thead>
           <tbody>
           {% for project in projects %}
           <tr>
+            <td><a href="{% url 'project_update' project.id  %}?backurl=">{{ project.id }}</a></td>
             <td><a href="{% url 'project_update' project.id  %}?backurl=">{{ project.name }}</a></td>
             {% if project.is_public %}
               <td><i class="fa fa-check"></i></td>
@@ -46,4 +48,11 @@
     {% include 'no_data.html' %}
   {% endif %}
 
+{% endblock %}
+
+{% block page-level-scripts %}
+<script>
+  var page_url = '{% url 'admin_project' %}';
+  init_table_orderby(page_url, null);
+</script>
 {% endblock %}

@@ -77,63 +77,37 @@
 
 {% block page-level-scripts %}
 <script>
-  (function(){
-    function get_query_item(obj, name) {
+  var page_url = '{% url 'issue_all' %}';
+
+  function get_query_item(obj, name) {
       var value = obj.val();
       return (value) ? (name + "=" + value) : '';
-    }
+  }
 
-    function get_query_string() {
-      var querystr = "";
-      var items = [
-          {% for field in form %}
-            ["{{ field.auto_id }}", "{{ field.html_name }}"],
-          {% endfor %}
-      ];
+  function get_query_string() {
+    var querystr = "";
+    var items = [
+        {% for field in form %}
+          ["{{ field.auto_id }}", "{{ field.html_name }}"],
+        {% endfor %}
+    ];
 
-      var first = true;
-      for (var i=0; i<items.length; i++) {
-        var item = items[i];
-        var str = get_query_item($('#' + item[0]), item[1]);
-        if (str) {
-          querystr = querystr + ((first) ? '?' : '&') + str;
-          first = false;
-        }
+    var first = true;
+    for (var i=0; i<items.length; i++) {
+      var item = items[i];
+      var str = get_query_item($('#' + item[0]), item[1]);
+      if (str) {
+        querystr = querystr + ((first) ? '?' : '&') + str;
+        first = false;
       }
-      return querystr;
     }
+    return querystr;
+  }
 
-    var url = '{% url 'issue_all' %}';
+  init_table_orderby(page_url, get_query_string);
 
-    $('#btn-view').click(function(){
-      location = url + get_query_string();
-    });
-
-    $("a[name='btn-order']").click(function(){
-      var orderby = $(this).attr('orderby');
-      var n = "";
-      if (orderby == "{{ order }}")
-        n = "-" + orderby;
-      else
-        n = orderby;
-
-      var querystr = get_query_string();
-      if (querystr)
-        location = url + querystr + "&order=" + n;
-      else
-        location = url + "?order=" + n;
-    });
-
-    // display orderby arrow in <th>
-    $("a[name='btn-order']").each(function(){
-      var orderby = $(this).attr("orderby");
-      if (orderby == "{{ order }}")
-        $(this).after("<i class=\"fa fa-font fa-caret-up\"></i>");
-      else if ("-" + orderby == "{{ order }}")
-        $(this).after("<i class=\"fa fa-font fa-caret-down\"></i>");
-      else
-        return;
-    });
-  })();
+  $('#btn-view').click(function(){
+    location = page_url + get_query_string();
+  });
 </script>
 {% endblock %}
