@@ -399,10 +399,38 @@ class Role(models.Model):
         return self.name
 
 
-class Setting(models.Model):
-    name = models.CharField(max_length=_STRING_MAX_LENGTH, unique=True)
-    value = models.TextField()
-    updated_on = models.DateTimeField(auto_now=True)
+class Settings(models.Model):
+
+    NONE_TEXT_FORMAT = 1
+    MARKDOWN_TEXT_FORMAT = 2
+
+    TEXT_FORMAT_CHOICES = (
+        (NONE_TEXT_FORMAT, _('None')),
+        (MARKDOWN_TEXT_FORMAT, _('Markdown')),
+    )
+
+    ENGLISH_LANGUAGE = 1
+    CHINESE_LANGUAGE = 2
+
+    LANGUAGE_CHOICES = (
+        (ENGLISH_LANGUAGE, _('English')),
+        (CHINESE_LANGUAGE, _('Simplified Chinese (简体中文)')),
+    )
+
+    app_name = models.CharField(default="", max_length=32, blank=True)
+    welcome_text = models.TextField(default="", blank=True)
+    attachment_max_size = models.IntegerField(default=1024, validators=[MinValueValidator(0)])     # KB
+    items_per_page = models.IntegerField(default=20, validators=[MinValueValidator(1)])
+    text_format = models.IntegerField(default=NONE_TEXT_FORMAT, choices=TEXT_FORMAT_CHOICES)
+    display_file_max_size = models.IntegerField(default=1024, validators=[MinValueValidator(0)])
+    default_language = models.IntegerField(default=ENGLISH_LANGUAGE, choices=LANGUAGE_CHOICES)
+    enforce_default_language = models.BooleanField(default=False)
+    # date_format =
+    # time_format =
+    # user_display_format =
+    default_public_project = models.BooleanField(default=True)
+    # issue_assigned_to_group =
+    gantt_max_items = models.IntegerField(default=30, validators=[MinValueValidator(0)])
 
     class Meta:
         default_permissions = ()

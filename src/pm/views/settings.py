@@ -1,33 +1,24 @@
-from django.views.generic import View
-from django.shortcuts import render
-from ..models import Setting as SettingModel
+from django.views.generic import UpdateView
+from django.core.urlresolvers import reverse_lazy
+from ..models import Settings
+from ..forms import UpdateSettingsForm
 from .auth import SuperuserRequiredMixin
+from .base import UpdateSuccessMessageMixin
 
-_settings = ['app_name',
-             'welcome_text',
-             'file_size_limit',
-             'entries_per_page',
-             'text_format',
-             'file_display_size_limit']
+_model = Settings
+_form = UpdateSettingsForm
 
 
-class Setting(SuperuserRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        context = dict()
-        context['data'] = { n.name: n.value for n in SettingModel.objects.all() }
-        return render(request, '_admin/settings.html', context=context)
+class Update(SuperuserRequiredMixin, UpdateSuccessMessageMixin, UpdateView):
+    model = _model
+    form_class = _form
+    template_name = '_admin/settings.html'
 
-    def post(self, request, *args, **kwargs):
+    def get_object(self, queryset=None):
+        return self.model.objects.get(pk=1)
 
-        if 0 == SettingModel.objects.all().count():
-            SettingModel.objects.bulk_create([ SettingModel(name=n, value=request.POST.get(n, '')) for n in _settings ])
-        else:
-            for n in _settings:
-                if n in request.POST:
-                    SettingModel.objects.filter(name=n).update(value=request.POST[n])
-        context = dict()
-        context['data'] = { n.name: n.value for n in SettingModel.objects.all() }
-        return render(request, '_admin/settings.html', context=context)
+    def get_success_url(self):
+        return reverse_lazy('settings')
 
 
 def allow_anonymous_access():

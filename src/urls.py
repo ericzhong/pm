@@ -129,7 +129,7 @@ urlpatterns = [
     url(r'^roles/(?P<pk>\d+)/delete/$', role.Delete.as_view(), name='role_delete'),
 
     # settings
-    url(r'^settings/$', settings.Setting.as_view(), name='settings'),
+    url(r'^settings/$', settings.Update.as_view(), name='settings'),
     url(r'^admin/$', project.Admin.as_view(), name='admin'),
     url(r'^admin/projects/$', project.Admin.as_view(), name='admin_project'),
 

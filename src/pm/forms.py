@@ -2,7 +2,8 @@
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import Group, Permission
-from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, Version, Comment, Worktime, Role, User
+from .models import Project, Issue, IssueTag, IssueCategory, IssueStatus, \
+    Version, Comment, Worktime, Role, User, Settings
 from django.conf import settings
 from django.forms import ModelMultipleChoiceField
 
@@ -249,3 +250,15 @@ class AllIssuesForm(forms.Form):
         self.fields['priority'].choices = [('', 'All priorities')] + list(Issue.PRIORITY_CHOICES)
         self.fields['assignee'].choices = [('', 'All assignees')] + _user_choices
         self.fields['watcher'].choices = [('', 'All watchers')] + _user_choices
+
+
+class UpdateSettingsForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateSettingsForm, self).__init__(*args, **kwargs)
+        for key, field in self.fields.iteritems():
+            self.fields[key].required = False
+
+    class Meta:
+        model = Settings
+        exclude = ['']
