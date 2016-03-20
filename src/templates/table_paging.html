@@ -1,4 +1,4 @@
-{% if paging and paging.length > paging.page_size %}
+{% if paging and paging.length > paging.page_length %}
 <div id="table-paging">
   <form>
     <span>Page:</span>
@@ -11,11 +11,11 @@
 
 <script>
   (function(){
-    var page_size = {{ paging.page_size }};
+    var page_length = {{ paging.page_length }};
     var offset = {{ paging.offset }};
     var length = {{ paging.length }};
 
-    if (length > page_size) {
+    if (length > page_length) {
 
       var select = document.getElementById("select-page");
       var pre_page = document.getElementById("btn-pre-page");
@@ -28,11 +28,11 @@
         else if (offset < 0)
           offset = 0;
         return {
-          'page_size': page_size,
+          'page_length': page_length,
           'offset': offset,
           'length': length,
-          'page_total': parseInt((length-1)/page_size) + 1,
-          'page_number': parseInt(offset/page_size) + 1
+          'page_total': parseInt((length-1)/page_length) + 1,
+          'page_number': parseInt(offset/page_length) + 1
         }
       })();
 
@@ -57,7 +57,7 @@
 
       page_range.textContent =
           (data.offset + 1).toString() + "-" +
-          (data.offset + data.page_size >= data.length ? data.length.toString() : (data.offset + data.page_size).toString()) +
+          (data.offset + data.page_length >= data.length ? data.length.toString() : (data.offset + data.page_length).toString()) +
           "/" + data.length.toString();
 
       /**
@@ -87,17 +87,17 @@
 
       select.onchange = function(){
         var page_number = this.options[this.selectedIndex].value;
-        location = set_query_arg('offset', (page_number-1) * data.page_size);
+        location = set_query_arg('offset', (page_number-1) * data.page_length);
       };
 
       pre_page.onclick = function(){
         if (data.page_number > 1)
-          location = set_query_arg('offset', (data.page_number-2)*data.page_size);
+          location = set_query_arg('offset', (data.page_number-2)*data.page_length);
       };
 
       next_page.onclick = function() {
         if (data.page_number < data.page_total)
-        location = set_query_arg('offset', (data.page_number)*data.page_size);
+        location = set_query_arg('offset', (data.page_number)*data.page_length);
       };
     } else {
       //console.log(document.getElementsByClassName("table-paging"));

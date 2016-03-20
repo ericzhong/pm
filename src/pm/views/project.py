@@ -198,7 +198,7 @@ class Admin(SuperuserRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(Admin, self).get_context_data(**kwargs)
         context['order'] = self.order
-        context['paging'] = {'length': self.length, 'offset': self.offset, 'page_size': self.page_size}
+        context['paging'] = {'length': self.length, 'offset': self.offset, 'page_length': self.page_length}
         return context
 
     def get_queryset(self):
@@ -213,10 +213,10 @@ class Admin(SuperuserRequiredMixin, ListView):
 
         self.length = len(objects)
         self.offset = Helper.get_offset(self.request.GET.get('offset', None))
-        from .settings import page_size
-        self.page_size = page_size()
+        from ..models import Settings
+        self.page_length = Settings.get_page_length()
 
-        return objects[self.offset:self.offset+self.page_size]
+        return objects[self.offset:self.offset+self.page_length]
 
 
 class Delete(SuperuserRequiredMixin, DeleteSuccessMessageMixin, DeleteView):

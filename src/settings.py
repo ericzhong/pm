@@ -70,10 +70,12 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.core.context_processors.i18n',
+                'pm.views.settings.context_processors',
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'wsgi.application'
 

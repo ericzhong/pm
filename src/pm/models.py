@@ -417,10 +417,10 @@ class Settings(models.Model):
         (CHINESE_LANGUAGE, _('Simplified Chinese (简体中文)')),
     )
 
-    app_name = models.CharField(default="", max_length=32, blank=True)
-    welcome_text = models.TextField(default="", blank=True)
+    app_name = models.CharField(default="PM", max_length=32, blank=True)
+    welcome_text = models.TextField(default="PM is a project management web application.", blank=True)
     attachment_max_size = models.IntegerField(default=1024, validators=[MinValueValidator(0)])     # KB
-    items_per_page = models.IntegerField(default=20, validators=[MinValueValidator(1)])
+    page_length = models.IntegerField(default=20, validators=[MinValueValidator(1)])
     text_format = models.IntegerField(default=NONE_TEXT_FORMAT, choices=TEXT_FORMAT_CHOICES)
     display_file_max_size = models.IntegerField(default=1024, validators=[MinValueValidator(0)])
     default_language = models.IntegerField(default=ENGLISH_LANGUAGE, choices=LANGUAGE_CHOICES)
@@ -430,10 +430,27 @@ class Settings(models.Model):
     # user_display_format =
     default_public_project = models.BooleanField(default=True)
     # issue_assigned_to_group =
-    gantt_max_items = models.IntegerField(default=30, validators=[MinValueValidator(0)])
+    gantt_length = models.IntegerField(default=30, validators=[MinValueValidator(0)])
+    anonymous_access = models.BooleanField(default=True)
 
     class Meta:
         default_permissions = ()
+
+    @staticmethod
+    def get_app_name():
+        return Settings.objects.get(pk=1).app_name
+
+    @staticmethod
+    def get_welcome_text():
+        return Settings.objects.get(pk=1).welcome_text
+
+    @staticmethod
+    def get_page_length():
+        return Settings.objects.get(pk=1).page_length
+
+    @staticmethod
+    def get_anonymous_access():
+        return Settings.objects.get(pk=1).anonymous_access
 
 
 @python_2_unicode_compatible

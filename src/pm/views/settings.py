@@ -21,9 +21,6 @@ class Update(SuperuserRequiredMixin, UpdateSuccessMessageMixin, UpdateView):
         return reverse_lazy('settings')
 
 
-def allow_anonymous_access():
-    return True     # TODO: data from settings
-
-
-def page_size():
-    return 3        # TODO
+def context_processors(request):
+    from ..models import Settings
+    return {'settings': Settings}

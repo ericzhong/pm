@@ -77,8 +77,8 @@ class PermissionMixin(object):
     def dispatch(self, request, *args, **kwargs):
         user = self.request.user
 
-        from .settings import allow_anonymous_access
-        if not user.is_authenticated() and not allow_anonymous_access():
+        from ..models import Settings
+        if not user.is_authenticated() and not Settings.get_anonymous_access():
             return redirect_login()
 
         if not self.has_perm():

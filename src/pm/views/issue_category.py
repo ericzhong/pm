@@ -55,7 +55,7 @@ class List(PermissionMixin, ListView):
         context['project'] = Project.objects.get(pk=project_id)
         context['other_projects'] = get_other_projects_html(project_id)
         context['order'] = self.order
-        context['paging'] = {'length': self.length, 'offset': self.offset, 'page_size': self.page_size}
+        context['paging'] = {'length': self.length, 'offset': self.offset, 'page_length': self.page_length}
         return context
 
     def get_queryset(self):
@@ -71,10 +71,10 @@ class List(PermissionMixin, ListView):
 
         self.length = len(objects)
         self.offset = Helper.get_offset(self.request.GET.get('offset', None))
-        from .settings import page_size
-        self.page_size = page_size()
+        from ..models import Settings
+        self.page_length = Settings.get_page_length()
 
-        return objects[self.offset:self.offset+self.page_size]
+        return objects[self.offset:self.offset+self.page_length]
 
     def has_perm(self):
         user = self.request.user
